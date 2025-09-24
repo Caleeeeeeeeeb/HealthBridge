@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HealthBridge - Home</title>
+    <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">HealthBridge</div>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Service</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+        <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to HealthBridge</h1>
+        <p>Donate or request medicine with ease.</p>
+        <a href="{% url 'register' %}"><button class="cta-btn">Get Started</button></a>
+    </div>
+</body>
+</html>
