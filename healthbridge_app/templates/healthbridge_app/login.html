@@ -23,9 +23,9 @@
     <!-- Login Form -->
     <form name="loginForm" method="post">
         {% csrf_token %}
-        <h2 style="text-align:center;">Login</h2>
+        <h1 style="text-align:center;">Login</h1>
         <div id="error" class="error">{% if error %}{{ error }}{% endif %}</div>
-        <input type="text" name="username" placeholder="Username" required>
+        <input type="text" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
