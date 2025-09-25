@@ -10,7 +10,7 @@
     <nav>
         <div class="logo">MediShare</div>
         <ul class="nav-menu">
-            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'dashboard' %}">Home</a></li>
             <li><a href="#">Donate Medicine</a></li>
             <li><a href="#">Request Medicine</a></li>
             <li><a href="#">About Us</a></li>
@@ -20,15 +20,29 @@
             <a href="{% url 'logout' %}"><button class="login-btn">Logout</button></a>
         </div>
     </nav>
+     <div class="search-button">
+        <input type="text" placeholder="Search medicine...">
+        <button>Search</button>
+    </div>
 
 </div>
     <div class="dashboard-wrapper">
       
         <aside class="sidebar">
+             
+    
             <h3>Category</h3>
             <label><input type="checkbox"> Pain Relief</label>
             <label><input type="checkbox"> Antibiotics</label>
             <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+
 
             <h3>Condition Treated</h3>
             <select>
@@ -41,19 +55,12 @@
             <label><input type="checkbox"> Tablets/Capsules</label>
             <label><input type="checkbox"> Syrups/Liquids</label>
             <label><input type="checkbox"> Stock</label>
-
-            <h3>Availability</h3>
-            <label><input type="checkbox"> Coming Soon</label>
-            <label><input type="checkbox"> In Stock</label>
-
-            <h3>Sort</h3>
-            <select>
-                <option>A-Z</option>
-                <option>Z-A</option>
-            </select>
+            <button>Sort</button>
+           
         </aside>
 
       <section class="medicine-grid">
+        
     <div class="medicine-card">
         <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
         <div class="details">
