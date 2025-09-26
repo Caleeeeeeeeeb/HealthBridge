@@ -118,6 +118,7 @@ form {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-sizing: border-box;
 }
 
 input {
@@ -250,6 +251,20 @@ button:hover {
     background-color: var(--deep-blue);
     color: white;
     cursor: pointer;
+}
+
+
+/* this style for registration firstname and lastname */
+.name-fields {
+    display: flex;
+    gap: 10px;
+    width: 106%; 
+    
+}
+
+.name-fields input {
+    flex : 1; 
+    
 }
 
 
