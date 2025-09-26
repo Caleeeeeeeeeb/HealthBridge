@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - MediShare</title>
+    <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">MediShare</div>
+        <ul class="nav-menu">
+            <li><a href="{% url 'dashboard' %}">Home</a></li>
+            <li><a href="#">Donate Medicine</a></li>
+            <li><a href="#">Request Medicine</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="{% url 'logout' %}"><button class="login-btn">Logout</button></a>
+        </div>
+    </nav>
+     <div class="search-button">
+        <input type="text" placeholder="Search medicine...">
+        <button>Search</button>
+    </div>
+
+</div>
+    <div class="dashboard-wrapper">
+      
+        <aside class="sidebar">
+             
+    
+            <h3>Category</h3>
+            <label><input type="checkbox"> Pain Relief</label>
+            <label><input type="checkbox"> Antibiotics</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+            <label><input type="checkbox"> Syrup Relief</label>
+
+
+            <h3>Condition Treated</h3>
+            <select>
+                <option>Fever</option>
+                <option>Cold</option>
+                <option>Allergy</option>
+            </select>
+
+            <h3>Form</h3>
+            <label><input type="checkbox"> Tablets/Capsules</label>
+            <label><input type="checkbox"> Syrups/Liquids</label>
+            <label><input type="checkbox"> Stock</label>
+            <button>Sort</button>
+           
+        </aside>
+
+      <section class="medicine-grid">
+        
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
+        <div class="details">
+            <h4>Paracetamol 500mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
+        <div class="details">
+            <h4>Amoxicillin 250mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
+        <div class="details">
+            <h4>Paracetamol 500mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
+        <div class="details">
+            <h4>Amoxicillin 250mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
+        <div class="details">
+            <h4>Paracetamol 500mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+
+    <div class="medicine-card">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
+        <div class="details">
+            <h4>Amoxicillin 250mg</h4>
+            <p>Uses: Pain Relief, Fever Reduction</p>
+            <p>Form: Tablets | Expiry: 12/2025</p>
+            <button class="cta-btn">Request</button>
+        </div>
+    </div>
+    
+</section>
+    
+
+    </div>
+</body>
+</html>

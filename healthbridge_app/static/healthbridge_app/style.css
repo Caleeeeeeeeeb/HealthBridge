@@ -149,3 +149,108 @@ button:hover {
     font-size: 14px;
     margin-bottom: 10px;
 }
+
+.dashboard-wrapper {
+    display: flex;
+    padding: 20px 50px;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
+    flex-shrink: 0;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.sidebar-search {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.sidebar-search input {
+    flex: 1;
+    padding: 5px 10px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.sidebar-search button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+    background-color: var(--deep-blue);
+    color: white;
+    cursor: pointer;
+}
+
+
+/* Medicine Cards Container */
+.medicine-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 20px;
+    flex: 1;
+}
+
+/* Each Card */
+.medicine-card {
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    gap: 15px;
+    align-items: center;
+}
+
+/* Image */
+.medicine-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Text & Button */
+.medicine-card .details {
+    flex: 1;
+}
+
+.medicine-card h4 {
+    color: var(--deep-blue);
+    margin-bottom: 5px;
+}
+
+.medicine-card p {
+    font-size: 12px;
+    margin: 2px 0;
+}
+
+.medicine-card .cta-btn {
+    margin-top: 10px;
+}
+
+
+/* for search */
+.search button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+    background-color: var(--deep-blue);
+    color: white;
+    cursor: pointer;
+}
+
+
+
