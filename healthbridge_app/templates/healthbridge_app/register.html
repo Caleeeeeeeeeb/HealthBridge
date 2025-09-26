@@ -8,12 +8,18 @@
     <script src="{% static 'healthbridge_app/script.js' %}"></script>
 </head>
 <body>
+      <nav>
+        <div class="logo">HealthBridge</div>
+        <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
+    </nav>
    
     <form name="registerForm" method="post" onsubmit="return validateRegisterForm()">
         {% csrf_token %}
           {% if error %}
         <div class="error" style="text-align:center;">{{ error }}</div>
     {% endif %}
+
+    
         <h1 style="text-align:center;">Register</h1>
         <div id="error" class="error"></div>
         <div class="name-fields">

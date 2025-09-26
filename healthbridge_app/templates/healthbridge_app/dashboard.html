@@ -20,29 +20,19 @@
             <a href="{% url 'logout' %}"><button class="login-btn">Logout</button></a>
         </div>
     </nav>
-     <div class="search-button">
+
+    <!-- Search -->
+    <div class="search-bar">
         <input type="text" placeholder="Search medicine...">
         <button>Search</button>
     </div>
 
-</div>
     <div class="dashboard-wrapper">
-      
         <aside class="sidebar">
-             
-    
             <h3>Category</h3>
             <label><input type="checkbox"> Pain Relief</label>
             <label><input type="checkbox"> Antibiotics</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-            <label><input type="checkbox"> Syrup Relief</label>
-
+            <label><input type="checkbox"> Vitamins</label>
 
             <h3>Condition Treated</h3>
             <select>
@@ -56,72 +46,29 @@
             <label><input type="checkbox"> Syrups/Liquids</label>
             <label><input type="checkbox"> Stock</label>
             <button>Sort</button>
-           
         </aside>
 
-      <section class="medicine-grid">
-        
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
-        <div class="details">
-            <h4>Paracetamol 500mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
+        <section class="medicine-grid">
+            <div class="medicine-card">
+                <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
+                <div class="details">
+                    <h4>Paracetamol 500mg</h4>
+                    <p>Uses: Pain Relief, Fever Reduction</p>
+                    <p>Form: Tablets | Expiry: 12/2025</p>
+                    <button class="cta-btn">Request</button>
+                </div>
+            </div>
 
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
-        <div class="details">
-            <h4>Amoxicillin 250mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
-        <div class="details">
-            <h4>Paracetamol 500mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
-
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
-        <div class="details">
-            <h4>Amoxicillin 250mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
-        <div class="details">
-            <h4>Paracetamol 500mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
-
-    <div class="medicine-card">
-        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
-        <div class="details">
-            <h4>Amoxicillin 250mg</h4>
-            <p>Uses: Pain Relief, Fever Reduction</p>
-            <p>Form: Tablets | Expiry: 12/2025</p>
-            <button class="cta-btn">Request</button>
-        </div>
-    </div>
-    
-</section>
-    
-
+            <div class="medicine-card">
+                <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
+                <div class="details">
+                    <h4>Amoxicillin 250mg</h4>
+                    <p>Uses: Antibiotic</p>
+                    <p>Form: Tablets | Expiry: 12/2025</p>
+                    <button class="cta-btn">Request</button>
+                </div>
+            </div>
+        </section>
     </div>
 </body>
 </html>
