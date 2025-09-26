@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'healthbridge_app',
 ]
 
+AUTH_USER_MODEL = 'healthbridge_app.CustomUser'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
