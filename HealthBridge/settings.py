@@ -42,6 +42,10 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'healthbridge_app.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'healthbridge_app.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',  # keep default for admin
+]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

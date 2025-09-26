@@ -13,13 +13,13 @@ def register(request):
         password = request.POST.get('password')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
+        username = email  # generate username
 
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(email=email).exists():
             return render(request, 'healthbridge_app/register.html', {'error': 'Email already exists'})
 
-        # Create user using email as username
         User.objects.create_user(
-            username=email,
+            username=username,
             email=email,
             password=password,
             first_name=first_name,
@@ -34,8 +34,8 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # since username == email at registration
-        user = authenticate(request, username=email, password=password)
+        # username=email because USERNAME_FIELD=email
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             return redirect('dashboard')
