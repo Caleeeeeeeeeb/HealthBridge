@@ -1,4 +1,11 @@
+{% extends 'healthbridge_app/base.html' %}
 {% load static %}
+{% block title %}Home • HealthBridge{% endblock %}
+{% block nav_home_active %}is-active{% endblock %}
+
+{% block content %}
+  <h1 class="hb-page-title">Available Medicines for Donation</h1>
+  <p class="hb-muted">Browse the list of available donated medicines…</p>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,3 +42,4 @@
     </section>
 </body>
 </html>
+{% endblock %}

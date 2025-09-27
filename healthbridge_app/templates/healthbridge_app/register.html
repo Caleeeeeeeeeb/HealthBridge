@@ -1,43 +1,40 @@
+{% extends 'healthbridge_app/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register - HealthBridge</title>
-    <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
-    <script src="{% static 'healthbridge_app/script.js' %}"></script>
-</head>
-<body>
 
-   
+{% block title %}Register • HealthBridge{% endblock %}
+{% block nav_register_active %}is-active{% endblock %}
 
-        <nav>
-    <div class="logo">HealthBridge</div>
-    <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact Us</a></li>
-    </ul>
-    <div class="nav-buttons">
-        <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
-       
-    </div>
-</nav>
-     
-    <form name="registerForm" method="post" onsubmit="return validateRegisterForm()">
+{% block content %}
+  <div class="hb-auth-wrap">
+    <h1 class="hb-auth-title">Create an account</h1>
+
+    <div class="hb-card hb-auth-card">
+      <form method="post" class="hb-form" novalidate>
         {% csrf_token %}
-          {% if error %}
-        <div class="error" style="text-align:center;">{{ error }}</div>
-    {% endif %}
-        <h1 style="text-align:center;">Register</h1>
-        <div id="error" class="error"></div>
-        <input type="text" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Register</button>
-    </form>
-    <p style="text-align:center;">
-        Already have an account? <a href="{% url 'login' %}">Login</a>
-    </p>
-</body>
-</html>
+
+        {% if form.non_field_errors %}
+          <div class="hb-errors">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        {% for field in form %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="hb-help">{{ field.help_text|safe }}</div>
+          {% endif %}
+          {% if field.errors %}
+            <div class="hb-errors">{{ field.errors }}</div>
+          {% endif %}
+        {% endfor %}
+
+        <div class="hb-actions">
+          <button class="hb-btn hb-btn-primary" type="submit">Register</button>
+          <a class="hb-btn hb-btn-ghost" href="{% url 'login' %}">Already have an account?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+  

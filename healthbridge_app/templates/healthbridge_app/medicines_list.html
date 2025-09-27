@@ -1,0 +1,46 @@
+{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+{% block title %}Available Medicines • HealthBridge{% endblock %}
+{% block nav_home_active %}is-active{% endblock %}
+
+{% block content %}
+  <h1 class="hb-page-title">Available Medicines for Donation</h1>
+  <p class="hb-muted">
+    Browse the list of available donated medicines. If someone you know needs these medicines,
+    click “Request” to add them to your cart.
+  </p>
+
+  <!-- Search bar -->
+  <div class="hb-searchbar">
+    <input type="search" class="hb-input hb-input-lg" placeholder="Search by Medicine Name, Condition, or Category">
+  </div>
+
+  <div class="hb-grid">
+    <!-- Sidebar filters -->
+    <aside class="hb-card hb-sidebar">
+      <h3 class="hb-sidebar-title">Category</h3>
+      <label><input type="checkbox"> Pain Relief</label>
+      <label><input type="checkbox"> Antibiotics</label>
+      <label><input type="checkbox"> Vitamins</label>
+    </aside>
+
+    <!-- Medicines cards -->
+    <section class="hb-cards">
+      <article class="hb-card hb-card-product">
+        <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol" class="hb-product-img">
+        <div class="hb-card-body">
+          <h3 class="hb-card-title">Paracetamol 500mg</h3>
+          <ul class="hb-meta">
+            <li>Uses: Pain Relief</li>
+            <li>Form: Tablet</li>
+            <li>Expiry: 12/2025</li>
+          </ul>
+          <div class="hb-card-actions">
+            <a href="#" class="hb-btn hb-btn-primary">Request</a>
+          </div>
+        </div>
+      </article>
+      <!-- repeat for more medicines -->
+    </section>
+  </div>
+{% endblock %}

@@ -1,6 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render
+from .models import Medicine
+
+def medicines_list(request):
+    return render(request, 'healthbridge_app/medicines_list.html')
 
 def home(request):
     return render(request, 'healthbridge_app/home.html')
@@ -35,8 +40,12 @@ def login_view(request):
     return render(request, 'healthbridge_app/login.html')
 
 def dashboard(request):
-    return render(request, 'healthbridge_app/dashboard.html')
-
+    medicines = Medicine.objects.all()[:24]  # sample list; tweak filters as needed
+    return render(request, 'healthbridge_app/dashboard.html', {'medicines': medicines})
 def logout_view(request):
     logout(request)
     return redirect('login')
+def request_medicine(request, med_id):
+    medicine = get_object_or_404(Medicine, id=med_id)
+    # For now, just redirect back to dashboard (you can add logic later)
+    return redirect('dashboard')
