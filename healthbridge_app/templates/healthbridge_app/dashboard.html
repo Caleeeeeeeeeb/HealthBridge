@@ -1,84 +1,78 @@
+{% extends 'healthbridge_app/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - HealthBridge</title>
-    <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
-</head>
-<body>
-    <nav>
-        <div class="logo">HealthBridge</div>
-        <ul class="nav-menu">
-            <li><a href="{% url 'dashboard' %}">Home</a></li>
-            <li><a href="#">Donate Medicine</a></li>
-            <li><a href="#">Request Medicine</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-        <div class="nav-buttons">
-            <a href="{% url 'logout' %}"><button class="login-btn">Logout</button></a>
-        </div>
-    </nav>
 
-    <!-- Search -->
-    <div class="search-bar">
-        <input type="text" placeholder="Search medicine...">
-        <button>Search</button>
-    </div>
+{% block title %}Dashboard • HealthBridge{% endblock %}
+{% block nav_dashboard_active %}is-active{% endblock %}
 
-    <div class="dashboard-wrapper">
-        <aside class="sidebar">
-            <h3>Category</h3>
-            <label><input type="checkbox"> Pain Relief</label>
-            <label><input type="checkbox"> Antibiotics</label>
-            <label><input type="checkbox"> Vitamins</label>
-             <label><input type="checkbox"> Vitamins</label>
-              <label><input type="checkbox"> Vitamins</label>
-               <label><input type="checkbox"> Vitamins</label>
-                <label><input type="checkbox"> Vitamins</label>
-                 <label><input type="checkbox"> Vitamins</label>
-                  <label><input type="checkbox"> Vitamins</label>
-                   <label><input type="checkbox"> Vitamins</label>
-                    <label><input type="checkbox"> Vitamins</label>
-                     <label><input type="checkbox"> Vitamins</label>
+{% block content %}
+  <h1 class="hb-page-title">Dashboard</h1>
 
+  <div class="hb-grid">
+    <!-- Sidebar filters -->
+    <aside class="hb-card hb-sidebar">
+      <h3 class="hb-sidebar-title">Category</h3>
+      <label class="hb-check"><input type="checkbox"> Pain Relief</label>
+      <label class="hb-check"><input type="checkbox"> Antibiotics</label>
+      <label class="hb-check"><input type="checkbox"> Syrup Relief</label>
 
-            <h3>Condition Treated</h3>
-            <select>
-                <option>Fever</option>
-                <option>Cold</option>
-                <option>Allergy</option>
-            </select>
+      <div class="hb-divider"></div>
 
-            <h3>Form</h3>
-            <label><input type="checkbox"> Tablets/Capsules</label>
-            <label><input type="checkbox"> Syrups/Liquids</label>
-            <label><input type="checkbox"> Stock</label>
-            <button>Sort</button>
-        </aside>
+      <h3 class="hb-sidebar-title">Condition Treated</h3>
+      <div class="hb-select">
+        <select>
+          <option>Fever</option>
+          <option>Allergy</option>
+          <option>Hypertension</option>
+        </select>
+      </div>
 
-        <section class="medicine-grid">
-            <div class="medicine-card">
-                <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Paracetamol 500mg">
-                <div class="details">
-                    <h4>Paracetamol 500mg</h4>
-                    <p>Uses: Pain Relief, Fever Reduction</p>
-                    <p>Form: Tablets | Expiry: 12/2025</p>
-                    <button class="cta-btn">Request</button>
-                </div>
+      <div class="hb-divider"></div>
+
+      <h3 class="hb-sidebar-title">Form</h3>
+      <label class="hb-check"><input type="checkbox"> Tablets/Capsules</label>
+      <label class="hb-check"><input type="checkbox"> Syrups/Liquids</label>
+      <label class="hb-check"><input type="checkbox"> Stock</label>
+
+      <div class="hb-divider"></div>
+
+      <h3 class="hb-sidebar-title">Availability</h3>
+      <label class="hb-check"><input type="checkbox"> Coming Soon</label>
+      <label class="hb-check"><input type="checkbox"> In Stock</label>
+    </aside>
+
+    <!-- Cards grid -->
+    <section class="hb-cards">
+      {% static 'healthbridge_app/paracetamol.png' as fallback_img %}
+
+      {% for med in medicines %}
+        <article class="hb-card hb-card-product">
+          {# Safe image fallback: ImageField -> URL string -> static placeholder #}
+          {% if med.image %}
+            <img src="{{ med.image.url }}" alt="{{ med.name }}" class="hb-product-img">
+          {% elif med.image_url %}
+            <img src="{{ med.image_url }}" alt="{{ med.name }}" class="hb-product-img">
+          {% else %}
+            <img src="{{ fallback_img }}" alt="{{ med.name }}" class="hb-product-img">
+          {% endif %}
+
+          <div class="hb-card-body">
+            <h3 class="hb-card-title">{{ med.name }}</h3>
+            <ul class="hb-meta">
+              {% if med.uses %}<li><strong>Uses:</strong> {{ med.uses }}</li>{% endif %}
+              <li>
+                {% if med.form %}<strong>Form:</strong> {{ med.form }}{% endif %}
+                {% if med.expiry %} <span class="hb-dot"></span> <strong>Expiry:</strong> {{ med.expiry|date:"m/Y" }}{% endif %}
+              </li>
+            </ul>
+
+            <div class="hb-card-actions">
+              <a href="{% url 'request_medicine' med.id %}" class="hb-btn hb-btn-primary">Request</a>
             </div>
-
-            <div class="medicine-card">
-                <img src="{% static 'healthbridge_app/paracetamol.png' %}" alt="Amoxicillin 250mg">
-                <div class="details">
-                    <h4>Amoxicillin 250mg</h4>
-                    <p>Uses: Antibiotic</p>
-                    <p>Form: Tablets | Expiry: 12/2025</p>
-                    <button class="cta-btn">Request</button>
-                </div>
-            </div>
-        </section>
-    </div>
-</body>
-</html>
+          </div>
+        </article>
+      {% empty %}
+        <p class="hb-muted">No medicines found.</p>
+      {% endfor %}
+    </section>
+  </div>
+{% endblock %}
