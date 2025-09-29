@@ -1,7 +1,35 @@
+/* =========================
+   Root Variables / Colors
+   ========================= */
 :root {
+    /* Brand Colors */
     --emerald-green: #2ECC71;
     --deep-blue: #2980B9;
+
+    /* HealthBridge Design System */
+    --hb-green:  #2ECC71;   /* primary buttons */
+    --hb-blue:   #2980B9;   /* header/nav */
+    --hb-teal:   #1ABC9C;   /* secondary buttons/links */
+    --hb-orange: #F39C12;   /* alerts */
+    --hb-red:    #E74C3C;   /* errors */
+
+    /* Neutrals */
+    --hb-bg:     #F4F6F7;   /* page background */
+    --hb-ink:    #2C3E50;   /* text */
+    --hb-white:  #FFFFFF;
+
+    /* Effects */
+    --hb-radius: 14px;
+    --hb-shadow: 0 8px 22px rgba(44, 62, 80, .08);
+    --hb-border: 1px solid rgba(41, 128, 185, .20);
 }
+
+/* =========================
+   Global Styles
+   ========================= */
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
 
 body {
     font-family: Arial, sans-serif;
@@ -10,14 +38,34 @@ body {
     background-color: #f5f5f5;
 }
 
-/* Navbar */
+body.hb-body {
+    margin: 0;
+    color: var(--hb-ink);
+    background: var(--hb-bg);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+}
+
+/* =========================
+   Containers
+   ========================= */
+.hb-container { 
+    width: min(1180px, 96%); 
+    margin-inline: auto; 
+}
+
+.hb-main { 
+    padding-block: 28px 36px; 
+}
+
+/* =========================
+   Navbar / Header
+   ========================= */
 nav {
     background-color: var(--deep-blue);
     color: white;
     padding: 15px 50px;
     display: flex;
     justify-content: space-between;
-   /* align-items: center; */
 }
 
 nav .logo {
@@ -50,14 +98,17 @@ nav ul li a:hover {
     margin-left: 10px;
 }
 
-.login-btn {
-    background-color: var(--emerald-green);
+.login-btn, .cta-btn {
     color: white;
     border: none;
-    padding: 10px 20px;
     cursor: pointer;
     font-weight: bold;
     border-radius: 5px;
+}
+
+.login-btn {
+    background-color: var(--emerald-green);
+    padding: 10px 20px;
 }
 
 .login-btn:hover {
@@ -66,20 +117,61 @@ nav ul li a:hover {
 
 .cta-btn {
     background-color: var(--emerald-green);
-    color: white;
-    border: none;
     padding: 12px 25px;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 8px;
     margin-top: 10px;
+    border-radius: 8px;
 }
 
 .cta-btn:hover {
     background-color: #27ae60;
 }
 
-/* Hero Section */
+/* HealthBridge Header */
+.hb-header {
+    background: var(--hb-blue);
+    color: var(--hb-white);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.hb-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+}
+
+.hb-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hb-brand-name {
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.hb-nav {
+    display: flex;
+    gap: 22px;
+}
+
+.hb-nav-link {
+    color: var(--hb-white);
+    text-decoration: none;
+    opacity: .9;
+    padding-bottom: 6px;
+    border-bottom: 2px solid transparent;
+}
+
+.hb-nav-link:hover { opacity: 1; }
+.hb-nav-link.is-active { border-color: var(--hb-white); }
+
+/* =========================
+   Hero Section
+   ========================= */
 .hero-section {
     display: flex;
     justify-content: space-between;
@@ -110,8 +202,10 @@ nav ul li a:hover {
     border-radius: 10px;
 }
 
-/* Form Styles (keep for login/register) */
-form {
+/* =========================
+   Forms / Auth Pages
+   ========================= */
+form, .hb-auth-card {
     max-width: 400px;
     margin: 50px auto;
     background-color: white;
@@ -121,291 +215,189 @@ form {
     box-sizing: border-box;
 }
 
-input {
+input, .hb-form input[type="text"], 
+.hb-form input[type="email"], 
+.hb-form input[type="password"], 
+.hb-form input[type="number"], 
+.hb-form select, .hb-form textarea {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
     border: 1px solid #ccc;
+    background: var(--hb-white);
+    outline: none;
+    margin-top: 6px;
 }
 
-button {
+button, .hb-btn, .hb-btn-primary {
     width: 100%;
     padding: 10px;
     margin-top: 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--emerald-green);
-    color: white;
-    font-weight: bold;
     cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
 }
 
-button:hover {
+button:hover, .hb-btn-primary:hover {
     background-color: #27ae60;
+    filter: brightness(0.96);
 }
 
-.error {
+.error, .hb-form .hb-errors {
     color: red;
     font-size: 14px;
     margin-bottom: 10px;
 }
 
-.dashboard-wrapper {
-    display: flex;
-    padding: 20px 50px;
-    gap: 30px;
-    align-items: flex-start;
-}
-
-
-
-
-/* this style for registration firstname and lastname */
 .name-fields {
     display: flex;
     gap: 10px;
-    width: 106%; 
-    
+    width: 106%;
 }
 
 .name-fields input {
-    flex : 1; 
-    
+    flex: 1;
+}
+
+.hb-auth-wrap {
+    max-width: 760px;
+    margin: 18px auto 36px;
+}
+
+.hb-auth-title {
+    font-size: clamp(24px, 3.2vw, 42px);
+    margin: 8px 0 14px;
 }
 
 /* =========================
-   HealthBridge Design System
+   Dashboard Layout / Sidebar
    ========================= */
-:root{
-  /* Brand */
-  --hb-green:  #2ECC71;   /* primary buttons */
-  --hb-blue:   #2980B9;   /* header/nav */
-  --hb-teal:   #1ABC9C;   /* secondary buttons/links */
-  --hb-orange: #F39C12;   /* alerts */
-  --hb-red:    #E74C3C;   /* errors */
-
-  /* Neutrals */
-  --hb-bg:     #F4F6F7;   /* page background */
-  --hb-ink:    #2C3E50;   /* text */
-  --hb-white:  #FFFFFF;
-
-  /* Effects */
-  --hb-radius: 14px;
-  --hb-shadow: 0 8px 22px rgba(44, 62, 80, .08);
-  --hb-border: 1px solid rgba(41, 128, 185, .20);
+.dashboard-wrapper, .hb-grid {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 20px 50px;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body.hb-body{
-  margin:0;
-  color:var(--hb-ink);
-  background: var(--hb-bg);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+.hb-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 22px;
+    align-items: start;
 }
 
-/* Containers */
-.hb-container{ width:min(1180px, 96%); margin-inline:auto; }
-.hb-main{ padding-block:28px 36px; }
-
-/* Header / Nav */
-.hb-header{ background:var(--hb-blue); color:var(--hb-white); position:sticky; top:0; z-index:10; }
-.hb-header-inner{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; }
-.hb-brand{ display:flex; align-items:center; gap:10px; }
-.hb-brand-name{ font-weight:700; letter-spacing:.2px; }
-.hb-nav{ display:flex; gap:22px; }
-.hb-nav-link{
-  color:var(--hb-white); text-decoration:none; opacity:.9; padding-bottom:6px; border-bottom:2px solid transparent;
-}
-.hb-nav-link:hover{ opacity:1; }
-.hb-nav-link.is-active{ border-color:var(--hb-white); }
-
-/* Cards / Buttons */
-.hb-card{ background:var(--hb-white); border-radius:var(--hb-radius); border:var(--hb-border); box-shadow:var(--hb-shadow); }
-
-.hb-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  padding:10px 16px; border-radius:999px; text-decoration:none; border:1px solid transparent;
-  cursor:pointer; font-weight:600;
-}
-.hb-btn-primary{ background:var(--hb-green); color:var(--hb-white); }
-.hb-btn-primary:hover{ filter: brightness(0.96); }
-.hb-btn-ghost{ background:transparent; color:var(--hb-blue); border-color:rgba(41,128,185,.35); }
-.hb-btn-ghost:hover{ background:rgba(41,128,185,.06); }
-
-/* Auth pages (Register/Login) */
-.hb-auth-wrap{
-  max-width: 760px;
-  margin: 18px auto 36px;
-}
-.hb-auth-title{
-  font-size: clamp(24px, 3.2vw, 42px);
-  margin: 8px 0 14px;
-}
-.hb-auth-card{
-  padding: 22px;
-  border-radius: var(--hb-radius);
+@media (max-width: 900px) {
+    .hb-grid { grid-template-columns: 1fr; }
 }
 
-/* Forms */
-.hb-form label{
-  display:block;
-  font-weight:600;
-  margin-top:12px;
-}
-.hb-form input[type="text"],
-.hb-form input[type="email"],
-.hb-form input[type="password"],
-.hb-form input[type="number"],
-.hb-form select,
-.hb-form textarea{
-  width: 100%;
-  border: var(--hb-border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  background: var(--hb-white);
-  outline: none;
-  margin-top: 6px;
-}
-.hb-form .hb-help{
-  font-size:.9rem;
-  color:#6c7a89;
-  margin-top:4px;
-}
-.hb-form .hb-errors{
-  background: rgba(231,76,60,.08);
-  border: 1px solid rgba(231,76,60,.35);
-  color:#a33;
-  padding:10px 12px;
-  border-radius:10px;
-  margin:8px 0 12px;
-}
-.hb-actions{ display:flex; align-items:center; gap:12px; margin-top:16px; }
-
-/* Utility */
-.hb-page-title{ margin:8px 0 16px; font-size: clamp(22px, 3vw, 34px); }
-.hb-muted{ color:#6c7a89; }
-/* ===== Layout: sidebar + cards ===== */
-.hb-grid{
-  display:grid;
-  grid-template-columns: 280px 1fr;
-  gap:22px;
-  align-items:start;
-}
-@media (max-width: 900px){
-  .hb-grid{ grid-template-columns: 1fr; }
+.hb-sidebar {
+    padding: 16px;
+    position: sticky;
+    top: 88px;
 }
 
-/* ===== Sidebar ===== */
-.hb-sidebar{ padding:16px; position:sticky; top:88px; }
-.hb-sidebar-title{ font-size:0.95rem; margin:10px 0 8px; }
-.hb-check{ display:block; font-size:.95rem; margin:6px 0; color:var(--hb-ink); }
-.hb-select select{
-  width:100%; padding:10px 12px; border:var(--hb-border);
-  border-radius:10px; background:var(--hb-white);
-}
-.hb-divider{ height:1px; background:rgba(44,62,80,.08); margin:14px 0; }
+.hb-sidebar-title { font-size: 0.95rem; margin: 10px 0 8px; }
 
-/* ===== Card grid ===== */
-.hb-cards{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap:22px;
+.hb-check { display: block; font-size: .95rem; margin: 6px 0; color: var(--hb-ink); }
+
+.hb-select select {
+    width: 100%;
+    padding: 10px 12px;
+    border: var(--hb-border);
+    border-radius: 10px;
+    background: var(--hb-white);
 }
 
-/* ===== Medicine Card ===== */
-.hb-card-product{ padding:14px; display:flex; flex-direction:column; gap:12px; }
-.hb-product-img{
-  width:100%; max-width:320px; height:auto; object-fit:cover;
-  border-radius:10px; margin: 4px auto 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-}
-.hb-card-body{ display:flex; flex-direction:column; gap:8px; }
-.hb-card-title{ font-size:1.06rem; font-weight:700; margin: 4px 0 2px; }
+.hb-divider { height: 1px; background: rgba(44,62,80,.08); margin: 14px 0; }
 
-/* Clean meta list (no bullets, no default link blue) */
-.hb-meta{ list-style:none; padding:0; margin:0; color:#4b5a68; }
-.hb-meta li{ margin:4px 0; }
-.hb-meta a{ color:inherit; text-decoration:none; }
-.hb-meta a:hover{ text-decoration:underline; }
-
-/* small middle dot (Form | Expiry line) */
-.hb-dot{
-  display:inline-block; width:5px; height:5px; border-radius:50%;
-  background: rgba(44,62,80,.45); margin: 0 8px;
+/* =========================
+   Cards / Products
+   ========================= */
+.hb-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 22px;
 }
 
-/* Buttons & actions */
-.hb-card-actions{ display:flex; justify-content:flex-start; margin-top:6px; }
-.hb-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  padding:10px 16px; border-radius:999px; text-decoration:none; border:1px solid transparent;
-  cursor:pointer; font-weight:600;
-}
-.hb-btn-primary{ background:var(--hb-green); color:var(--hb-white); }
-.hb-btn-primary:hover{ filter: brightness(0.96); }
-
-/* ===== General Polish ===== */
-.hb-page-title{ margin:14px 0 18px; font-size: clamp(24px, 3vw, 36px); }
-.hb-card{ background:var(--hb-white); border-radius:14px; border:var(--hb-border); box-shadow:0 8px 22px rgba(44,62,80,.08); }
-
-/* ===== Layout: sidebar + cards ===== */
-.hb-grid{
-  display:grid;
-  grid-template-columns: 280px 1fr;
-  gap:22px;
-  align-items:start;
-}
-@media (max-width: 900px){
-  .hb-grid{ grid-template-columns: 1fr; }
+.hb-card, .hb-card-product {
+    background: var(--hb-white);
+    border-radius: 14px;
+    border: var(--hb-border);
+    box-shadow: 0 8px 22px rgba(44,62,80,.08);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* Sidebar */
-.hb-sidebar{ padding:16px; position:sticky; top:88px; }
-.hb-sidebar-title{ font-size:0.95rem; margin:10px 0 8px; }
-.hb-check{ display:block; font-size:.95rem; margin:6px 0; color:var(--hb-ink); }
-.hb-select select{
-  width:100%; padding:10px 12px; border:var(--hb-border);
-  border-radius:10px; background:var(--hb-white);
-}
-.hb-divider{ height:1px; background:rgba(44,62,80,.08); margin:14px 0; }
-
-/* Card grid */
-.hb-cards{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap:22px;
+.hb-product-img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 4px auto 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
 
-/* Medicine card */
-.hb-card{ background:var(--hb-white); border-radius:14px; border:var(--hb-border); box-shadow:0 8px 22px rgba(44,62,80,.08); }
-.hb-card-product{ padding:14px; display:flex; flex-direction:column; gap:12px; }
-.hb-product-img{
-  width:100%; max-width:320px; height:auto; object-fit:cover;
-  border-radius:10px; margin: 4px auto 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+.hb-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
-.hb-card-body{ display:flex; flex-direction:column; gap:8px; }
-.hb-card-title{ font-size:1.06rem; font-weight:700; margin: 4px 0 2px; }
-.hb-meta{ list-style:none; padding:0; margin:0; color:#4b5a68; }
-.hb-meta li{ margin:4px 0; }
-.hb-meta a{ color:inherit; text-decoration:none; }
-.hb-meta a:hover{ text-decoration:underline; }
-.hb-dot{
-  display:inline-block; width:5px; height:5px; border-radius:50%;
-  background: rgba(44,62,80,.45); margin: 0 8px;
+
+.hb-card-title { font-size: 1.06rem; font-weight: 700; margin: 4px 0 2px; }
+
+.hb-meta { list-style: none; padding: 0; margin: 0; color: #4b5a68; }
+
+.hb-meta li { margin: 4px 0; }
+
+.hb-meta a { color: inherit; text-decoration: none; }
+
+.hb-meta a:hover { text-decoration: underline; }
+
+.hb-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(44,62,80,.45);
+    margin: 0 8px;
 }
-.hb-card-actions{ display:flex; justify-content:flex-start; margin-top:6px; }
 
-.hb-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  padding:10px 16px; border-radius:999px; text-decoration:none; border:1px solid transparent;
-  cursor:pointer; font-weight:600;
+.hb-card-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 6px;
 }
-.hb-btn-primary{ background:var(--hb-green); color:var(--hb-white); }
-.hb-btn-primary:hover{ filter: brightness(0.96); }
 
-/* Page title */
-.hb-page-title{ margin:14px 0 18px; font-size: clamp(24px, 3vw, 36px); }
+/* =========================
+   Buttons
+   ========================= */
+.hb-btn, .hb-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+}
 
+.hb-btn-primary { background: var(--hb-green); color: var(--hb-white); }
+
+.hb-btn-primary:hover { filter: brightness(0.96); }
+
+/* =========================
+   Page Titles / Typography
+   ========================= */
+.hb-page-title {
+    margin: 14px 0 18px;
+    font-size: clamp(24px, 3vw, 36px);
+}
+
+.hb-muted { color: #6c7a89; }
