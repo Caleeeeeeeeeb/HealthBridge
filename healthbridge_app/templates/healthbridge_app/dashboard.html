@@ -52,7 +52,7 @@
           {% elif med.image_url %}
             <img src="{{ med.image_url }}" alt="{{ med.name }}" class="hb-product-img">
           {% else %}
-            <img src="{{ fallback_img }}" alt="{{ med.name }}" class="hb-product-img">
+            <img src="{% static 'healthbridge_app/paracetamol.png'}" alt="{{ med.name }}" class="hb-product-img">
           {% endif %}
 
           <div class="hb-card-body">
