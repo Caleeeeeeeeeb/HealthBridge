@@ -17,12 +17,15 @@ nav {
     padding: 15px 50px;
     display: flex;
     justify-content: space-between;
-   /* align-items: center; */
+    align-items: center; 
 }
 
 nav .logo {
-    font-size: 24px;
+    font-size: 2.3rem;
     font-weight: bold;
+    letter-spacing: 1px;
+    margin-right: 24px;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
 nav ul {
@@ -30,10 +33,11 @@ nav ul {
     display: flex;
     margin: 0;
     padding: 0;
+    gap: 22px;
 }
 
 nav ul li {
-    margin-left: 25px;
+    margin: 0;
 }
 
 nav ul li a {
@@ -85,7 +89,6 @@ nav ul li a:hover {
     justify-content: space-between;
     align-items: center;
     padding: 80px 50px;
-    background-color: #ffffff;
 }
 
 .hero-text {
@@ -94,7 +97,7 @@ nav ul li a:hover {
 
 .hero-text h1 {
     font-size: 48px;
-    color: var(--deep-blue);
+    color: #FFFFFF;
     margin-bottom: 20px;
 }
 
@@ -117,7 +120,8 @@ form {
     background-color: white;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border: 2px solid #32a5ed; /* Thicker border */
+    box-shadow: none;           /* No shadow */
     box-sizing: border-box;
 }
 
@@ -409,3 +413,55 @@ body.hb-body{
 /* Page title */
 .hb-page-title{ margin:14px 0 18px; font-size: clamp(24px, 3vw, 36px); }
 
+
+/* trying to make it modern clean auth page  */
+/* Modern, clean auth page text styles using built-in fonts */
+.modern-title {
+    text-align: center;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--deep-blue);
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.modern-link {
+    color: var(--deep-blue);
+    text-decoration: none;
+    font-weight: 500;
+    font-family: "Segoe UI", Arial, sans-serif;
+    transition: color 0.2s;
+}
+
+.modern-link:hover {
+    color: var(--emerald-green);
+}
+
+.modern-helper {
+    text-align: center;
+    color: #6c7a89;
+    font-size: 1rem;
+    margin-top: 18px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.error {
+    text-align: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+.login-bg-blur, .register-bg-blur, .home-bg-blur {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: url("background.png") center center / cover no-repeat; 
+    filter: blur(8px) brightness(0.85);
+}
+.tagline {
+  text-align: center;
+  font-size: 14px;   /* smaller than main text */
+  color: #555;       /* subtle gray tone */
+  margin-top: 8px;   /* space from heading */
+}

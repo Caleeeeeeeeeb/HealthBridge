@@ -8,26 +8,26 @@
 </head>
 <body>
     <!-- Navbar -->
+     <div class="home-bg-blur"></div>
     <nav>
         <div class="logo">HealthBridge</div>
+        <div class="nav-right"></div>
         <ul>
-            <li><a href="#">Home</a></li>
             <li><a href="#">Services</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact Us</a></li>
         </ul>
         <div class="nav-buttons">
             <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
-            <a href="{% url 'register' %}"><button class="cta-btn">Register</button></a>
         </div>
     </nav>
-
+      
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-text">
-            <h1>Your Health, Our Priority</h1>
+            <h1>Your Health,<br> Our Priority.</h1>
             <p>Donate or request medicine easily and securely.</p>
-            <a href="{% url 'register' %}"><button class="cta-btn">Get Started</button></a>
+            <a href="{% url 'register' %}"><button class="cta-btn">Sign Up</button></a>
         </div>
         <div class="hero-image">
             <img src="{% static 'healthbridge_app/doctor.png' %}" alt="Doctor Image">

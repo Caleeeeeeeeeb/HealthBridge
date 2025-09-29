@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
     <script src="{% static 'healthbridge_app/script.js' %}"></script>
 </head>
+
 <body>
+    <div class="login-bg-blur"></div>
     <!-- Navbar -->
     <nav>
+       
         <div class="logo">HealthBridge</div>
         <ul>
             <li><a href="{% url 'home' %}">Home</a></li>
@@ -17,13 +20,14 @@
             <li><a href="#">About</a></li>
             <li><a href="#">Contact Us</a></li>
         </ul>
-        <a href="{% url 'register' %}"><button class="login-btn">Register</button></a>
+        </div>
     </nav>
 
     <!-- Login Form -->
     <form name="loginForm" method="post">
         {% csrf_token %}
         <h1 style="text-align:center;">Login</h1>
+        <p class="tagline">Your health, just a click away.</p>
         <div id="error" class="error">{% if error %}{{ error }}{% endif %}</div>
 
         <input type="text" name="email" placeholder="Email" required>
@@ -31,7 +35,7 @@
         <button type="submit">Login</button>
     </form>
     <p style="text-align:center;">
-        Don't have an account? <a href="{% url 'register' %}">Register</a>
+        Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
     </p>
 </body>
 </html>

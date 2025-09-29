@@ -8,9 +8,15 @@
     <script src="{% static 'healthbridge_app/script.js' %}"></script>
 </head>
 <body>
+    <div class="register-bg-blur"></div>
       <nav>
         <div class="logo">HealthBridge</div>
-        <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">Service</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
     </nav>
    
     <form name="registerForm" method="post" onsubmit="return validateRegisterForm()">
@@ -20,7 +26,8 @@
     {% endif %}
 
     
-        <h1 style="text-align:center;">Register</h1>
+        <h1 style="text-align:center;">Sign Up</h1>
+        <p class="tagline">Join us in building a healthier tomorrow.</p>
         <div id="error" class="error"></div>
         <div class="name-fields">
     <input type="text" name="first_name" placeholder="First Name" required>
@@ -29,6 +36,7 @@
  <div class="form">
 <input type="text" name="email" placeholder="Email" required>
 <input type="password" name="password" placeholder="Password" required>
+<input type="password" name="password2" placeholder="Confirm Password" required>
 </div>
         <button type="submit">Register</button>
     </form>
