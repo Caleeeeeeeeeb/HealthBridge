@@ -2,36 +2,394 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>HealthBridge - Home</title>
-    <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
+  <meta charset="UTF-8">
+  <title>HealthBridge - Home</title>
+  <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
+  <style>
+    :root {
+      --emerald-green: #2ECC71;
+      --deep-blue: #2980B9;
+      --text-dark: #2c3e50;
+      --text-muted: #7f8c8d;
+      --bg-light: #f8f9fa;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text-dark);
+      background-color: white;
+    background: linear-gradient(135deg, rgba(41, 128, 185, 0.5), rgba(46, 204, 113, 0.5));
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--deep-blue);
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: var(--emerald-green);
+    }
+
+   .nav-buttons {
+  display: flex;          /* place buttons in a row */
+  align-items: center;    /* vertically center */
+  gap: 0.8rem;            /* space between them */
+}
+
+.nav-buttons button {
+  padding: 0.6rem 1.2rem;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    rgba(41, 128, 185, 0.5),
+    rgba(46, 204, 113, 0.5)
+  );
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.nav-buttons button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(41, 128, 185, 0.8),
+    rgba(46, 204, 113, 0.8)
+  );
+}
+
+
+
+    .hero-image img {
+  max-width: 600px; /* increased from 400px */
+  width: 100%;
+  height: auto;
+  animation: float 4s ease-in-out infinite;
+}
+
+    /* Hero Section */
+    .hero-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5% 8%;
+    background: linear-gradient(135deg, rgba(41, 128, 185, 0.5), rgba(46, 204, 113, 0.5));
+      color: white;
+      min-height: 80vh;
+    }
+
+    .hero-text {
+      max-width: 50%;
+    
+    }
+
+   .hero-text h1 {
+   font-size: 3.2rem;
+  margin-bottom: 1rem;
+  color: #ffffff;  /* pure white */
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.3); 
+   
+
+    
+}
+
+.hero-text p {
+ font-size: 1.3rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #ffffff;  /* pure white */
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.25);  /* tagline clearer */
+}
+
+.cta-btn {
+  padding: 0.9rem 2rem;
+  background: var(--emerald-green);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cta-btn:hover {
+  background: #27ae60; /* darker emerald hover */
+}
+
+/* Hero Features under tagline */
+.hero-features {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255,255,255,0.15);
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.hero-feature span.icon {
+  font-size: 1.5rem;
+}
+
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: 5% 8%;
+      background: var(--bg-light);
+      text-align: center;
+    }
+
+    .features-section h2 {
+      font-size: 2.5rem;
+      color: var(--deep-blue);
+      margin-bottom: 1rem;
+    }
+
+    .features-section p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 3rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--deep-blue), var(--emerald-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      color: var(--deep-blue);
+    }
+
+    .feature-card p {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: var(--deep-blue);
+      color: white;
+      text-align: center;
+      padding: 5% 8%;
+    }
+
+    .cta-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .cta-buttons a button {
+      padding: 0.8rem 1.6rem;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--emerald-green);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: white;
+      color: var(--deep-blue);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: var(--deep-blue);
+    }
+  </style>
 </head>
 <body>
-    <!-- Navbar -->
-     <div class="home-bg-blur"></div>
-    <nav>
-        <div class="logo">HealthBridge</div>
-        <div class="nav-right"></div>
-        <ul>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact Us</a></li>
-        </ul>
-        <div class="nav-buttons">
-            <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
-        </div>
-    </nav>
-      
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-text">
-            <h1>Your Health,<br> Our Priority.</h1>
-            <p>Donate or request medicine easily and securely.</p>
-            <a href="{% url 'register' %}"><button class="cta-btn">Sign Up</button></a>
-        </div>
-        <div class="hero-image">
-            <img src="{% static 'healthbridge_app/doctor.png' %}" alt="Doctor Image">
-        </div>
-    </section>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">HealthBridge</div>
+    <ul>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
+      <a href="{% url 'register' %}"><button class="login-btn">Register</button></a>
+    </div>
+    
+    
+  </nav>
+
+  <!-- Hero Section -->
+ <section class="hero-section">
+  <div class="hero-text">
+    <h1>Your Health,<br> Our Priority.</h1>
+    <p>
+      Donate or request medicine easily and securely.<br>
+      Building bridges in healthcare, one donation at a time.
+    </p>
+    
+
+    <!-- 3 main points -->
+    <div class="hero-features">
+      <div class="hero-feature">
+        <span class="icon">🛡️</span>
+        <div>Safe Transaction</div>
+      </div>
+      <div class="hero-feature">
+        <span class="icon">👥</span>
+        <div>Help Others</div>
+      </div>
+      <div class="hero-feature">
+        <span class="icon">❤️</span>
+        <div>Compassionate Service</div>
+        
+      </div>
+      <a href="{% url 'login' %}">
+      <button class="cta-btn">Get Started</button>
+    </a>
+   
+    </div>
+  </div>
+
+
+  <div class="hero-image">
+    <img src="{% static 'healthbridge_app/doctors.png' %}" alt="Doctor Image">
+  </div>
+  
+</section>
+
+
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Why Choose HealthBridge?</h2>
+    <p>We make healthcare accessible through community-driven medicine sharing, ensuring safety and reliability every step of the way.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">❤️</div>
+        <h3>Easy Donations</h3>
+        <p>Donate unused medicines safely and help those in need with just a few clicks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Secure & Verified</h3>
+        <p>All medicines are verified for safety and authenticity before distribution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Community Driven</h3>
+        <p>Connect with your local community and make healthcare accessible for everyone.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3>Quick Delivery</h3>
+        <p>Fast and reliable delivery system to get medicines where they're needed most.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to Make a Difference?</h2>
+    <p>Join thousands of people who are already making healthcare more accessible through medicine donations and community support.</p>
+    <div class="cta-buttons">
+      <a href="{% url 'register' %}"><button class="btn-primary">Start Donating</button></a>
+      <a href="{% url 'login' %}"><button class="btn-outline">Login to Account</button></a>
+    </div>
+  </section>
 </body>
 </html>
