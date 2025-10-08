@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.utils.text import slugify
+from django.templatetags.static import static
+from django.contrib.staticfiles import finders
+from .models import Donation
 
 User = get_user_model()
 
+
 def home(request):
     return render(request, 'healthbridge_app/home.html')
+
 
 def register(request):
     if request.method == 'POST':
@@ -13,7 +19,7 @@ def register(request):
         password = request.POST.get('password')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        username = email  # generate username
+        username = email  # use email as username
 
         if User.objects.filter(email=email).exists():
             return render(request, 'healthbridge_app/register.html', {'error': 'Email already exists'})
@@ -29,12 +35,12 @@ def register(request):
 
     return render(request, 'healthbridge_app/register.html')
 
+
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # username=email because USERNAME_FIELD=email
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
@@ -44,24 +50,49 @@ def login_view(request):
 
     return render(request, 'healthbridge_app/login.html')
 
+
 def dashboard(request):
     return render(request, 'healthbridge_app/dashboard.html')
+
 
 def logout_view(request):
     logout(request)
     return redirect('home')
 
-# this is for medicine search list
-from django.shortcuts import render
-from .services.medicine_service import MedicineService
 
-from .models import Donation
+# ✅ SEARCH VIEW FIXED (no more medicine_name)
 def medicine_search(request):
     query = request.GET.get('q', '')
     medicines = Donation.objects.all()
 
+    # filter using "name" (your actual model field)
     if query:
-        medicines = medicines.filter(medicine_name__icontains=query)
+        medicines = medicines.filter(name__icontains=query)
+
+    # optional filename mapping (so image lookup works)
+    NAME_MAP = {
+        'biogisic': 'biogesic',
+        'tambal ubo': 'tambalubo',
+        'para': 'para',
+        'gay': 'gay',
+        'test1': 'test1',
+        'test2': 'test2',
+        'paracetamol': 'Paracetamol',
+    }
+
+    for med in medicines:
+        med_name = med.name.lower().strip()  # ✅ fixed
+        base = NAME_MAP.get(med_name, slugify(med.name))
+        candidates = [f'medicines/{base}.png', f'medicines/{base}.jpg']
+
+        chosen = None
+        for rel in candidates:
+            if finders.find(rel):
+                chosen = static(rel)
+                break
+
+        # this attaches an accessible image URL to each medicine
+        med.image_static = chosen or static('img/placeholder-medicine.png')
 
     return render(request, 'healthbridge_app/medicine_search.html', {
         'medicines': medicines,
@@ -69,22 +100,11 @@ def medicine_search(request):
     })
 
 
-from .models import GenericMedicine, BrandMedicine
-from django.contrib.auth.decorators import login_required
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import GenericMedicine
-
-
-from .models import Donation
 def donate_medicine(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         quantity = request.POST.get('quantity')
         expiry_date = request.POST.get('expiry_date')
-        
 
         if name and quantity and expiry_date:
             Donation.objects.create(
