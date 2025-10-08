@@ -2,77 +2,108 @@
 {% load static %}
 
 {% block title %}Dashboard • HealthBridge{% endblock %}
-{% block nav_dashboard_active %}is-active{% endblock %}
+{% block nav_dashboard_active %}active{% endblock %}
 
 {% block content %}
-  <h1 class="hb-page-title">Dashboard</h1>
+<style>
+  .dashboard-container {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
 
-  <div class="hb-grid">
-    <!-- Sidebar filters -->
-    <aside class="hb-card hb-sidebar">
-      <h3 class="hb-sidebar-title">Category</h3>
-      <label class="hb-check"><input type="checkbox"> Pain Relief</label>
-      <label class="hb-check"><input type="checkbox"> Antibiotics</label>
-      <label class="hb-check"><input type="checkbox"> Syrup Relief</label>
+  .dashboard-container h1 {
+    color: var(--dark-emerald);
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
 
-      <div class="hb-divider"></div>
+  .dashboard-container p {
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
 
-      <h3 class="hb-sidebar-title">Condition Treated</h3>
-      <div class="hb-select">
-        <select>
-          <option>Fever</option>
-          <option>Allergy</option>
-          <option>Hypertension</option>
-        </select>
-      </div>
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 
-      <div class="hb-divider"></div>
+  .dashboard-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+  }
 
-      <h3 class="hb-sidebar-title">Form</h3>
-      <label class="hb-check"><input type="checkbox"> Tablets/Capsules</label>
-      <label class="hb-check"><input type="checkbox"> Syrups/Liquids</label>
-      <label class="hb-check"><input type="checkbox"> Stock</label>
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
 
-      <div class="hb-divider"></div>
+  .dashboard-card img {
+    width: 90px;
+    margin-bottom: 1rem;
+  }
 
-      <h3 class="hb-sidebar-title">Availability</h3>
-      <label class="hb-check"><input type="checkbox"> Coming Soon</label>
-      <label class="hb-check"><input type="checkbox"> In Stock</label>
-    </aside>
+  .dashboard-card h3 {
+    color: var(--dark-emerald);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
 
-    <!-- Cards grid -->
-    <section class="hb-cards">
-      {% static 'healthbridge_app/paracetamol.png' as fallback_img %}
+  .dashboard-card p {
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+  }
 
-      {% for med in medicines %}
-        <article class="hb-card hb-card-product">
-          {# Safe image fallback: ImageField -> URL string -> static placeholder #}
-          {% if med.image %}
-            <img src="{{ med.image.url }}" alt="{{ med.name }}" class="hb-product-img">
-          {% elif med.image_url %}
-            <img src="{{ med.image_url }}" alt="{{ med.name }}" class="hb-product-img">
-          {% else %}
-            <img src="{% static 'healthbridge_app/paracetamol.png'}" alt="{{ med.name }}" class="hb-product-img">
-          {% endif %}
+  .dashboard-card a {
+    background: var(--gradient);
+    color: white;
+    padding: 0.7rem 1.7rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+  }
 
-          <div class="hb-card-body">
-            <h3 class="hb-card-title">{{ med.name }}</h3>
-            <ul class="hb-meta">
-              {% if med.uses %}<li><strong>Uses:</strong> {{ med.uses }}</li>{% endif %}
-              <li>
-                {% if med.form %}<strong>Form:</strong> {{ med.form }}{% endif %}
-                {% if med.expiry %} <span class="hb-dot"></span> <strong>Expiry:</strong> {{ med.expiry|date:"m/Y" }}{% endif %}
-              </li>
-            </ul>
+  .dashboard-card a:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #3aa776, #1b8f6e);
+  }
+</style>
 
-            <div class="hb-card-actions">
-              <a href="{% url 'request_medicine' med.id %}" class="hb-btn hb-btn-primary">Request</a>
-            </div>
-          </div>
-        </article>
-      {% empty %}
-        <p class="hb-muted">No medicines found.</p>
-      {% endfor %}
-    </section>
+<section class="dashboard-container">
+  <h1>Welcome to Your Dashboard</h1>
+  <p>Manage your medicine donations and search for available supplies.</p>
+</section>
+
+<section class="card-grid">
+  <div class="dashboard-card">
+    <img src="{% static 'healthbridge_app/donate.png' %}" alt="Donate Medicine">
+    <h3>Donate Medicine</h3>
+    <p>Help others by donating unused or surplus medicines.</p>
+    <a href="{% url 'donate_medicine' %}">Go to Donation</a>
   </div>
+
+  <div class="dashboard-card">
+    <img src="{% static 'healthbridge_app/search_medicine.png' %}" alt="Search Medicine">
+    <h3>Search Medicines</h3>
+    <p>Find available medicines by brand or generic name.</p>
+    <a href="{% url 'medicine_search' %}">Search Now</a>
+  </div>
+
+  <div class="dashboard-card">
+    <img src="{% static 'healthbridge_app/track.png' %}" alt="Track Requests">
+    <h3>Track Requests</h3>
+    <p>Monitor your requested medicines and donation status.</p>
+    <a href="#">View Status</a>
+  </div>
+</section>
 {% endblock %}

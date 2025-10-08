@@ -50,3 +50,51 @@ def dashboard(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+# this is for medicine search list
+from django.shortcuts import render
+from .services.medicine_service import MedicineService
+
+from .models import Donation
+def medicine_search(request):
+    query = request.GET.get('q', '')
+    medicines = Donation.objects.all()
+
+    if query:
+        medicines = medicines.filter(medicine_name__icontains=query)
+
+    return render(request, 'healthbridge_app/medicine_search.html', {
+        'medicines': medicines,
+        'query': query
+    })
+
+
+from .models import GenericMedicine, BrandMedicine
+from django.contrib.auth.decorators import login_required
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import GenericMedicine
+
+
+from .models import Donation
+def donate_medicine(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        quantity = request.POST.get('quantity')
+        expiry_date = request.POST.get('expiry_date')
+        
+
+        if name and quantity and expiry_date:
+            Donation.objects.create(
+                name=name,
+                quantity=quantity,
+                expiry_date=expiry_date
+            )
+            messages.success(request, f"Thank you for donating {quantity}x {name}!")
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Please fill in all fields.")
+
+    return render(request, 'healthbridge_app/donate_medicine.html')
