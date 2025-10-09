@@ -142,3 +142,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Folder to store uploaded images
 LOGIN_URL = '/login/'             # where @login_required sends unauthenticated users
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Email configuration
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development - prints to console
+# For production, use:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'HealthBridge <noreply@healthbridge.com>'

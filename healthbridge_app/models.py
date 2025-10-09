@@ -1,8 +1,10 @@
 from uuid import uuid4
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
@@ -30,6 +32,34 @@ class BrandMedicine(models.Model):
 
     def __str__(self):
         return f"{self.brand_name} ({self.generic.name})"
+
+
+class DonationManager(models.Manager):
+    """Custom manager for Donation model with expiry-related methods"""
+    
+    def expiring_within(self, days=10):
+        """Get donations expiring within specified days"""
+        target_date = date.today() + timedelta(days=days)
+        return self.filter(
+            expiry_date__lte=target_date,
+            expiry_date__gte=date.today(),
+            status__in=[Donation.Status.AVAILABLE, Donation.Status.RESERVED]
+        )
+    
+    def expired(self):
+        """Get expired donations"""
+        return self.filter(expiry_date__lt=date.today())
+    
+    def critical_expiry(self):
+        """Get donations expiring today or tomorrow"""
+        return self.expiring_within(days=1)
+    
+    def by_urgency(self):
+        """Order donations by expiry urgency"""
+        return self.filter(
+            expiry_date__gte=date.today(),
+            status__in=[Donation.Status.AVAILABLE, Donation.Status.RESERVED]
+        ).order_by('expiry_date')
 
 
 class Donation(models.Model):
@@ -61,12 +91,88 @@ class Donation(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     notes = models.TextField(blank=True, default="")
 
+    objects = DonationManager()  # Custom manager
+
     def save(self, *args, **kwargs):
         # create a short unique code like AB12CD34EF
         if not self.tracking_code:
             self.tracking_code = uuid4().hex[:12].upper()
         super().save(*args, **kwargs)
 
+    @property
+    def days_until_expiry(self):
+        """Calculate days until expiry (negative if already expired)"""
+        if not self.expiry_date:
+            return None
+        delta = self.expiry_date - date.today()
+        return delta.days
+    
+    @property
+    def is_expiring_soon(self, days_threshold=10):
+        """Check if medicine is expiring within threshold days"""
+        if not self.expiry_date:
+            return False
+        days = self.days_until_expiry
+        return days is not None and 0 <= days <= days_threshold
+    
+    @property
+    def is_expired(self):
+        """Check if medicine has already expired"""
+        if not self.expiry_date:
+            return False
+        return self.expiry_date < date.today()
+    
+    @property
+    def urgency_level(self):
+        """Return urgency level based on days until expiry"""
+        if not self.expiry_date:
+            return "normal"
+        
+        days = self.days_until_expiry
+        if days is None:
+            return "normal"
+        elif days < 0:
+            return "expired"
+        elif days == 0:
+            return "critical"  # expires today
+        elif days <= 3:
+            return "high"      # expires in 1-3 days
+        elif days <= 7:
+            return "medium"    # expires in 4-7 days
+        elif days <= 14:
+            return "low"       # expires in 8-14 days
+        else:
+            return "normal"    # expires in 15+ days
+
     def __str__(self):
         base = f"{self.name} ({self.quantity})"
         return f"{base} • {self.get_status_display()}"
+
+
+class ExpiryAlert(models.Model):
+    """Track expiry notifications sent to avoid duplicates"""
+    donation = models.ForeignKey(Donation, on_delete=models.CASCADE, related_name='expiry_alerts')
+    alert_sent_at = models.DateTimeField(auto_now_add=True)
+    days_before_expiry = models.PositiveIntegerField()
+    recipient_email = models.EmailField()
+    alert_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('email', 'Email'),
+            ('dashboard', 'Dashboard'),
+            ('sms', 'SMS'),  # Future feature
+        ],
+        default='email'
+    )
+    
+    class Meta:
+        unique_together = ['donation', 'days_before_expiry', 'recipient_email']
+        ordering = ['-alert_sent_at']
+    
+    @property
+    def was_sent_recently(self):
+        """Check if alert was sent in the last 24 hours"""
+        return self.alert_sent_at >= timezone.now() - timedelta(days=1)
+    
+    def __str__(self):
+        return f"Alert for {self.donation.name} ({self.days_before_expiry} days before expiry)"
