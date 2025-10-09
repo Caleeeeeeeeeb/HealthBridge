@@ -31,8 +31,11 @@ class Donation(models.Model):
     name = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
     expiry_date = models.DateField()
-    donated_at = models.DateTimeField(auto_now_add=True)
+   
     
+    # 🆕 Added field to store uploaded medicine image
+    image = models.ImageField(upload_to='donations/', null=True, blank=True)
+    donated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} ({self.quantity})"
