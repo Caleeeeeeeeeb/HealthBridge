@@ -138,13 +138,7 @@
         <h3 style="color: black;">{{ med.name }}</h3>
         <p><strong>Quantity:</strong> {{ med.quantity }}</p>
         <p><strong>Expiry:</strong> {{ med.expiry_date|date:"M. j, Y" }}</p>
-        <p><strong>Donor:</strong>
-          {% if med.donor %}
-            {{ med.donor.first_name }} {{ med.donor.last_name }}
-          {% else %}
-            Unknown
-          {% endif %}
-        </p>
+        
       </div>
     {% empty %}
       <p style="text-align:center; color:#777;">No medicines found.</p>
