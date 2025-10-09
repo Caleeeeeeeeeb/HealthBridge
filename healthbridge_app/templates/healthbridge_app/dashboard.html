@@ -2,80 +2,80 @@
 {% load static %}
 
 {% block title %}Dashboard • HealthBridge{% endblock %}
-{% block nav_dashboard_active %}active{% endblock %}
+{% block nav_dashboard_active %}is-active{% endblock %}
 
 {% block content %}
 <style>
-  .dashboard-container {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
+  .dashboard-container { text-align: center; margin-bottom: 2rem; }
   .dashboard-container h1 {
-    color: var(--dark-emerald);
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+    font-weight: 800;
+    margin: 0 0 .4rem;
   }
-
-  .dashboard-container p {
-    color: var(--text-muted);
-    font-size: 1rem;
-  }
+  .dashboard-container p { color: var(--text-muted); margin: 0; }
 
   .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    gap: 1.5rem;
     padding: 1rem 0;
   }
 
   .dashboard-card {
     background: var(--white);
-    border-radius: 16px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    border-radius: 18px;
+    padding: 1.8rem 1.4rem 1.5rem;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
     text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #eef2f7;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(0,0,0,.08);
+    border-color: #e3e8ef;
   }
 
-  .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  .tile-badge {
+    display: inline-block;
+    padding: .35rem .6rem;
+    font-size: .72rem;
+    font-weight: 800;
+    color: #0f172a;
+    background: #f1f5f9;
+    border-radius: 999px;
+    margin-bottom: .75rem;
+    letter-spacing: .2px;
   }
 
   .dashboard-card img {
     width: 90px;
-    margin-bottom: 1rem;
+    height: 90px;
+    object-fit: contain;
+    margin: .25rem auto 1rem;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.06));
   }
 
   .dashboard-card h3 {
-    color: var(--dark-emerald);
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    margin: 0 0 .35rem;
+    font-weight: 800;
+    letter-spacing: .2px;
   }
 
   .dashboard-card p {
     color: var(--text-muted);
-    margin-bottom: 1.2rem;
-    font-size: 0.95rem;
+    margin: 0 0 1.1rem;
+    font-size: .96rem;
   }
 
-  .dashboard-card a {
-    background: var(--gradient);
-    color: white;
-    padding: 0.7rem 1.7rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.3s ease, transform 0.2s ease;
-    display: inline-block;
-  }
+  .cta-wrap { display: grid; }
+  .cta-wrap .btn { width: 100%; } /* full width on small tiles */
 
-  .dashboard-card a:hover {
-    transform: scale(1.05);
-    background: linear-gradient(90deg, #3aa776, #1b8f6e);
+  @media (min-width: 520px) {
+    .cta-wrap .btn { width: auto; }
   }
 </style>
 
@@ -86,24 +86,33 @@
 
 <section class="card-grid">
   <div class="dashboard-card">
+    <span class="tile-badge">Donate</span>
     <img src="{% static 'healthbridge_app/donate.png' %}" alt="Donate Medicine">
     <h3>Donate Medicine</h3>
     <p>Help others by donating unused or surplus medicines.</p>
-    <a href="{% url 'donate_medicine' %}">Go to Donation</a>
+    <div class="cta-wrap">
+      <a href="{% url 'donate_medicine' %}" class="btn btn-primary">Go to Donation</a>
+    </div>
   </div>
 
   <div class="dashboard-card">
+    <span class="tile-badge">Search</span>
     <img src="{% static 'healthbridge_app/search_medicine.png' %}" alt="Search Medicine">
     <h3>Search Medicines</h3>
     <p>Find available medicines by brand or generic name.</p>
-    <a href="{% url 'medicine_search' %}">Search Now</a>
+    <div class="cta-wrap">
+      <a href="{% url 'medicine_search' %}" class="btn btn-primary">Search Now</a>
+    </div>
   </div>
 
   <div class="dashboard-card">
+    <span class="tile-badge">Track</span>
     <img src="{% static 'healthbridge_app/track.png' %}" alt="Track Requests">
     <h3>Track Requests</h3>
     <p>Monitor your requested medicines and donation status.</p>
-    <a href="#">View Status</a>
+    <div class="cta-wrap">
+      <a href="{% url 'request_list' %}" class="btn btn-primary">View Status</a>
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -127,6 +127,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "healthbridge_app" / "static"]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -136,3 +138,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # 🆕 Media files (for uploaded images)
 MEDIA_URL = '/media/'  # URL path for serving media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Folder to store uploaded images
+# Auth redirects
+LOGIN_URL = '/login/'             # where @login_required sends unauthenticated users
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'

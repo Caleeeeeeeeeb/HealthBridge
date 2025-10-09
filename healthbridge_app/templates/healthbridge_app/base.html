@@ -6,86 +6,105 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}HealthBridge{% endblock %}</title>
- 
+
   <style>
     :root {
+      /* brand palette */
       --emerald: #2ECC71;
+      --emerald-dark: #1ea35a;
       --blue: #2980B9;
+
+      /* tokens used by child templates */
+      --white: #ffffff;
       --light-bg: #f4f8f9;
       --text-dark: #2c3e50;
+      --text-muted: #6b7280;   /* NEW */
+      --dark-emerald: #127a4c; /* NEW */
+      --gradient: linear-gradient(135deg, var(--blue), var(--emerald)); /* NEW */
     }
 
+    /* base page */
     body {
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, rgba(41,128,185,0.25), rgba(46,204,113,0.25));
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, rgba(41,128,185,0.18), rgba(46,204,113,0.18));
       color: var(--text-dark);
     }
 
+    /* header */
     header {
-      background: linear-gradient(135deg, var(--blue), var(--emerald));
+      background: var(--gradient);
       padding: 1rem 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       position: sticky;
       top: 0;
       z-index: 100;
     }
+    .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: .2px; }
 
-    .logo {
-      font-weight: bold;
-      font-size: 1.5rem;
-    }
-
-    nav {
-      display: flex;
-      gap: 1.5rem;
-    }
-
+    nav { display: flex; gap: 1.25rem; align-items: center; }
     nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      position: relative;
-      padding-bottom: 4px;
+      color: white; text-decoration: none; font-weight: 600;
+      padding: .25rem 0; position: relative;
     }
-
     nav a:hover,
-    nav a.is-active {
-      border-bottom: 2px solid white;
-    }
+    nav a.is-active { border-bottom: 2px solid white; }
 
-    .logout-btn {
-      background: white;
-      color: var(--blue);
-      border: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 6px;
-      font-weight: bold;
+    /* shared button system (usable anywhere) */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: .5rem;
+      height: 44px;
+      padding: 0 1.1rem;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      user-select: none;
     }
-
-    .logout-btn:hover {
-      background: #ecf0f1;
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 0 0 5px rgba(34,197,94,.5);
     }
-
-    main {
-      padding: 2rem 5%;
+    .btn-primary {
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(41,128,185,.18), 0 4px 8px rgba(0,0,0,.05);
     }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-primary:active { transform: translateY(1px); }
 
+    .btn-ghost {
+      background: #ffffff;
+      color: var(--blue);
+      border-color: rgba(41,128,185,.25);
+    }
+    .btn-ghost:hover { background: #f3f7fb; }
+
+    .logout-btn { /* keep route the same, just switch to .btn classes in HTML if you want */
+      background: white; color: var(--blue); border: none;
+      padding: 0.55rem 1.2rem; border-radius: 10px; font-weight: 800;
+      cursor: pointer; transition: filter .15s ease, transform .08s ease;
+    }
+    .logout-btn:hover { filter: brightness(0.97); }
+
+    main { padding: 2rem 5%; }
     footer {
-      text-align: center;
-      padding: 1rem;
-      color: #777;
-      font-size: 0.9rem;
-      background: var(--light-bg);
-      margin-top: 2rem;
+      text-align: center; padding: 1rem; color: #777;
+      font-size: .9rem; background: var(--light-bg); margin-top: 2rem;
+    }
+
+    @media (max-width: 720px){
+      main { padding: 1.25rem 4%; }
     }
   </style>
+
   {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -93,9 +112,10 @@
     <div class="logo">HealthBridge</div>
     <nav>
       <a href="{% url 'dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
-        
     </nav>
-    <a href="{% url 'home' %}"><button class="logout-btn">Logout</button></a>
+    <a href="{% url 'home' %}">
+      <button class="logout-btn">Logout</button>
+    </a>
   </header>
 
   <main>
