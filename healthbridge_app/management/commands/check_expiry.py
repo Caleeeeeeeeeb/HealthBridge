@@ -111,12 +111,12 @@ class Command(BaseCommand):
                     email_data = self.prepare_email(donation, recipient_email, days_until_expiry)
                     email_batch.append(email_data)
                     
-                    # Record the alert
-                    ExpiryAlert.objects.create(
+                    # Record the alert (with duplicate protection)
+                    ExpiryAlert.objects.get_or_create(
                         donation=donation,
                         days_before_expiry=days_until_expiry,
                         recipient_email=recipient_email,
-                        alert_type='email'
+                        defaults={'alert_type': 'email'}
                     )
                     notifications_sent += 1
         
