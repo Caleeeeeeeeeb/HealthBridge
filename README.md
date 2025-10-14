@@ -33,10 +33,41 @@ python manage.py migrate
 Start the server
 python manage.py runserver
 
+---
 
+## 🚀 Running the Background Service
 
+### Quick Start (Windows)
 
-👨‍💻 Team Members
+**Start the Django development server with monitoring:**
+```powershell
+.\start_background_service.bat
+```
+
+**Run expiry check manually:**
+```powershell
+.\run_expiry_check.bat
+```
+
+### What These Scripts Do
+
+- **`start_background_service.bat`** - Starts the Django development server at `http://127.0.0.1:8000/` with auto-reload enabled for real-time monitoring
+- **`run_expiry_check.bat`** - Runs the expiry notification system to check for medicines nearing expiration and sends email alerts
+
+Both scripts automatically detect and activate your virtual environment (`env`, `venv`, or `.venv`) if present.
+
+### Command-Line Options for Expiry Check
+
+```powershell
+python manage.py check_expiry --days 7          # Check items expiring in 7 days
+python manage.py check_expiry --dry-run         # Preview without sending emails
+python manage.py check_expiry --force           # Force send even if already notified
+python manage.py check_expiry --critical-only   # Only check critical (<3 days)
+```
+
+---
+
+## 👨‍💻 Team Members
 Name	Role	CIT-U Email
 Terence Ed N. Limpio 	      Project Manager	    terenceed.limpio@cit.edu
 Keith Daniel P. Lim	        Business Analyst 	  keithdaniel.lim@cit.edu
