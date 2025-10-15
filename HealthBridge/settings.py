@@ -19,9 +19,10 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from the project's .env file explicitly
-# (ensures DATABASE_URL and other secrets are available when Django starts)
-load_dotenv(str(BASE_DIR / '.env'))
+# Load environment variables from .env file (must be loaded BEFORE using os.getenv)
+env_path = BASE_DIR / '.env'
+load_dotenv(env_path)
+print(f"Loading .env from: {env_path}")  # Debug line
 
 
 # Quick-start development settings - unsuitable for production
@@ -84,14 +85,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'HealthBridge.wsgi.application'
 
 
-# Database
+# Database - Supabase PostgreSQL (Required)
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Get DATABASE_URL from environment (must be set in .env file)
+database_url = os.getenv('DATABASE_URL')
+
+if not database_url:
+    raise ValueError(
+        "DATABASE_URL not found in environment variables. "
+        "Please set it in your .env file with your Supabase connection string."
+    )
+
 DATABASES = {
-     "default": dj_database_url.config(
-        default="sqlite:///db.sqlite3",
-        conn_max_age=600, # persistent connections
-        ssl_require=True # enforce SSL
+    "default": dj_database_url.config(
+        default=database_url,
+        conn_max_age=600,  # Keep connections alive for 10 minutes
+        conn_health_checks=True,  # Verify connection health
+        ssl_require=True,  # Require SSL for Supabase
     )
 }
 

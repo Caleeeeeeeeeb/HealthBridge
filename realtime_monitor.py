@@ -1,53 +1,102 @@
 """
-Database change monitor
-Watches for database file changes and triggers expiry checks
+Supabase Database Monitor for HealthBridge
+Monitors Supabase PostgreSQL database and triggers expiry checks
+Uses periodic polling since Supabase is a remote database
+Runs silently in background without popup windows
 """
 import time
 import os
 import sys
+import subprocess
 from pathlib import Path
 from datetime import datetime
+import django
+from django.db import connection
+
+def setup_django():
+    """Initialize Django to access database"""
+    script_dir = Path(__file__).parent.resolve()
+    os.chdir(script_dir)
+    
+    # Setup Django
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'HealthBridge.settings')
+    django.setup()
+
+def check_database_connection():
+    """Verify connection to Supabase"""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()[0]
+            if 'PostgreSQL' in version:
+                return True, "Supabase (PostgreSQL)"
+        return False, "Unknown database"
+    except Exception as e:
+        return False, str(e)
 
 def monitor_database_changes():
     """
-    Monitor database file for changes and trigger expiry checks
-    More efficient than time-based scheduling
+    Monitor Supabase database and trigger expiry checks periodically
+    Uses smart polling instead of file monitoring
     """
-    # Get script directory (portable)
     script_dir = Path(__file__).parent.resolve()
-    db_path = script_dir / "db.sqlite3"
-    last_modified = 0
     
-    print("🔍 Starting real-time database monitoring...")
-    print(f"📁 Monitoring: {db_path}")
-    print("Will check for expiring medicines whenever database changes")
+    print("🔍 Starting Supabase real-time monitoring...")
+    print(f"📁 Working directory: {script_dir}")
+    
+    # Setup Django and verify connection
+    try:
+        setup_django()
+        connected, db_info = check_database_connection()
+        
+        if connected:
+            print(f"✅ Connected to {db_info}")
+        else:
+            print(f"❌ Database connection failed: {db_info}")
+            return
+    except Exception as e:
+        print(f"❌ Django setup failed: {e}")
+        return
+    
+    print("🔄 Monitoring for expiring medicines every 2 minutes...")
+    print("Press Ctrl+C to stop\n")
+    
+    check_interval = 120  # Check every 2 minutes
     
     while True:
         try:
-            # Check if database file exists
-            if not db_path.exists():
-                print(f"⚠️  Database not found at {db_path}")
-                time.sleep(30)
-                continue
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"📊 [{timestamp}] Running expiry check...")
             
-            # Check if database file was modified
-            current_modified = os.path.getmtime(db_path)
+            # Run expiry check command silently (no popup window)
+            os.chdir(script_dir)
+            result = subprocess.run(
+                [sys.executable, 'manage.py', 'check_expiry'],
+                capture_output=True,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+            )
             
-            if current_modified > last_modified:
-                last_modified = current_modified
-                print(f"📊 Database changed at {datetime.now().strftime('%H:%M:%S')} - checking expiry...")
-                
-                # Run expiry check (portable - uses current directory)
-                os.chdir(script_dir)
-                os.system('python manage.py check_expiry')
-                
-            time.sleep(30)  # Check every 30 seconds
+            # Print output for logging purposes
+            if result.stdout:
+                print(result.stdout.strip())
+            
+            if result.returncode == 0:
+                print(f"✅ Check completed successfully")
+            else:
+                print(f"⚠️  Check completed with warnings (exit code: {result.returncode})")
+                if result.stderr:
+                    print(f"Error: {result.stderr.strip()}")
+            
+            print(f"⏰ Next check in {check_interval} seconds...\n")
+            time.sleep(check_interval)
             
         except KeyboardInterrupt:
-            print("\n🛑 Monitoring stopped")
+            print("\n🛑 Monitoring stopped by user")
             break
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"❌ Error during check: {e}")
+            print("Retrying in 60 seconds...")
             time.sleep(60)
 
 if __name__ == "__main__":
