@@ -10,17 +10,10 @@ cd HealthBridge
 # 2. Run setup
 setup.bat
 
-# 3. Edit .env file with these credentials:
+# 3. Edit .env file with the project set up notepad file
 ```
 
-**.env file:**
-```
-DATABASE_URL=postgresql://postgres.rovbuexxvufsylkahhgw:HealthBridge@aws-1-us-east-2.pooler.supabase.com:5432/postgres
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=healthbridge.expiryalerts123@gmail.com
-EMAIL_HOST_PASSWORD=vxze zjtx nrip uhhr
-```
+
 
 ```bash
 # 4. Setup database
