@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import CustomUser, GenericMedicine, BrandMedicine, Donation, ExpiryAlert
+from .models import CustomUser, GenericMedicine, BrandMedicine, Donation, ExpiryAlert, MedicineRequest
 
 
 @admin.register(ExpiryAlert)
@@ -110,6 +110,43 @@ class DonationAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(GenericMedicine)
 admin.site.register(BrandMedicine)
+
+
+@admin.register(MedicineRequest)
+class MedicineRequestAdmin(admin.ModelAdmin):
+    list_display = ['medicine_name', 'recipient', 'quantity', 'urgency', 'status', 'tracking_code', 'created_at']
+    list_filter = ['status', 'urgency', 'created_at']
+    search_fields = ['medicine_name', 'tracking_code', 'recipient__email', 'recipient__first_name', 'recipient__last_name']
+    readonly_fields = ['tracking_code', 'created_at', 'updated_at', 'days_since_request']
+    fieldsets = (
+        ('Request Information', {
+            'fields': ('recipient', 'medicine_name', 'quantity', 'urgency', 'reason')
+        }),
+        ('Status & Tracking', {
+            'fields': ('status', 'tracking_code', 'matched_donation', 'notes')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at', 'days_since_request'),
+            'classes': ('collapse',)
+        }),
+    )
+    actions = ['mark_as_matched', 'mark_as_fulfilled', 'mark_as_cancelled']
+    
+    def mark_as_matched(self, request, queryset):
+        updated = queryset.update(status=MedicineRequest.Status.MATCHED)
+        self.message_user(request, f'{updated} requests marked as matched.')
+    mark_as_matched.short_description = "Mark selected as matched"
+    
+    def mark_as_fulfilled(self, request, queryset):
+        updated = queryset.update(status=MedicineRequest.Status.FULFILLED)
+        self.message_user(request, f'{updated} requests marked as fulfilled.')
+    mark_as_fulfilled.short_description = "Mark selected as fulfilled"
+    
+    def mark_as_cancelled(self, request, queryset):
+        updated = queryset.update(status=MedicineRequest.Status.CANCELLED)
+        self.message_user(request, f'{updated} requests marked as cancelled.')
+    mark_as_cancelled.short_description = "Mark selected as cancelled"
+
 
 # Customize admin site header
 admin.site.site_header = "HealthBridge Administration"
