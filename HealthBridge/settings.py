@@ -73,6 +73,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -89,7 +90,7 @@ WSGI_APPLICATION = 'HealthBridge.wsgi.application'
 
 DATABASES = {
      "default": dj_database_url.config(
-        default="sqlite:///db.sqlite3",
+        default="postgresql://postgres.rovbuexxvufsylkahhgw:HealthBridge@aws-1-us-east-2.pooler.supabase.com:5432/postgres",
         conn_max_age=600, # persistent connections
         ssl_require=True # enforce SSL
     )

@@ -16,6 +16,8 @@ urlpatterns = [
     # tracking
     path("requests/", views.my_donations, name="request_list"),
     path("requests/<int:pk>/", views.donation_detail, name="request_detail"),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('reset-password/<uidb64>/<token>/', views.reset_password, name='reset_password'),
 ]
 
 if settings.DEBUG:

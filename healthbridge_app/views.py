@@ -3,7 +3,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 from django.utils import timezone
+from django.conf import settings
 
 from .models import Donation, GenericMedicine, BrandMedicine
 
@@ -133,3 +140,54 @@ def my_donations(request):
 def donation_detail(request, pk: int):
     donation = get_object_or_404(Donation, pk=pk, donor=request.user)
     return render(request, "healthbridge_app/track_request_detail.html", {"donation": donation})
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "No account found with that email.")
+            return redirect('forgot_password')
+
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_link = request.build_absolute_uri(f'/reset-password/{uid}/{token}/')
+
+        subject = 'Password Reset - HealthBridge'
+        message = render_to_string('healthbridge_app/password_reset_email.html', {
+            'user': user,
+            'reset_link': reset_link,
+        })
+
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+
+        messages.success(request, 'Password reset link has been sent to your email.')
+        return redirect('login')
+
+    return render(request, 'healthbridge_app/forgot_password.html')
+
+def reset_password(request, uidb64, token):
+    UserModel = get_user_model()
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = UserModel.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Password has been reset successfully!')
+                return redirect('login')
+            else:
+                messages.error(request, 'Passwords do not match.')
+        return render(request, 'healthbridge_app/reset_password.html')
+    else:
+        messages.error(request, 'Invalid or expired reset link.')
+        return redirect('forgot_password')

@@ -140,8 +140,27 @@
             background: linear-gradient(135deg, var(--emerald-green), var(--deep-blue));
         }
 
+        .extra-links {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .extra-links a {
+            color: #ffe600;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .extra-links a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
         p {
-            margin-top: 15px;
+            margin-top: 20px;
             color: #fff;
         }
 
@@ -180,8 +199,16 @@
 
         <input type="text" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>
+
+        <!-- Forgot Password link -->
+        <div class="extra-links">
+            <span></span>
+            <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+        </div>
+
         <button type="submit">Login</button>
     </form>
+
     <p>
         Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
     </p>
