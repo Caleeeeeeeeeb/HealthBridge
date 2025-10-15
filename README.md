@@ -42,17 +42,7 @@ setup.bat
 ```
 
 ### Configure Environment Variables
-Edit `.env` file with your credentials:
-```env
-# Database Configuration (Supabase)
-DATABASE_URL=postgresql://postgres.rovbuexxvufsylkahhgw:HealthBridge@aws-1-us-east-2.pooler.supabase.com:5432/postgres
-
-# Email Settings (for expiry alerts)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=healthbridge.expiryalerts123@gmail.com
-EMAIL_HOST_PASSWORD=vxze zjtx nrip uhhr
-```
+### go to project set up notepadfile
 
 ### Run Migrations & Start
 ```bash
@@ -197,12 +187,3 @@ This project is part of an academic requirement.
 **Version:** 2.0 (Supabase Edition)  
 **Last Updated:** October 15, 2025
 
-👨‍💻 Team Members
-Name	Role	CIT-U Email
-Terence Ed N. Limpio 	      Project Manager	    terenceed.limpio@cit.edu
-Keith Daniel P. Lim	        Business Analyst 	  keithdaniel.lim@cit.edu
-Rhyz Nhicco C. Libetario	  Scrum Masater	       rhyznhicco.libetario@cit.edu
-
-Junjie L. Geraldez	        Lead Developer	     junjie.geraldez@cit.edu
-Benz Leo A. Gamallo	        Developer	           benzleo.gamallo@cit.edu
-Rudyard Axel L. Gersamio    Developer	           rudyardaxle.gersamiol@cit.edu
