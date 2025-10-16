@@ -1,6 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views  # Added import for built-in auth views
 from . import views
 
 urlpatterns = [
@@ -27,6 +28,21 @@ urlpatterns = [
     path("recipient/track/", views.track_medicine_requests, name="track_medicine_requests"),
     path("recipient/track/<int:pk>/", views.medicine_request_detail, name="medicine_request_detail"),
     path("recipient/requests/<int:pk>/delete/", views.delete_medicine_request, name="delete_medicine_request"),
+
+    # Password reset URLs (added)
+    path('password-reset/', auth_views.PasswordResetView.as_view(
+        template_name='healthbridge_app/password_reset.html',
+        email_template_name='healthbridge_app/password_reset_email.html'
+    ), name='password_reset'),
+    path('password-reset-done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='healthbridge_app/password_reset_done.html'
+    ), name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='healthbridge_app/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='healthbridge_app/password_reset_complete.html'
+    ), name='password_reset_complete'),
 ]
 
 if settings.DEBUG:

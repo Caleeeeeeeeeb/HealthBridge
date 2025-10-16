@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.http import JsonResponse
 from django.core.cache import cache
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 from .models import Donation, GenericMedicine, BrandMedicine, MedicineRequest
 
@@ -264,3 +265,18 @@ def delete_medicine_request(request, pk):
         return redirect('track_medicine_requests')
     
     return render(request, 'healthbridge_app/confirm_delete_request.html', {'medicine_request': medicine_request})
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'healthbridge_app/password_reset.html'
+    email_template_name = 'healthbridge_app/password_reset_email.html'
+    success_url = '/password-reset-done/'
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'healthbridge_app/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'healthbridge_app/password_reset_confirm.html'
+    success_url = '/password-reset-complete/'
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'healthbridge_app/password_reset_complete.html'
