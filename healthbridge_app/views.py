@@ -4,8 +4,10 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.http import JsonResponse
+from django.core.cache import cache
 
-from .models import Donation, GenericMedicine, BrandMedicine
+from .models import Donation, GenericMedicine, BrandMedicine, MedicineRequest
 
 User = get_user_model()
 
@@ -88,6 +90,40 @@ def logout_view(request):
     logout(request)
     return redirect("home")
 
+# ---------- API ENDPOINTS ----------
+def medicine_autocomplete(request):
+    """API endpoint for medicine name autocomplete suggestions with caching"""
+    query = request.GET.get('q', '').strip().lower()
+    
+    # Return empty if query too short
+    if not query or len(query) < 2:
+        return JsonResponse({'suggestions': []})
+    
+    # Try to get from cache first (cache for 5 minutes)
+    cache_key = f'autocomplete_{query}'
+    cached_result = cache.get(cache_key)
+    if cached_result is not None:
+        return JsonResponse({'suggestions': cached_result})
+    
+    # Get unique medicine names from donations
+    donation_medicines = Donation.objects.filter(
+        name__icontains=query
+    ).values_list('name', flat=True).distinct()[:5]
+    
+    # Get unique medicine names from generic medicines  
+    generic_medicines = GenericMedicine.objects.filter(
+        name__icontains=query
+    ).values_list('name', flat=True).distinct()[:5]
+    
+    # Combine and deduplicate
+    all_medicines = list(set(list(donation_medicines) + list(generic_medicines)))
+    suggestions = sorted(all_medicines)[:10]  # Limit to 10 suggestions
+    
+    # Cache the result for 5 minutes (300 seconds)
+    cache.set(cache_key, suggestions, 300)
+    
+    return JsonResponse({'suggestions': suggestions})
+
 # ---------- SEARCH ----------
 def medicine_search(request):
     query = request.GET.get('q', '').strip()
@@ -133,3 +169,98 @@ def my_donations(request):
 def donation_detail(request, pk: int):
     donation = get_object_or_404(Donation, pk=pk, donor=request.user)
     return render(request, "healthbridge_app/track_request_detail.html", {"donation": donation})
+
+
+# ---------- RECIPIENT FEATURES ----------
+@login_required
+def recipient_dashboard(request):
+    """Dashboard for recipients to view their requests and available medicines"""
+    user_requests = MedicineRequest.objects.filter(recipient=request.user)  # Use 'recipient' not 'requester'
+    
+    context = {
+        'total_requests': user_requests.count(),
+        'pending_requests': user_requests.filter(status=MedicineRequest.Status.PENDING).count(),
+        'matched_requests': user_requests.filter(status=MedicineRequest.Status.MATCHED).count(),
+        'available_medicines': Donation.objects.filter(status=Donation.Status.AVAILABLE).count(),
+        'recent_requests': user_requests.order_by('-created_at')[:5],  # Order by most recent
+    }
+    return render(request, 'healthbridge_app/recipient.html', context)
+
+
+@login_required
+def request_medicine(request):
+    """Allow recipients to request medicines"""
+    if request.method == 'POST':
+        medicine_name = request.POST.get('medicine_name', '').strip()
+        quantity_needed = request.POST.get('quantity_needed', '').strip()
+        urgency = request.POST.get('urgency', 'medium')
+        reason = request.POST.get('reason', '').strip()
+        
+        # Validation
+        if not medicine_name or not quantity_needed:
+            messages.error(request, "Please fill in all required fields.")
+            return render(request, 'healthbridge_app/request_medicine.html')
+        
+        try:
+            quantity_int = int(quantity_needed)
+            if quantity_int <= 0:
+                raise ValueError("Quantity must be positive")
+        except ValueError:
+            messages.error(request, "Please enter a valid quantity.")
+            return render(request, 'healthbridge_app/request_medicine.html')
+        
+        # Create the request using actual database field names
+        medicine_request = MedicineRequest.objects.create(
+            recipient=request.user,  # Use 'recipient' not 'requester'
+            medicine_name=medicine_name,
+            quantity=str(quantity_needed),  # Store as string (varchar in DB)
+            urgency=urgency,
+            reason=reason
+        )
+        
+        messages.success(request, f"Your request for {medicine_name} has been submitted! Tracking code: {medicine_request.tracking_code}")
+        return redirect('recipient_dashboard')
+    
+    return render(request, 'healthbridge_app/request_medicine.html')
+
+
+@login_required
+def track_medicine_requests(request):
+    """View all medicine requests made by the user"""
+    requests = MedicineRequest.objects.filter(recipient=request.user)  # Use 'recipient' not 'requester'
+    return render(request, 'healthbridge_app/track_medicine_requests.html', {'requests': requests})
+
+
+@login_required
+def medicine_request_detail(request, pk):
+    """View details of a specific medicine request"""
+    medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)  # Use 'recipient'
+    return render(request, 'healthbridge_app/medicine_request_detail.html', {'request': medicine_request})
+
+
+@login_required
+def delete_donation(request, pk):
+    """Delete a donation (only by the donor)"""
+    donation = get_object_or_404(Donation, pk=pk, donor=request.user)
+    
+    if request.method == 'POST':
+        medicine_name = donation.name
+        donation.delete()
+        messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
+        return redirect('dashboard')
+    
+    return render(request, 'healthbridge_app/confirm_delete_donation.html', {'donation': donation})
+
+
+@login_required
+def delete_medicine_request(request, pk):
+    """Delete a medicine request (only by the requester)"""
+    medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)
+    
+    if request.method == 'POST':
+        medicine_name = medicine_request.medicine_name
+        medicine_request.delete()
+        messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
+        return redirect('track_medicine_requests')
+    
+    return render(request, 'healthbridge_app/confirm_delete_request.html', {'medicine_request': medicine_request})

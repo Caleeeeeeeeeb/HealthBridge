@@ -79,7 +79,7 @@
   .badge[data-status="in transit"]{ background:#e0f2fe; color:#075985; }
   .badge[data-status="completed"]{ background:#e9d5ff; color:#6b21a8; }
 
-  .actions{ margin-top:.8rem; display:flex; justify-content:center; }
+  .actions{ margin-top:.8rem; display:flex; gap:.5rem; justify-content:center; }
   .btn{
     display:inline-flex; align-items:center; justify-content:center;
     padding:.55rem .95rem; border-radius:.6rem; background:var(--gradient); color:#fff;
@@ -87,6 +87,17 @@
     transition: transform .06s ease, filter .15s ease;
   }
   .btn:hover{ filter:brightness(1.05); transform: translateY(-1px); }
+  
+  .btn-delete{
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #fecaca;
+    box-shadow: none;
+  }
+  .btn-delete:hover{
+    background: #fecaca;
+    border-color: #ef4444;
+  }
 </style>
 
 <div class="list-wrap">
@@ -132,6 +143,7 @@
 
           <div class="actions">
             <a class="btn" href="{% url 'request_detail' d.pk %}">View details</a>
+            <a class="btn btn-delete" href="{% url 'delete_donation' d.pk %}">🗑️ Delete</a>
           </div>
         </div>
       {% endfor %}
