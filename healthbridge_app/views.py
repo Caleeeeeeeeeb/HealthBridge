@@ -236,3 +236,31 @@ def medicine_request_detail(request, pk):
     """View details of a specific medicine request"""
     medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)  # Use 'recipient'
     return render(request, 'healthbridge_app/medicine_request_detail.html', {'request': medicine_request})
+
+
+@login_required
+def delete_donation(request, pk):
+    """Delete a donation (only by the donor)"""
+    donation = get_object_or_404(Donation, pk=pk, donor=request.user)
+    
+    if request.method == 'POST':
+        medicine_name = donation.name
+        donation.delete()
+        messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
+        return redirect('dashboard')
+    
+    return render(request, 'healthbridge_app/confirm_delete_donation.html', {'donation': donation})
+
+
+@login_required
+def delete_medicine_request(request, pk):
+    """Delete a medicine request (only by the requester)"""
+    medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)
+    
+    if request.method == 'POST':
+        medicine_name = medicine_request.medicine_name
+        medicine_request.delete()
+        messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
+        return redirect('track_medicine_requests')
+    
+    return render(request, 'healthbridge_app/confirm_delete_request.html', {'medicine_request': medicine_request})

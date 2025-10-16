@@ -288,6 +288,19 @@
     box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
   }
 
+  .btn-delete {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #fecaca;
+  }
+
+  .btn-delete:hover {
+    background: #fecaca;
+    border-color: #ef4444;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
+  }
+
   .empty-state {
     text-align: center;
     padding: 5rem 2rem;
@@ -430,6 +443,9 @@
             <div class="action-buttons">
               <a href="{% url 'medicine_request_detail' request.pk %}" class="btn-action btn-view">
                 View Details →
+              </a>
+              <a href="{% url 'delete_medicine_request' request.pk %}" class="btn-action btn-delete">
+                🗑️ Delete
               </a>
             </div>
           </div>
