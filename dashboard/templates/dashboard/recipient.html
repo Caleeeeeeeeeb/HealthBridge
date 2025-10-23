@@ -1,0 +1,133 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Recipient Dashboard â€¢ HealthBridge{% endblock %}
+{% block nav_recipient_active %}is-active{% endblock %}
+
+{% block content %}
+
+
+<section class="dashboard-container">
+  <h1>ðŸ‘‹ Welcome back, {{ user.first_name }}!</h1>
+  <p>Your recipient dashboard - manage your medicine requests</p>
+</section>
+
+<!-- Stats Overview -->
+<section class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">ðŸ“‹</span>
+    <div class="stat-number">{{ total_requests }}</div>
+    <div class="stat-label">Total Requests</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">â³</span>
+    <div class="stat-number">{{ pending_requests }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">âœ…</span>
+    <div class="stat-number">{{ matched_requests }}</div>
+    <div class="stat-label">Matched</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">ðŸ’Š</span>
+    <div class="stat-number">{{ available_medicines }}</div>
+    <div class="stat-label">Available Now</div>
+  </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="card-grid">
+  <div class="dashboard-card">
+    <span class="tile-badge">New Request</span>
+    <img src="{% static 'healthbridge_app/donate.png' %}" alt="Request Medicine">
+    <h3>Request Medicine</h3>
+    <p>Submit a request for medicines you need</p>
+    <div class="cta-wrap">
+      <a href="{% url 'requests:request_medicine' %}" class="btn btn-primary">Make Request</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Browse</span>
+    <img src="{% static 'healthbridge_app/search_medicine.png' %}" alt="Search Medicine">
+    <h3>Search Medicines</h3>
+    <p>Browse available donated medicines</p>
+    <div class="cta-wrap">
+      <a href="{% url 'donations:medicine_search' %}" class="btn btn-primary">Search Now</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Monitor</span>
+    <img src="{% static 'healthbridge_app/track.png' %}" alt="Track Requests">
+    <h3>Track Requests</h3>
+    <p>Monitor all your medicine requests</p>
+    <div class="cta-wrap">
+      <a href="{% url 'requests:track_medicine_requests' %}" class="btn btn-primary">View All</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Profile</span>
+    <img src="{% static 'healthbridge_app/profile.png' %}" alt="My Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div style="display:none; justify-content:center; align-items:center; height:180px; font-size:5rem;">👤</div>
+    <h3>My Profile</h3>
+    <p>View and edit your personal information</p>
+    <div class="cta-wrap">
+      <a href="{% url 'profile:profile' %}" class="btn btn-primary">View Profile</a>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Requests -->
+<section class="recent-section">
+  <div class="section-header">
+    <h2>ðŸ“œ Recent Requests</h2>
+    <a href="{% url 'track_medicine_requests' %}" class="view-all-link">View All â†’</a>
+  </div>
+
+  {% if recent_requests %}
+    <table class="requests-table">
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Quantity</th>
+          <th>Urgency</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in recent_requests %}
+          <tr>
+            <td><strong>{{ req.medicine_name }}</strong></td>
+            <td>{{ req.quantity }}</td>
+            <td>
+              <span class="urgency-badge urgency-{{ req.urgency }}">
+                {{ req.get_urgency_display }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge status-{{ req.status }}">
+                {{ req.get_status_display }}
+              </span>
+            </td>
+            <td>{{ req.created_at|date:"M j, Y" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">ðŸ“­</div>
+      <h3>No requests yet</h3>
+      <p>Start by making your first medicine request</p>
+      <a href="{% url 'request_medicine' %}" class="btn btn-primary">Make Your First Request</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

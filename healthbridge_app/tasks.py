@@ -16,7 +16,7 @@ def continuous_expiry_monitor():
     Continuously monitor for expiring medicines
     More efficient than daily checks
     """
-    from healthbridge_app.models import Donation
+    from donations.models import Donation
     from healthbridge_app.management.commands.check_expiry import Command as ExpiryCommand
     
     while True:
@@ -45,7 +45,7 @@ def immediate_expiry_check(donation_id):
     Immediate check for a specific donation
     Triggered when donations are added/updated
     """
-    from healthbridge_app.models import Donation
+    from donations.models import Donation
     from healthbridge_app.management.commands.check_expiry import Command as ExpiryCommand
     
     try:

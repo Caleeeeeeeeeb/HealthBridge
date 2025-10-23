@@ -1,0 +1,36 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Donate Medicine â€¢ HealthBridge{% endblock %}
+
+{% block content %}
+
+
+<div class="donate-container">
+  <a href="{% url 'dashboard' %}" class="back-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Dashboard
+  </a>
+
+  <h2>Donate Medicine</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="name">Medicine Name</label>
+    <input type="text" name="name" placeholder="Enter medicine name" required>
+
+    <label for="quantity">Quantity</label>
+    <input type="number" name="quantity" placeholder="Enter quantity" required>
+
+    <label for="expiry_date">Expiry Date</label>
+    <input type="date" name="expiry_date" required>
+
+    <label for="image">Upload Medicine Image</label>
+    <input type="file" name="image" accept="image/*">
+
+    <button type="submit" class="submit-btn">Donate</button>
+  </form>
+</div>
+{% endblock %}

@@ -8,7 +8,9 @@ from django.http import JsonResponse
 from django.core.cache import cache
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
-from .models import Donation, GenericMedicine, BrandMedicine, MedicineRequest
+from .models import GenericMedicine, BrandMedicine
+from donations.models import Donation
+from requests.models import MedicineRequest
 
 User = get_user_model()
 
@@ -80,7 +82,7 @@ def dashboard(request):
             context['total_expiring_count'] = all_expiring.count()
             
             # Recent alerts for admin
-            from .models import ExpiryAlert
+            from donations.models import ExpiryAlert
             context['recent_alerts'] = ExpiryAlert.objects.filter(
                 alert_sent_at__gte=timezone.now() - timedelta(days=7)
             ).select_related('donation')[:10]

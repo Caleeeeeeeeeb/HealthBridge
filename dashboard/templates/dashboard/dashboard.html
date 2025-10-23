@@ -1,0 +1,57 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard â€¢ HealthBridge{% endblock %}
+{% block nav_dashboard_active %}is-active{% endblock %}
+
+{% block content %}
+
+
+<section class="dashboard-container">
+  <h1>Welcome to Your Dashboard</h1>
+  <p>Manage your medicine donations and search for available supplies.</p>
+</section>
+
+<section class="card-grid">
+  <div class="dashboard-card">
+    <span class="tile-badge">Donate</span>
+    <img src="{% static 'healthbridge_app/donate.png' %}" alt="Donate Medicine">
+    <h3>Donate Medicine</h3>
+    <p>Help others by donating unused or surplus medicines.</p>
+    <div class="cta-wrap">
+      <a href="{% url 'donations:donate_medicine' %}" class="btn btn-primary">Go to Donation</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Search</span>
+    <img src="{% static 'healthbridge_app/search_medicine.png' %}" alt="Search Medicine">
+    <h3>Search Medicines</h3>
+    <p>Find available medicines by brand or generic name.</p>
+    <div class="cta-wrap">
+      <a href="{% url 'donations:medicine_search' %}" class="btn btn-primary">Search Now</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Track</span>
+    <img src="{% static 'healthbridge_app/track.png' %}" alt="Track Requests">
+    <h3>Track Requests</h3>
+    <p>Monitor your requested medicines and donation status.</p>
+    <div class="cta-wrap">
+      <a href="{% url 'donations:request_list' %}" class="btn btn-primary">View Status</a>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <span class="tile-badge">Profile</span>
+    <img src="{% static 'healthbridge_app/profile.png' %}" alt="My Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div style="display:none; justify-content:center; align-items:center; height:180px; font-size:5rem;">👤</div>
+    <h3>My Profile</h3>
+    <p>View and edit your personal information and stats.</p>
+    <div class="cta-wrap">
+      <a href="{% url 'profile:profile' %}" class="btn btn-primary">View Profile</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

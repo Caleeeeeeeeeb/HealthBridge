@@ -3,9 +3,16 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import CustomUser, GenericMedicine, BrandMedicine, Donation, ExpiryAlert, MedicineRequest
+from .models import CustomUser, GenericMedicine, BrandMedicine
+
+# NOTE: Donation, ExpiryAlert, and MedicineRequest are now registered in their
+# respective modular apps (donations/admin.py and requests/admin.py)
 
 
+# ============================================================================
+# OLD ADMIN CLASSES COMMENTED OUT - NOW IN donations/admin.py and requests/admin.py
+# ============================================================================
+"""
 @admin.register(ExpiryAlert)
 class ExpiryAlertAdmin(admin.ModelAdmin):
     list_display = ['donation_link', 'days_before_expiry', 'recipient_email', 'alert_type', 'alert_sent_at']
@@ -105,13 +112,17 @@ class DonationAdmin(admin.ModelAdmin):
         updated = queryset.update(status=Donation.Status.CANCELLED)
         self.message_user(request, f'{updated} donations marked as cancelled.')
     mark_as_cancelled.short_description = "Mark selected donations as cancelled"
+"""
 
+# ============================================================================
+# ACTIVE ADMIN REGISTRATIONS - Core models only
+# ============================================================================
 
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(GenericMedicine)
 admin.site.register(BrandMedicine)
 
-
+"""
 @admin.register(MedicineRequest)
 class MedicineRequestAdmin(admin.ModelAdmin):
     list_display = ['medicine_name', 'recipient', 'quantity', 'urgency', 'status', 'tracking_code', 'created_at']
@@ -146,7 +157,11 @@ class MedicineRequestAdmin(admin.ModelAdmin):
         updated = queryset.update(status=MedicineRequest.Status.CANCELLED)
         self.message_user(request, f'{updated} requests marked as cancelled.')
     mark_as_cancelled.short_description = "Mark selected as cancelled"
+"""
 
+# ============================================================================
+# ADMIN SITE CUSTOMIZATION
+# ============================================================================
 
 # Customize admin site header
 admin.site.site_header = "HealthBridge Administration"

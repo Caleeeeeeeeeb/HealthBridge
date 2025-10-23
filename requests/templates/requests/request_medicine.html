@@ -1,0 +1,148 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Request Medicine - HealthBridge<link rel="stylesheet" href="{% static 'requests/request_medicine.css' %}">
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'healthbridge_app/autocomplete.css' %}">
+
+<link rel="stylesheet" href="{% static 'requests/request_medicine.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="request-container">
+  <a href="{% url 'recipient_dashboard' %}" class="back-link">
+    â† Back to Dashboard
+  </a>
+
+  <div class="page-header">
+    <h1>
+      <span>ðŸ’Š</span>
+      Request Medicine
+    </h1>
+    <p>Tell us what medicine you need and we'll try to match you with a donor.</p>
+  </div>
+
+  <div class="form-card">
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <span>ðŸ“‹</span>
+          Basic Information
+        </h3>
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span>ðŸ”</span>
+              Medicine Name
+              <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              name="medicine_name" 
+              class="form-input" 
+              placeholder="Start typing medicine name..."
+              required
+              data-autocomplete="medicine"
+              autocomplete="off"
+            >
+            <div class="form-help">ðŸ’¡ Suggestions will appear as you type</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>ðŸ“¦</span>
+              Quantity Needed
+              <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              name="quantity_needed" 
+              class="form-input" 
+              placeholder="Enter quantity"
+              min="1"
+              required
+            >
+            <div class="form-help">ðŸ’Š Number of units needed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgency Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <span>âš¡</span>
+          Urgency Level
+        </h3>
+
+        <div class="urgency-options">
+          <div class="urgency-option">
+            <input type="radio" name="urgency" value="low" id="urgency-low">
+            <label for="urgency-low" class="urgency-label">
+              <span class="icon">ðŸŸ¢</span>
+              Low
+            </label>
+          </div>
+          <div class="urgency-option">
+            <input type="radio" name="urgency" value="medium" id="urgency-medium" checked>
+            <label for="urgency-medium" class="urgency-label">
+              <span class="icon">ðŸŸ¡</span>
+              Medium
+            </label>
+          </div>
+          <div class="urgency-option">
+            <input type="radio" name="urgency" value="high" id="urgency-high">
+            <label for="urgency-high" class="urgency-label">
+              <span class="icon">ðŸŸ </span>
+              High
+            </label>
+          </div>
+          <div class="urgency-option">
+            <input type="radio" name="urgency" value="critical" id="urgency-critical">
+            <label for="urgency-critical" class="urgency-label">
+              <span class="icon">ðŸ”´</span>
+              Critical
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Details Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <span>ðŸ“</span>
+          Additional Details
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span>ï¿½</span>
+            Reason (Optional)
+          </label>
+          <textarea 
+            name="reason" 
+            class="form-input" 
+            placeholder="Why do you need this medicine? Any additional information that might help..."
+          ></textarea>
+          <div class="form-help">â„¹ï¸ Providing details helps us prioritize urgent requests</div>
+        </div>
+      </div>
+
+      <!-- Submit Section -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn">
+          ðŸš€ Submit Request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'healthbridge_app/autocomplete.js' %}"></script>
+<link rel="stylesheet" href="{% static 'requests/request_medicine.css' %}">
+{% endblock %}

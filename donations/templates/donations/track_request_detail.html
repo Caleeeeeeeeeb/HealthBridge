@@ -1,0 +1,64 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Request Details â€¢ HealthBridge{% endblock %}
+{% block nav_dashboard_active %}active{% endblock %}
+
+{% block content %}
+
+
+<div class="detail-wrap">
+  <!-- ðŸŸ¢ Back Button -->
+  <a href="{% url 'request_list' %}" class="back-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back
+  </a>
+
+  <div class="page-header">
+    <h2>Details</h2>
+  </div>
+
+  <div class="details-grid">
+    <div class="image-card">
+      <div class="thumb">
+        {% if donation.image %}
+          <img src="{{ donation.image.url }}" alt="{{ donation.name }}">
+        {% else %}
+          <img src="{% static 'img/placeholder-medicine.png' %}" alt="No image">
+        {% endif %}
+      </div>
+
+      <div class="tracking">
+        <span>Tracking Code</span>
+        <strong>{{ donation.tracking_code }}</strong>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>{{ donation.name }}</h3>
+      <span class="status" data-status="{{ donation.status|lower }}">{{ donation.status }}</span>
+
+      <table class="info-list">
+        <tr>
+          <td>Quantity</td>
+          <td>{{ donation.quantity }}</td>
+        </tr>
+        <tr>
+          <td>Expiry date</td>
+          <td>{{ donation.expiry_date|date:"M d, Y" }}</td>
+        </tr>
+        <tr>
+          <td>Donated on</td>
+          <td>{{ donation.donated_at|date:"M d, Y, g:i a" }}</td>
+        </tr>
+        <tr>
+          <td>Last update</td>
+          <td>{{ donation.updated_at|date:"M d, Y, g:i a" }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

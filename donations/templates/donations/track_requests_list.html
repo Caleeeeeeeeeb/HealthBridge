@@ -1,0 +1,82 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Track Requests â€¢ HealthBridge{% endblock %}
+{% block nav_dashboard_active %}active{% endblock %}
+
+{% block content %}
+
+
+<div class="list-wrap">
+  <!-- Back -->
+  <a href="{% url 'dashboard' %}" class="back-btn" aria-label="Back to Dashboard">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to Dashboard
+  </a>
+
+  <div class="list-head">
+    <h2>Track Requests</h2>
+    <p>See the status of the medicines you donated.</p>
+  </div>
+
+  {% if items %}
+    <div class="cards">
+      {% for d in items %}
+        <div class="card">
+          <div class="thumb">
+            {% if d.image %}
+              <img src="{{ d.image.url }}" alt="{{ d.name }}" loading="lazy">
+            {% else %}
+              <img src="{% static 'img/placeholder-medicine.png' %}" alt="No image" loading="lazy">
+            {% endif %}
+          </div>
+
+          <div class="name">{{ d.name }}</div>
+
+          <div class="track-row" title="Tracking code">
+            <span class="code" id="code-{{ d.pk }}">{{ d.tracking_code }}</span>
+            <button class="copy-btn" type="button" data-target="code-{{ d.pk }}">Copy</button>
+          </div>
+
+          <div class="row"><span>Qty</span><span><strong>{{ d.quantity }}</strong></span></div>
+          <div class="row"><span>Expiry</span><span><strong>{{ d.expiry_date|date:"M j, Y" }}</strong></span></div>
+
+          <div class="row">
+            <span>Status</span>
+            <span class="badge" data-status="{{ d.get_status_display|lower }}">{{ d.get_status_display }}</span>
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="{% url 'request_detail' d.pk %}">View details</a>
+            <a class="btn btn-delete" href="{% url 'delete_donation' d.pk %}">ðŸ—‘ï¸ Delete</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="text-align:center; color:#667085; margin: .5rem 0 0;">
+      You don't have any donations yet.
+      <a href="{% url 'donate_medicine' %}" style="font-weight:800; color:var(--blue); text-decoration:none;">Donate now</a>
+    </p>
+  {% endif %}
+</div>
+
+<script>
+  // Copy tracking code to clipboard
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const id = btn.getAttribute('data-target');
+    const el = document.getElementById(id);
+    if (!el) return;
+    const text = el.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const prev = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = prev, 1200);
+    });
+  });
+</script>
+{% endblock %}

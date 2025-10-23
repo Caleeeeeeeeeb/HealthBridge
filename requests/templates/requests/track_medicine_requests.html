@@ -1,0 +1,112 @@
+﻿{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Track Requests - HealthBridge{% endblock %}
+
+{% block content %}
+
+
+<div class="track-container">
+  <a href="{% url 'recipient_dashboard' %}" class="back-link">
+    â† Back to Dashboard
+  </a>
+
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span>ðŸ“¦</span>
+          My Requests
+        </h1>
+        <p>Track and manage all your medicine requests</p>
+      </div>
+      <div class="header-stats">
+        <div class="header-stat">
+          <span class="header-stat-number">{{ requests.count }}</span>
+          <span class="header-stat-label">Total</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if requests %}
+    <div class="requests-grid">
+      {% for request in requests %}
+        <div class="request-card">
+          <div class="request-header">
+            <div class="request-title">
+              <h2 class="medicine-name">
+                ðŸ’Š {{ request.medicine_name }}
+              </h2>
+              <span class="tracking-code">{{ request.tracking_code }}</span>
+            </div>
+            <div class="request-badges">
+              <span class="status-badge status-{{ request.status }}">
+                {% if request.status == 'pending' %}â³{% elif request.status == 'matched' %}âœ…{% elif request.status == 'fulfilled' %}ðŸŽ‰{% else %}âŒ{% endif %}
+                {{ request.get_status_display }}
+              </span>
+              <span class="urgency-badge urgency-{{ request.urgency }}">
+                {{ request.get_urgency_display }}
+              </span>
+            </div>
+          </div>
+
+          <div class="request-details">
+            <div class="detail-item">
+              <span class="detail-icon">ðŸ“¦</span>
+              <div class="detail-content">
+                <div class="detail-label">Quantity</div>
+                <div class="detail-value">{{ request.quantity }}</div>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-icon">ðŸ“…</span>
+              <div class="detail-content">
+                <div class="detail-label">Requested</div>
+                <div class="detail-value">{{ request.created_at|date:"M j, Y" }}</div>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-icon">ðŸ¥</span>
+              <div class="detail-content">
+                <div class="detail-label">Status</div>
+                <div class="detail-value">{{ request.get_status_display }}</div>
+              </div>
+            </div>
+          </div>
+
+          {% if request.reason %}
+            <div class="request-reason">
+              <div class="reason-label">ðŸ’¬ Reason</div>
+              <p class="reason-text">{{ request.reason }}</p>
+            </div>
+          {% endif %}
+
+          <div class="request-footer">
+            <span class="request-date">
+              ðŸ• Updated {{ request.updated_at|timesince }} ago
+            </span>
+            <div class="action-buttons">
+              <a href="{% url 'medicine_request_detail' request.pk %}" class="btn-action btn-view">
+                View Details â†’
+              </a>
+              <a href="{% url 'delete_medicine_request' request.pk %}" class="btn-action btn-delete">
+                ðŸ—‘ï¸ Delete
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">ðŸ“­</div>
+      <h3>No Requests Yet</h3>
+      <p>You haven't made any medicine requests yet. Start by requesting what you need!</p>
+      <a href="{% url 'request_medicine' %}" class="btn btn-primary">Make Your First Request</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
