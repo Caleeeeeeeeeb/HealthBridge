@@ -46,7 +46,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Core app (will keep CustomUser model here)
     'healthbridge_app',
+    
+    # Modular apps
+    'landing',
+    'login',
+    'registration',
+    'dashboard',
+    'profile',
+    'donations',
+    'requests',
 ]
 
 AUTH_USER_MODEL = 'healthbridge_app.CustomUser'

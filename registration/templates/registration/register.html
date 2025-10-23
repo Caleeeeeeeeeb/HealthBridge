@@ -1,0 +1,145 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - HealthBridge</title>
+    
+  <link rel="stylesheet" href="{% static 'registration/register.css' %}">
+</head>
+
+<body>
+    <div class="register-bg-blur"></div>
+
+    <nav>
+        <div class="logo">HealthBridge</div>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">Service</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <form name="registerForm" method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <h1>Register</h1>
+        <p class="tagline">Join HealthBridge today.</p>
+        <div id="error" class="error">{% if error %}{{ error }}{% endif %}</div>
+
+        <input type="text" name="first_name" placeholder="First Name" required>
+        <input type="text" name="last_name" placeholder="Last Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        
+        <input type="password" id="password" name="password" placeholder="Password" required oninput="validatePassword()">
+        <ul class="password-rules" id="passwordRules">
+            <li id="rule-length">At least 8 characters</li>
+            <li id="rule-capital">At least 1 uppercase letter</li>
+            <li id="rule-number">At least 1 number</li>
+            <li id="rule-special">At least 1 special character (!@#$%^&* etc.)</li>
+        </ul>
+
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+
+        <div class="checkbox-container">
+            <label>
+                <input type="checkbox" id="terms"> 
+                I agree with the 
+                <a href="#" id="termsLink">Terms & Conditions</a>
+            </label>
+        </div>
+
+        <button type="submit" id="registerBtn">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+
+    <!-- Terms Modal -->
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2>HealthBridge Terms & Conditions</h2>
+            <p>Welcome to HealthBridge! By creating an account, you agree to the following terms:</p>
+            <ul>
+                <li>âœ” Your data will be used solely for managing your account and healthcare records.</li>
+                <li>âœ” You are responsible for maintaining the confidentiality of your login credentials.</li>
+                <li>âœ” Any misuse of the system or unauthorized access attempts may result in account suspension.</li>
+                <li>âœ” HealthBridge reserves the right to modify or update these terms at any time.</li>
+                <li>âœ” Continued use of the platform constitutes acceptance of any updated terms.</li>
+            </ul>
+            <p>For more information, please contact our support team at 
+                <a href="mailto:support@healthbridge.com" style="color:#ffe600;">support@healthbridge.com</a>.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const rulesList = document.getElementById("passwordRules");
+
+        passwordInput.addEventListener("focus", () => rulesList.style.display = "block");
+        passwordInput.addEventListener("blur", () => {
+            if (passwordInput.value === "") rulesList.style.display = "none";
+        });
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const rules = {
+                length: password.length >= 8,
+                capital: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            };
+            for (const [rule, valid] of Object.entries(rules)) {
+                document.getElementById(`rule-${rule}`).classList.toggle("valid", valid);
+            }
+        }
+
+        function validateForm() {
+            const password = passwordInput.value;
+            const confirm = document.getElementById("confirm_password").value;
+            const termsChecked = document.getElementById("terms").checked;
+
+            const validPassword = password.length >= 8 &&
+                /[A-Z]/.test(password) &&
+                /[0-9]/.test(password) &&
+                /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            if (!validPassword) {
+                alert("Please enter a valid password that meets all requirements.");
+                return false;
+            }
+
+            if (password !== confirm) {
+                alert("Passwords do not match.");
+                return false;
+            }
+
+            if (!termsChecked) {
+                alert("You must agree to the Terms & Conditions.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Modal logic
+        const modal = document.getElementById("termsModal");
+        const termsLink = document.getElementById("termsLink");
+        const closeModal = document.getElementById("closeModal");
+
+        termsLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            modal.style.display = "flex";
+        });
+
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) modal.style.display = "none";
+        });
+    </script>
+</body>
+</html>

@@ -16,8 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
-    path('', include('healthbridge_app.urls')),
+    
+    # Modular apps
+    path('', include('landing.urls')),  # Landing page at root
+    path('login/', include('login.urls')),  # Login, logout, and password reset
+    path('register/', include('registration.urls')),  # Registration
+    path('dashboard/', include('dashboard.urls')),  # Dashboards
+    path('profile/', include('profile.urls')),  # User profile
+    path('donations/', include('donations.urls')),  # Donations
+    path('requests/', include('requests.urls')),  # Medicine requests
+    
+    # Keep healthbridge_app for backwards compatibility (can remove later)
+    path('legacy/', include('healthbridge_app.urls')),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

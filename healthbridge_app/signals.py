@@ -6,7 +6,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from datetime import timedelta
-from .models import Donation, ExpiryAlert
+from donations.models import Donation, ExpiryAlert
 
 @receiver(post_save, sender=Donation)
 def check_expiry_on_donation_save(sender, instance, created, **kwargs):

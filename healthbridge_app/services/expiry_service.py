@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from typing import List, Dict, Any
 
-from .models import Donation, ExpiryAlert
+from donations.models import Donation, ExpiryAlert
 
 
 class ExpiryMonitoringService:
