@@ -104,6 +104,37 @@
     @media (max-width: 720px){
       main { padding: 1.25rem 4%; }
     }
+
+    /* Toast-style Django messages */
+.messages {
+  max-width: 650px;
+  margin: 0 auto 1rem auto;
+  padding: 0;
+}
+
+.alert {
+  padding: 0.9rem 1.2rem;
+  background: var(--emerald);
+  color: white;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 4px 9px rgba(0,0,0,0.12);
+  animation: fadeSlide 0.4s ease;
+  text-align: center;
+}
+
+/* Small entry animation */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
   </style>
 
   {% block extra_css %}{% endblock %}
@@ -132,11 +163,26 @@
   </header>
 
   <main>
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
     {% block content %}{% endblock %}
   </main>
 
   <footer>
     © 2025 HealthBridge — Building bridges in healthcare.
   </footer>
+  <script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+      el.style.transition = 'opacity 0.6s';
+      el.style.opacity = '0';
+    });
+  }, 3000);
+</script>
 </body>
 </html>
