@@ -81,7 +81,7 @@ ROOT_URLCONF = 'HealthBridge.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # Look for templates in project root
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,7 +153,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "healthbridge_app" / "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]  # Look for static files in project root
 
 # Cache configuration for faster autocomplete
 CACHES = {
