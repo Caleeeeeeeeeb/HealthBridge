@@ -3,8 +3,11 @@
 
 {% block title %}Delete Request - HealthBridge{% endblock %}
 
-{% block content %}
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'requests/confirm_delete_request.css' %}">
+{% endblock %}
+
+{% block content %}
 
 <div class="delete-container">
   <div class="delete-card">
@@ -47,7 +50,7 @@
     <form method="post">
       {% csrf_token %}
       <div class="button-group">
-        <a href="{% url 'track_medicine_requests' %}" class="btn-cancel">Cancel</a>
+        <a href="{% url 'requests:track_medicine_requests' %}" class="btn-cancel">Cancel</a>
         <button type="submit" class="btn-delete">Yes, Delete Request</button>
       </div>
     </form>

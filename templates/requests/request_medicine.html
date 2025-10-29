@@ -12,13 +12,13 @@
 
 {% block content %}
 <div class="request-container">
-  <a href="{% url 'recipient_dashboard' %}" class="back-link">
-    â† Back to Dashboard
+  <a href="{% url 'dashboard:recipient_dashboard' %}" class="back-link">
+    ← Back to Dashboard
   </a>
 
   <div class="page-header">
     <h1>
-      <span>ðŸ’Š</span>
+      <span>💊</span>
       Request Medicine
     </h1>
     <p>Tell us what medicine you need and we'll try to match you with a donor.</p>
@@ -28,17 +28,28 @@
     <form method="post">
       {% csrf_token %}
 
+      <!-- Pre-fill notification if coming from search -->
+      {% if prefill_data.medicine_name %}
+      <div class="prefill-notice">
+        <span>✨</span>
+        <div>
+          <strong>Auto-filled from search!</strong>
+          <p>Requesting <strong>{{ prefill_data.medicine_name }}</strong> from donor <strong>{{ prefill_data.donor_name }}</strong>. You can adjust the details below before submitting.</p>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Basic Information Section -->
       <div class="form-section">
         <h3 class="section-title">
-          <span>ðŸ“‹</span>
+          <span>📋</span>
           Basic Information
         </h3>
 
         <div class="form-grid">
           <div class="form-group full-width">
             <label class="form-label">
-              <span>ðŸ”</span>
+              <span>📝</span>
               Medicine Name
               <span class="required">*</span>
             </label>
@@ -47,16 +58,17 @@
               name="medicine_name" 
               class="form-input" 
               placeholder="Start typing medicine name..."
+              value="{{ prefill_data.medicine_name }}"
               required
               data-autocomplete="medicine"
               autocomplete="off"
             >
-            <div class="form-help">ðŸ’¡ Suggestions will appear as you type</div>
+            <div class="form-help">💡 Suggestions will appear as you type</div>
           </div>
 
           <div class="form-group">
             <label class="form-label">
-              <span>ðŸ“¦</span>
+              <span>📦</span>
               Quantity Needed
               <span class="required">*</span>
             </label>
@@ -65,10 +77,11 @@
               name="quantity_needed" 
               class="form-input" 
               placeholder="Enter quantity"
+              value="{{ prefill_data.quantity }}"
               min="1"
               required
             >
-            <div class="form-help">ðŸ’Š Number of units needed</div>
+            <div class="form-help">💊 Number of units needed</div>
           </div>
         </div>
       </div>
@@ -76,7 +89,7 @@
       <!-- Urgency Section -->
       <div class="form-section">
         <h3 class="section-title">
-          <span>âš¡</span>
+          <span>⚡</span>
           Urgency Level
         </h3>
 
@@ -84,28 +97,28 @@
           <div class="urgency-option">
             <input type="radio" name="urgency" value="low" id="urgency-low">
             <label for="urgency-low" class="urgency-label">
-              <span class="icon">ðŸŸ¢</span>
+              <span class="icon">🟢</span>
               Low
             </label>
           </div>
           <div class="urgency-option">
             <input type="radio" name="urgency" value="medium" id="urgency-medium" checked>
             <label for="urgency-medium" class="urgency-label">
-              <span class="icon">ðŸŸ¡</span>
+              <span class="icon">🟡</span>
               Medium
             </label>
           </div>
           <div class="urgency-option">
             <input type="radio" name="urgency" value="high" id="urgency-high">
             <label for="urgency-high" class="urgency-label">
-              <span class="icon">ðŸŸ </span>
+              <span class="icon">🟠</span>
               High
             </label>
           </div>
           <div class="urgency-option">
             <input type="radio" name="urgency" value="critical" id="urgency-critical">
             <label for="urgency-critical" class="urgency-label">
-              <span class="icon">ðŸ”´</span>
+              <span class="icon">🔴</span>
               Critical
             </label>
           </div>
@@ -115,7 +128,7 @@
       <!-- Additional Details Section -->
       <div class="form-section">
         <h3 class="section-title">
-          <span>ðŸ“</span>
+          <span>📝</span>
           Additional Details
         </h3>
 
@@ -129,14 +142,14 @@
             class="form-input" 
             placeholder="Why do you need this medicine? Any additional information that might help..."
           ></textarea>
-          <div class="form-help">â„¹ï¸ Providing details helps us prioritize urgent requests</div>
+          <div class="form-help">ℹ️ Providing details helps us prioritize urgent requests</div>
         </div>
       </div>
 
       <!-- Submit Section -->
       <div class="submit-section">
         <button type="submit" class="submit-btn">
-          ðŸš€ Submit Request
+          🚀 Submit Request
         </button>
       </div>
     </form>

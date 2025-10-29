@@ -31,9 +31,6 @@ urlpatterns = [
     path('profile/', include('profile.urls')),  # User profile
     path('donations/', include('donations.urls')),  # Donations
     path('requests/', include('requests.urls')),  # Medicine requests
-    
-    # Keep healthbridge_app for backwards compatibility (can remove later)
-    path('legacy/', include('healthbridge_app.urls')),
 ]
 
 # Serve media files in development

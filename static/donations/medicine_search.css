@@ -263,6 +263,75 @@
   font-size: 1.05rem;
 }
 
+/* Own Donation Styles */
+.medicine-card.own-donation {
+  border: 2px solid #fbbf24;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.medicine-card.own-donation::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.own-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.own-donation-notice {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+/* Medicine Actions */
+.medicine-actions {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.request-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  background: linear-gradient(135deg, var(--blue), var(--emerald));
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(41, 128, 185, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.request-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(41, 128, 185, 0.4);
+  filter: brightness(1.05);
+}
+
+.request-btn:active {
+  transform: translateY(0);
+}
+
+.request-btn span {
+  font-size: 1.1rem;
+}
+
 @media (max-width: 768px) {
   .page-header h1 {
     font-size: 1.75rem;

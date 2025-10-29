@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8">
   <title>HealthBridge - Home</title>
-  <link rel="stylesheet" href="{% static 'healthbridge_app/style.css' %}">
+  <link rel="stylesheet" href="{% static 'landing/style.css' %}">
   <style>
     :root {
       --emerald-green: #2ECC71;
@@ -308,8 +308,8 @@
       <li><a href="#">Contact Us</a></li>
     </ul>
     <div class="nav-buttons">
-      <a href="{% url 'login' %}"><button class="login-btn">Login</button></a>
-      <a href="{% url 'register' %}"><button class="login-btn">Register</button></a>
+      <a href="{% url 'login:login' %}"><button class="login-btn">Login</button></a>
+      <a href="{% url 'registration:register' %}"><button class="login-btn">Register</button></a>
     </div>
     
     
@@ -340,7 +340,7 @@
         <div>Compassionate Service</div>
         
       </div>
-      <a href="{% url 'login' %}">
+      <a href="{% url 'login:login' %}">
       <button class="cta-btn">Get Started</button>
     </a>
    
@@ -389,8 +389,8 @@
     <h2>Ready to Make a Difference?</h2>
     <p>Join thousands of people who are already making healthcare more accessible through medicine donations and community support.</p>
     <div class="cta-buttons">
-      <a href="{% url 'register' %}"><button class="btn-primary">Start Donating</button></a>
-      <a href="{% url 'login' %}"><button class="btn-outline">Login to Account</button></a>
+      <a href="{% url 'registration:register' %}"><button class="btn-primary">Start Donating</button></a>
+      <a href="{% url 'login:login' %}"><button class="btn-outline">Login to Account</button></a>
     </div>
   </section>
 </body>

@@ -3,19 +3,23 @@
 
 {% block title %}Track Requests - HealthBridge{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'requests/track_medicine_requests.css' %}">
+{% endblock %}
+
 {% block content %}
 
 
 <div class="track-container">
-  <a href="{% url 'recipient_dashboard' %}" class="back-link">
-    â† Back to Dashboard
+  <a href="{% url 'dashboard:recipient_dashboard' %}" class="back-link">
+    ← Back to Dashboard
   </a>
 
   <div class="page-header">
     <div class="header-content">
       <div class="header-left">
         <h1>
-          <span>ðŸ“¦</span>
+          <span>📦</span>
           My Requests
         </h1>
         <p>Track and manage all your medicine requests</p>
@@ -36,13 +40,13 @@
           <div class="request-header">
             <div class="request-title">
               <h2 class="medicine-name">
-                ðŸ’Š {{ request.medicine_name }}
+                💊 {{ request.medicine_name }}
               </h2>
               <span class="tracking-code">{{ request.tracking_code }}</span>
             </div>
             <div class="request-badges">
               <span class="status-badge status-{{ request.status }}">
-                {% if request.status == 'pending' %}â³{% elif request.status == 'matched' %}âœ…{% elif request.status == 'fulfilled' %}ðŸŽ‰{% else %}âŒ{% endif %}
+                {% if request.status == 'pending' %}⏳{% elif request.status == 'matched' %}✅{% elif request.status == 'fulfilled' %}🎉{% else %}❌{% endif %}
                 {{ request.get_status_display }}
               </span>
               <span class="urgency-badge urgency-{{ request.urgency }}">
@@ -53,7 +57,7 @@
 
           <div class="request-details">
             <div class="detail-item">
-              <span class="detail-icon">ðŸ“¦</span>
+              <span class="detail-icon">📦</span>
               <div class="detail-content">
                 <div class="detail-label">Quantity</div>
                 <div class="detail-value">{{ request.quantity }}</div>
@@ -61,7 +65,7 @@
             </div>
 
             <div class="detail-item">
-              <span class="detail-icon">ðŸ“…</span>
+              <span class="detail-icon">📅</span>
               <div class="detail-content">
                 <div class="detail-label">Requested</div>
                 <div class="detail-value">{{ request.created_at|date:"M j, Y" }}</div>
@@ -69,7 +73,7 @@
             </div>
 
             <div class="detail-item">
-              <span class="detail-icon">ðŸ¥</span>
+              <span class="detail-icon">🏥</span>
               <div class="detail-content">
                 <div class="detail-label">Status</div>
                 <div class="detail-value">{{ request.get_status_display }}</div>
@@ -79,21 +83,21 @@
 
           {% if request.reason %}
             <div class="request-reason">
-              <div class="reason-label">ðŸ’¬ Reason</div>
+              <div class="reason-label">💬 Reason</div>
               <p class="reason-text">{{ request.reason }}</p>
             </div>
           {% endif %}
 
           <div class="request-footer">
             <span class="request-date">
-              ðŸ• Updated {{ request.updated_at|timesince }} ago
+              🕐 Updated {{ request.updated_at|timesince }} ago
             </span>
             <div class="action-buttons">
-              <a href="{% url 'medicine_request_detail' request.pk %}" class="btn-action btn-view">
-                View Details â†’
+              <a href="{% url 'requests:medicine_request_detail' request.pk %}" class="btn-action btn-view">
+                View Details →
               </a>
-              <a href="{% url 'delete_medicine_request' request.pk %}" class="btn-action btn-delete">
-                ðŸ—‘ï¸ Delete
+              <a href="{% url 'requests:delete_medicine_request' request.pk %}" class="btn-action btn-delete">
+                🗑️ Delete
               </a>
             </div>
           </div>
@@ -102,10 +106,10 @@
     </div>
   {% else %}
     <div class="empty-state">
-      <div class="empty-icon">ðŸ“­</div>
+      <div class="empty-icon">🔭</div>
       <h3>No Requests Yet</h3>
       <p>You haven't made any medicine requests yet. Start by requesting what you need!</p>
-      <a href="{% url 'request_medicine' %}" class="btn btn-primary">Make Your First Request</a>
+      <a href="{% url 'requests:request_medicine' %}" class="btn btn-primary">Make Your First Request</a>
     </div>
   {% endif %}
 </div>

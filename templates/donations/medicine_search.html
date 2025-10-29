@@ -1,13 +1,13 @@
 ﻿{% extends 'healthbridge_app/base.html' %}
 {% load static %}
 
-{% block title %}Search Medicines â€¢ HealthBridge<link rel="stylesheet" href="{% static 'donations/medicine_search.css' %}">
+{% block title %}Search Medicines • HealthBridge<link rel="stylesheet" href="{% static 'donations/medicine_search.css' %}">
 {% endblock %}
 {% block nav_search_active %}active<link rel="stylesheet" href="{% static 'donations/medicine_search.css' %}">
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'healthbridge_app/autocomplete.css' %}">
+<link rel="stylesheet" href="{% static 'donations/autocomplete.css' %}">
 <link rel="stylesheet" href="{% static 'donations/medicine_search.css' %}">
 {% endblock %}
 
@@ -15,47 +15,33 @@
 
 
 <div class="search-container">
-  <a href="{% url 'dashboard' %}" class="back-btn">
-    â† Back to Dashboard
+  <a href="{% url 'dashboard:dashboard' %}" class="back-btn">
+    ← Back to Dashboard
   </a>
 
   <div class="page-header">
     <h1>
-      <span>ðŸ”</span>
+      <span>🔍</span>
       Search Medicines
     </h1>
-    <p>Browse and search available medicines donated by our community</p>
-  </div>
-
-  <div class="search-section">
-    <form method="get" class="search-form">
-      <label class="search-label">ðŸ”Ž Find the medicine you need</label>
-      <div class="search-input-wrapper">
-        <span class="search-icon">ðŸ’Š</span>
-        <input 
-          type="text" 
-          name="q" 
-          value="{{ query }}" 
-          placeholder="Start typing to see medicine suggestions..."
-          data-autocomplete="medicine"
-          autocomplete="off"
-        >
-        <button type="submit" class="search-btn">Search</button>
-      </div>
-    </form>
+    <p>Browse available medicines donated by our community</p>
   </div>
 
   {% if medicines %}
     <div class="medicine-grid">
       {% for med in medicines %}
-        <div class="medicine-card">
-          <span class="medicine-badge">Available</span>
+        <div class="medicine-card {% if med.donor == user %}own-donation{% endif %}">
+          {% if med.donor == user %}
+            <span class="medicine-badge own-badge">Your Donation</span>
+          {% else %}
+            <span class="medicine-badge">Available</span>
+          {% endif %}
           
           <div class="thumb">
             {% if med.image %}
               <img src="{{ med.image.url }}" alt="{{ med.name }}">
             {% else %}
-              <span class="medicine-icon">ðŸ’Š</span>
+              <span class="medicine-icon">💊</span>
             {% endif %}
           </div>
 
@@ -63,32 +49,50 @@
           
           <div class="medicine-info">
             <div class="info-row">
-              <span class="info-label">ðŸ“¦ Quantity</span>
+              <span class="info-label">📦 Quantity</span>
               <span class="info-value">{{ med.quantity }}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">ðŸ“… Expiry</span>
+              <span class="info-label">📅 Expiry</span>
               <span class="info-value">{{ med.expiry_date|date:"M j, Y" }}</span>
             </div>
             {% if med.donor %}
             <div class="info-row">
-              <span class="info-label">ðŸ‘¤ Donor</span>
-              <span class="info-value">{{ med.donor.get_full_name }}</span>
+              <span class="info-label">👤 Donor</span>
+              <span class="info-value">
+                {% if med.donor == user %}
+                  You
+                {% else %}
+                  {{ med.donor.get_full_name }}
+                {% endif %}
+              </span>
             </div>
             {% endif %}
           </div>
+          
+          {% if med.donor == user %}
+            <div class="own-donation-notice">
+              <span>ℹ️</span> This is your donation. You cannot request your own medicine.
+            </div>
+          {% else %}
+            <div class="medicine-actions">
+              <a href="{% url 'requests:request_medicine' %}?medicine={{ med.name|urlencode }}&quantity={{ med.quantity }}&donor={{ med.donor.get_full_name|urlencode }}" class="request-btn">
+                <span>🚀</span> Request This Medicine
+              </a>
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
   {% else %}
     <div class="empty-state">
-      <div class="empty-icon">ðŸ”</div>
+      <div class="empty-icon">🔍</div>
       <h3>No Medicines Found</h3>
       <p>Try searching with a different medicine name or check back later</p>
     </div>
   {% endif %}
 </div>
 
-<script src="{% static 'healthbridge_app/autocomplete.js' %}"></script>
+<script src="{% static 'donations/autocomplete.js' %}"></script>
 <link rel="stylesheet" href="{% static 'donations/medicine_search.css' %}">
 {% endblock %}

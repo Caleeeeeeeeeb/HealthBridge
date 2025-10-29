@@ -105,6 +105,184 @@
       main { padding: 1.25rem 4%; }
     }
 
+    /* Navbar Search Styles */
+    .navbar-search-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+      margin-right: 1.5rem;
+    }
+
+    .navbar-search-form {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-search-wrapper {
+      position: relative;
+      width: 320px;
+    }
+
+    .navbar-search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.5rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      outline: none;
+      color: var(--text-dark);
+    }
+
+    .navbar-search-input:focus {
+      background: white;
+      border-color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      width: 350px;
+    }
+
+    .navbar-search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .navbar-search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .navbar-search-btn {
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .navbar-search-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: white;
+      transform: translateY(-1px);
+    }
+
+    .navbar-display-all-btn {
+      background: white;
+      color: var(--blue);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-display-all-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Navbar Autocomplete Styles */
+    .navbar-autocomplete-suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .navbar-autocomplete-suggestions.show {
+      display: block;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .navbar-autocomplete-item {
+      padding: 0.85rem 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.15s ease;
+      color: var(--text-dark);
+    }
+
+    .navbar-autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .navbar-autocomplete-item:hover,
+    .navbar-autocomplete-item.selected {
+      background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
+    }
+
+    .navbar-autocomplete-icon {
+      font-size: 1.3rem;
+      opacity: 0.8;
+    }
+
+    .navbar-autocomplete-loading,
+    .navbar-autocomplete-empty {
+      padding: 1.2rem;
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1200px) {
+      .navbar-search-wrapper {
+        width: 250px;
+      }
+      
+      .navbar-search-input:focus {
+        width: 280px;
+      }
+    }
+
+    @media (max-width: 968px) {
+      .navbar-search-container {
+        display: none;
+      }
+    }
+
     /* Toast-style Django messages */
 .messages {
   max-width: 650px;
@@ -144,14 +322,37 @@
     <div class="logo">HealthBridge</div>
     <nav>
       {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Donor Dashboard</a>
-        <a href="{% url 'recipient_dashboard' %}" class="{% block nav_recipient_active %}{% endblock %}">Recipient Dashboard</a>
+        <a href="{% url 'dashboard:dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Donor Dashboard</a>
+        <a href="{% url 'dashboard:recipient_dashboard' %}" class="{% block nav_recipient_active %}{% endblock %}">Recipient Dashboard</a>
         <a href="{% url 'profile:profile' %}" class="{% block nav_profile_active %}{% endblock %}" style="display: flex; align-items: center; gap: 0.3rem;">
           <span>👤</span> Profile
         </a>
       {% endif %}
     </nav>
+    
     {% if user.is_authenticated %}
+      <!-- Navbar Search -->
+      <div class="navbar-search-container">
+        <form method="get" action="{% url 'donations:medicine_search' %}" class="navbar-search-form">
+          <div class="navbar-search-wrapper">
+            <span class="navbar-search-icon">🔍</span>
+            <input 
+              type="text" 
+              name="q" 
+              id="navbar-search-input"
+              class="navbar-search-input"
+              placeholder="Search medicines..."
+              autocomplete="off"
+            >
+            <div id="navbar-autocomplete-suggestions" class="navbar-autocomplete-suggestions"></div>
+          </div>
+          <button type="submit" class="navbar-search-btn">Search</button>
+        </form>
+        <a href="{% url 'donations:medicine_search' %}" class="navbar-display-all-btn">
+          <span>📋</span> Display All
+        </a>
+      </div>
+      
       <a href="{% url 'login:logout' %}">
         <button class="logout-btn">Logout</button>
       </a>
@@ -176,13 +377,153 @@
   <footer>
     © 2025 HealthBridge — Building bridges in healthcare.
   </footer>
+  
   <script>
+  // Auto-dismiss messages
   setTimeout(() => {
     document.querySelectorAll('.alert').forEach(el => {
       el.style.transition = 'opacity 0.6s';
       el.style.opacity = '0';
     });
   }, 3000);
-</script>
+
+  // Navbar Medicine Autocomplete
+  (function() {
+    const input = document.getElementById('navbar-search-input');
+    if (!input) return; // Not on authenticated pages
+    
+    const container = document.getElementById('navbar-autocomplete-suggestions');
+    let debounceTimer = null;
+    let selectedIndex = -1;
+    let suggestions = [];
+
+    function showLoading() {
+      container.innerHTML = '<div class="navbar-autocomplete-loading">Searching medicines...</div>';
+      container.classList.add('show');
+    }
+
+    function showEmpty() {
+      container.innerHTML = '<div class="navbar-autocomplete-empty">No medicines found</div>';
+      container.classList.add('show');
+    }
+
+    function hide() {
+      container.classList.remove('show');
+      selectedIndex = -1;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function highlightMatch(text, query) {
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<strong>$1</strong>');
+    }
+
+    function display(query) {
+      if (suggestions.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      const html = suggestions.map((suggestion, index) => {
+        const highlighted = highlightMatch(escapeHtml(suggestion), escapeHtml(query));
+        return `
+          <div class="navbar-autocomplete-item" data-index="${index}" data-value="${escapeHtml(suggestion)}">
+            <span class="navbar-autocomplete-icon">💊</span>
+            <span>${highlighted}</span>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+      container.classList.add('show');
+
+      // Add click handlers
+      container.querySelectorAll('.navbar-autocomplete-item').forEach(item => {
+        item.addEventListener('click', () => {
+          input.value = item.dataset.value;
+          hide();
+          input.form.submit();
+        });
+      });
+    }
+
+    async function fetchSuggestions(query) {
+      if (!query || query.length < 2) {
+        hide();
+        return;
+      }
+
+      showLoading();
+
+      try {
+        const response = await fetch(`/donations/api/autocomplete/?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        suggestions = data.suggestions || [];
+        display(query);
+      } catch (error) {
+        console.error('Autocomplete error:', error);
+        hide();
+      }
+    }
+
+    // Input event
+    input.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
+    });
+
+    // Focus event
+    input.addEventListener('focus', () => {
+      const query = input.value.trim();
+      if (query.length >= 2) {
+        fetchSuggestions(query);
+      }
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      const items = container.querySelectorAll('.navbar-autocomplete-item');
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        updateSelection(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, -1);
+        updateSelection(items);
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault();
+        items[selectedIndex].click();
+      } else if (e.key === 'Escape') {
+        hide();
+      }
+    });
+
+    function updateSelection(items) {
+      items.forEach((item, index) => {
+        if (index === selectedIndex) {
+          item.classList.add('selected');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+    }
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !container.contains(e.target)) {
+        hide();
+      }
+    });
+  })();
+  </script>
 </body>
 </html>

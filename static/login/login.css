@@ -22,11 +22,17 @@ body {
 /* Background Blur */
 .login-bg-blur {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    background: url("{% static 'healthbridge_app/background.png' %}") center center / cover no-repeat; 
+    background-image: url("/static/healthbridge_app/background.png");
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
     filter: blur(8px) brightness(0.85);
 }
 

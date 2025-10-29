@@ -6,6 +6,18 @@
     <title>Register - HealthBridge</title>
     
   <link rel="stylesheet" href="{% static 'registration/register.css' %}">
+  <style>
+        /* Background Blur Override */
+        .register-bg-blur {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: url("{% static 'healthbridge_app/background.png' %}") center center / cover no-repeat; 
+            filter: blur(8px) brightness(0.85);
+        }
+    </style>
 </head>
 
 <body>
@@ -14,7 +26,7 @@
     <nav>
         <div class="logo">HealthBridge</div>
         <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'landing:home' %}">Home</a></li>
             <li><a href="#">Service</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact Us</a></li>
@@ -52,7 +64,7 @@
         <button type="submit" id="registerBtn">Register</button>
     </form>
 
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    <p>Already have an account? <a href="{% url 'login:login' %}">Login</a></p>
 
     <!-- Terms Modal -->
     <div class="modal" id="termsModal">
@@ -61,11 +73,11 @@
             <h2>HealthBridge Terms & Conditions</h2>
             <p>Welcome to HealthBridge! By creating an account, you agree to the following terms:</p>
             <ul>
-                <li>âœ” Your data will be used solely for managing your account and healthcare records.</li>
-                <li>âœ” You are responsible for maintaining the confidentiality of your login credentials.</li>
-                <li>âœ” Any misuse of the system or unauthorized access attempts may result in account suspension.</li>
-                <li>âœ” HealthBridge reserves the right to modify or update these terms at any time.</li>
-                <li>âœ” Continued use of the platform constitutes acceptance of any updated terms.</li>
+                <li>✓ Your data will be used solely for managing your account and healthcare records.</li>
+                <li>✓ You are responsible for maintaining the confidentiality of your login credentials.</li>
+                <li>✓ Any misuse of the system or unauthorized access attempts may result in account suspension.</li>
+                <li>✓ HealthBridge reserves the right to modify or update these terms at any time.</li>
+                <li>✓ Continued use of the platform constitutes acceptance of any updated terms.</li>
             </ul>
             <p>For more information, please contact our support team at 
                 <a href="mailto:support@healthbridge.com" style="color:#ffe600;">support@healthbridge.com</a>.

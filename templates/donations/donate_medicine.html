@@ -1,13 +1,17 @@
 ﻿{% extends 'healthbridge_app/base.html' %}
 {% load static %}
 
-{% block title %}Donate Medicine â€¢ HealthBridge{% endblock %}
+{% block title %}Donate Medicine • HealthBridge{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'donations/donate_medicine.css' %}">
+{% endblock %}
 
 {% block content %}
 
 
 <div class="donate-container">
-  <a href="{% url 'dashboard' %}" class="back-btn">
+  <a href="{% url 'dashboard:dashboard' %}" class="back-btn">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
