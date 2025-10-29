@@ -1,17 +1,49 @@
 ﻿{% extends 'healthbridge_app/base.html' %}
 {% load static %}
 
-{% block title %}Dashboard â€¢ HealthBridge{% endblock %}
+{% block title %}Dashboard • HealthBridge{% endblock %}
 {% block nav_dashboard_active %}is-active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
 
 
 <section class="dashboard-container">
-  <h1>Welcome to Your Dashboard</h1>
-  <p>Manage your medicine donations and search for available supplies.</p>
+  <h1>👋 Welcome back, {{ user.first_name }}!</h1>
+  <p>Your donor dashboard - manage your medicine donations and make a difference</p>
 </section>
 
+<!-- Stats Overview -->
+<section class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">📦</span>
+    <div class="stat-number">{{ total_donations }}</div>
+    <div class="stat-label">Total Donations</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">✅</span>
+    <div class="stat-number">{{ available_donations }}</div>
+    <div class="stat-label">Available</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">📌</span>
+    <div class="stat-number">{{ reserved_donations }}</div>
+    <div class="stat-label">Reserved</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">🎉</span>
+    <div class="stat-number">{{ delivered_donations }}</div>
+    <div class="stat-label">Delivered</div>
+  </div>
+</section>
+
+<!-- Quick Actions -->
 <section class="card-grid">
   <div class="dashboard-card">
     <span class="tile-badge">Donate</span>
@@ -24,34 +56,75 @@
   </div>
 
   <div class="dashboard-card">
-    <span class="tile-badge">Search</span>
-    <img src="{% static 'dashboard/search_medicine.png' %}" alt="Search Medicine">
-    <h3>Search Medicines</h3>
-    <p>Find available medicines by brand or generic name.</p>
-    <div class="cta-wrap">
-      <a href="{% url 'donations:medicine_search' %}" class="btn btn-primary">Search Now</a>
-    </div>
-  </div>
-
-  <div class="dashboard-card">
     <span class="tile-badge">Track</span>
-    <img src="{% static 'dashboard/track.png' %}" alt="Track Requests">
-    <h3>Track Requests</h3>
-    <p>Monitor your requested medicines and donation status.</p>
+    <img src="{% static 'dashboard/track.png' %}" alt="Track Donations">
+    <h3>Track Donations</h3>
+    <p>Monitor your donated medicines and their status.</p>
     <div class="cta-wrap">
-      <a href="{% url 'donations:request_list' %}" class="btn btn-primary">View Status</a>
-    </div>
-  </div>
-
-  <div class="dashboard-card">
-    <span class="tile-badge">Profile</span>
-    <img src="{% static 'dashboard/profile.png' %}" alt="My Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div style="display:none; justify-content:center; align-items:center; height:180px; font-size:5rem;">👤</div>
-    <h3>My Profile</h3>
-    <p>View and edit your personal information and stats.</p>
-    <div class="cta-wrap">
-      <a href="{% url 'profile:profile' %}" class="btn btn-primary">View Profile</a>
+      <a href="{% url 'donations:my_donations' %}" class="btn btn-primary">View Status</a>
     </div>
   </div>
 </section>
+
+<!-- Recent Donations Section -->
+{% if recent_donations %}
+<section class="recent-section">
+  <div class="section-header">
+    <h2>📋 Recent Donations</h2>
+    <a href="{% url 'donations:my_donations' %}" class="view-all-link">View All →</a>
+  </div>
+
+  <div class="recent-grid">
+    {% for donation in recent_donations %}
+    <div class="recent-card">
+      <div class="recent-card-header">
+        <div class="recent-medicine-name">💊 {{ donation.name }}</div>
+        <span class="status-badge status-{{ donation.status }}">{{ donation.get_status_display }}</span>
+      </div>
+      
+      <div class="recent-card-body">
+        <div class="recent-info-row">
+          <span class="recent-label">Quantity:</span>
+          <span class="recent-value">{{ donation.quantity }}</span>
+        </div>
+        <div class="recent-info-row">
+          <span class="recent-label">Expiry:</span>
+          <span class="recent-value">{{ donation.expiry_date|date:"M j, Y" }}</span>
+        </div>
+        <div class="recent-info-row">
+          <span class="recent-label">Donated:</span>
+          <span class="recent-value">{{ donation.donated_at|timesince }} ago</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Expiring Donations Alert -->
+{% if user_critical_donations %}
+<section class="alert-section">
+  <div class="alert-box critical">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-content">
+      <h3>Critical: Medicines Expiring Soon!</h3>
+      <p>You have {{ user_critical_donations.count }} donation(s) expiring within 3 days. Please check your inventory.</p>
+      <a href="{% url 'donations:my_donations' %}" class="alert-link">View Expiring Donations →</a>
+    </div>
+  </div>
+</section>
+{% elif user_expiring_donations %}
+<section class="alert-section">
+  <div class="alert-box warning">
+    <div class="alert-icon">📅</div>
+    <div class="alert-content">
+      <h3>Upcoming Expiration</h3>
+      <p>{{ user_expiring_donations.count }} donation(s) will expire within 10 days.</p>
+      <a href="{% url 'donations:my_donations' %}" class="alert-link">View Details →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {% endblock %}

@@ -23,6 +23,6 @@ def register(request):
             first_name=first_name,
             last_name=last_name,
         )
-        return redirect("login")
+        return redirect("login:login")
 
     return render(request, "registration/register.html")

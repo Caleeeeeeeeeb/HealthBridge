@@ -39,6 +39,47 @@
     border: 1px solid #eef2f7;
   }
 
+  /* Pre-fill Notice */
+  .prefill-notice {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.4s ease;
+  }
+
+  .prefill-notice > span {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  .prefill-notice strong {
+    color: #1e40af;
+    font-weight: 800;
+  }
+
+  .prefill-notice p {
+    margin: 0.5rem 0 0 0;
+    color: #1e3a8a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .form-section {
     margin-bottom: 2.5rem;
     padding-bottom: 2.5rem;

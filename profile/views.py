@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from donations.models import Donation
+from requests.models import MedicineRequest
 
 User = get_user_model()
 
@@ -13,8 +15,8 @@ User = get_user_model()
 def profile_view(request):
     """Display user profile"""
     user = request.user
-    donations_count = user.donation_set.count() if hasattr(user, 'donation_set') else 0
-    requests_count = user.medicinerequest_set.count() if hasattr(user, 'medicinerequest_set') else 0
+    donations_count = Donation.objects.filter(donor=user).count()
+    requests_count = MedicineRequest.objects.filter(recipient=user).count()
     context = {
         'user': user,
         'donations_count': donations_count,

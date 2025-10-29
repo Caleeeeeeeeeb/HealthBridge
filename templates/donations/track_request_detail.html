@@ -1,15 +1,19 @@
 ﻿{% extends 'healthbridge_app/base.html' %}
 {% load static %}
 
-{% block title %}Request Details â€¢ HealthBridge{% endblock %}
+{% block title %}Request Details • HealthBridge{% endblock %}
 {% block nav_dashboard_active %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'donations/track_request_detail.css' %}">
+{% endblock %}
 
 {% block content %}
 
 
 <div class="detail-wrap">
-  <!-- ðŸŸ¢ Back Button -->
-  <a href="{% url 'request_list' %}" class="back-btn">
+  <!-- 🟢 Back Button -->
+  <a href="{% url 'donations:my_donations' %}" class="back-btn">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>

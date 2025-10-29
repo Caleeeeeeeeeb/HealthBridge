@@ -6,6 +6,18 @@
     <title>Login - HealthBridge</title>
     
   <link rel="stylesheet" href="{% static 'login/login.css' %}">
+  <style>
+        /* Background Blur Override */
+        .login-bg-blur {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: url("{% static 'healthbridge_app/background.png' %}") center center / cover no-repeat; 
+            filter: blur(8px) brightness(0.85);
+        }
+    </style>
 </head>
 
 <body>
@@ -15,7 +27,7 @@
     <nav>
         <div class="logo">HealthBridge</div>
         <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'landing:home' %}">Home</a></li>
             <li><a href="#">Service</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact Us</a></li>
@@ -33,9 +45,9 @@
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-    <p>Forgot your password? <a href="{% url 'password_reset' %}">Click here</a></p>
+    <p>Forgot your password? <a href="{% url 'login:password_reset' %}">Click here</a></p>
     <p>
-        Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+        Don't have an account? <a href="{% url 'registration:register' %}">Sign Up</a>
     </p>
 </body>
 </html>

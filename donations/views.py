@@ -26,7 +26,7 @@ def donate_medicine(request):
                 image=image,
             )
             messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
-            return redirect("dashboard")
+            return redirect("dashboard:dashboard")
         messages.error(request, "Please fill in all fields.")
     return render(request, "donations/donate_medicine.html")
 
@@ -54,7 +54,7 @@ def delete_donation(request, pk):
         medicine_name = donation.name
         donation.delete()
         messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
-        return redirect('dashboard')
+        return redirect('donations:my_donations')
     
     return render(request, 'donations/confirm_delete_donation.html', {'donation': donation})
 

@@ -1,15 +1,19 @@
 ﻿{% extends 'healthbridge_app/base.html' %}
 {% load static %}
 
-{% block title %}Track Requests â€¢ HealthBridge{% endblock %}
+{% block title %}Track Donations • HealthBridge{% endblock %}
 {% block nav_dashboard_active %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'donations/track_requests_list.css' %}">
+{% endblock %}
 
 {% block content %}
 
 
 <div class="list-wrap">
   <!-- Back -->
-  <a href="{% url 'dashboard' %}" class="back-btn" aria-label="Back to Dashboard">
+  <a href="{% url 'dashboard:dashboard' %}" class="back-btn" aria-label="Back to Dashboard">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
     </svg>
@@ -17,7 +21,7 @@
   </a>
 
   <div class="list-head">
-    <h2>Track Requests</h2>
+    <h2>Track Donations</h2>
     <p>See the status of the medicines you donated.</p>
   </div>
 
@@ -49,8 +53,8 @@
           </div>
 
           <div class="actions">
-            <a class="btn" href="{% url 'request_detail' d.pk %}">View details</a>
-            <a class="btn btn-delete" href="{% url 'delete_donation' d.pk %}">ðŸ—‘ï¸ Delete</a>
+            <a class="btn" href="{% url 'donations:donation_detail' d.pk %}">View details</a>
+            <a class="btn btn-delete" href="{% url 'donations:delete_donation' d.pk %}">🗑️ Delete</a>
           </div>
         </div>
       {% endfor %}
@@ -58,7 +62,7 @@
   {% else %}
     <p style="text-align:center; color:#667085; margin: .5rem 0 0;">
       You don't have any donations yet.
-      <a href="{% url 'donate_medicine' %}" style="font-weight:800; color:var(--blue); text-decoration:none;">Donate now</a>
+      <a href="{% url 'donations:donate_medicine' %}" style="font-weight:800; color:var(--blue); text-decoration:none;">Donate now</a>
     </p>
   {% endif %}
 </div>
