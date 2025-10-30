@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -15,19 +15,32 @@ def donate_medicine(request):
     if request.method == "POST":
         name = request.POST.get("name")
         quantity = request.POST.get("quantity")
-        expiry_date = request.POST.get("expiry_date")
+        expiry_date_str = request.POST.get("expiry_date")
         image = request.FILES.get("image")
 
-        if name and quantity and expiry_date:
-            Donation.objects.create(
-                name=name,
-                quantity=quantity,
-                expiry_date=expiry_date,
-                donor=request.user,
-                image=image,
-            )
-            messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
-            return redirect("dashboard:dashboard")
+        if name and quantity and expiry_date_str:
+            # Validate expiry date is not in the past
+            try:
+                expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+                today = date.today()
+                
+                if expiry_date < today:
+                    messages.error(request, f"Cannot donate expired medicine. The expiry date ({expiry_date_str}) has already passed.")
+                    return render(request, "donations/donate_medicine.html")
+                
+                Donation.objects.create(
+                    name=name,
+                    quantity=quantity,
+                    expiry_date=expiry_date,
+                    donor=request.user,
+                    image=image,
+                )
+                messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
+                return redirect("dashboard:dashboard")
+            except ValueError:
+                messages.error(request, "Invalid date format. Please use a valid date.")
+                return render(request, "donations/donate_medicine.html")
+        
         messages.error(request, "Please fill in all fields.")
     return render(request, "donations/donate_medicine.html")
 

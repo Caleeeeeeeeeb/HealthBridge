@@ -6,23 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from donations.models import Donation
-from requests.models import MedicineRequest
 
 User = get_user_model()
-
-@login_required
-def profile_view(request):
-    """Display user profile"""
-    user = request.user
-    donations_count = Donation.objects.filter(donor=user).count()
-    requests_count = MedicineRequest.objects.filter(recipient=user).count()
-    context = {
-        'user': user,
-        'donations_count': donations_count,
-        'requests_count': requests_count,
-    }
-    return render(request, 'profile/profile.html', context)
 
 @login_required
 def edit_profile(request):
@@ -33,7 +18,8 @@ def edit_profile(request):
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
         user.save()
-        return redirect('profile:profile')
+        messages.success(request, "✅ Profile updated successfully.")
+        return redirect('dashboard:dashboard')
     return render(request, 'profile/edit_profile.html', {'user': request.user})
 
 #change pass
