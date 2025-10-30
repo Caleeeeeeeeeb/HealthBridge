@@ -349,3 +349,149 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Expiry Date Range Filter Styles */
+.filter-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.filter-header {
+  margin-bottom: 1rem;
+}
+
+.filter-header h3 {
+  margin: 0;
+  color: var(--blue);
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-inputs {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.date-input-group label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.date-input {
+  padding: 0.65rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.filter-btn {
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.apply-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.apply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.reset-btn {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.reset-btn:hover {
+  background: #e0e0e0;
+}
+
+.filter-status {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  font-weight: 600;
+  animation: slideIn 0.3s ease;
+}
+
+.filter-status.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #4caf50;
+}
+
+.filter-status.error {
+  background: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #f44336;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsive for filter */
+@media (max-width: 768px) {
+  .filter-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-input-group {
+    min-width: 100%;
+  }
+  
+  .filter-btn {
+    width: 100%;
+  }
+}

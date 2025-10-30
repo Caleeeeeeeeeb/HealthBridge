@@ -27,6 +27,60 @@
     <p>Browse available medicines donated by our community</p>
   </div>
 
+  <!-- Expiry Date Range Filter -->
+  <div class="filter-section">
+    <form method="get" action="{% url 'donations:medicine_search' %}" class="filter-form">
+      <div class="filter-header">
+        <h3>📅 Filter by Expiry Date</h3>
+      </div>
+      
+      <div class="filter-inputs">
+        <div class="date-input-group">
+          <label for="start_date">From:</label>
+          <input 
+            type="date" 
+            id="start_date" 
+            name="start_date" 
+            value="{{ start_date }}"
+            class="date-input"
+          >
+        </div>
+        
+        <div class="date-input-group">
+          <label for="end_date">To:</label>
+          <input 
+            type="date" 
+            id="end_date" 
+            name="end_date" 
+            value="{{ end_date }}"
+            class="date-input"
+          >
+        </div>
+        
+        <button type="submit" class="filter-btn apply-btn">Apply Filter</button>
+        <a href="{% url 'donations:medicine_search' %}" class="filter-btn reset-btn">Reset</a>
+      </div>
+      
+      <!-- Keep search query if it exists -->
+      {% if query %}
+        <input type="hidden" name="q" value="{{ query }}">
+      {% endif %}
+    </form>
+    
+    <!-- Filter Status Messages -->
+    {% if filter_message %}
+      <div class="filter-status success">
+        ✓ {{ filter_message }}
+      </div>
+    {% endif %}
+    
+    {% if filter_error %}
+      <div class="filter-status error">
+        ⚠ {{ filter_error }}
+      </div>
+    {% endif %}
+  </div>
+
   {% if medicines %}
     <div class="medicine-grid">
       {% for med in medicines %}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -60,16 +61,52 @@ def delete_donation(request, pk):
 
 
 def medicine_search(request):
-    """Search for available medicines"""
+    """Search for available medicines with expiry date range filter"""
     query = request.GET.get('q', '').strip()
+    start_date = request.GET.get('start_date', '').strip()
+    end_date = request.GET.get('end_date', '').strip()
+    
     medicines = Donation.objects.all()
+    filter_message = None
+    filter_error = None
 
+    # Apply name search
     if query:
         medicines = medicines.filter(name__icontains=query)
 
+    # Apply expiry date range filter
+    if start_date or end_date:
+        try:
+            if start_date and end_date:
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                
+                if start > end:
+                    filter_error = "Start date cannot be after end date."
+                else:
+                    medicines = medicines.filter(expiry_date__range=[start, end])
+                    filter_message = f"Showing medicines expiring between {start_date} and {end_date}"
+            
+            elif start_date:
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                medicines = medicines.filter(expiry_date__gte=start)
+                filter_message = f"Showing medicines expiring from {start_date} onwards"
+            
+            elif end_date:
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                medicines = medicines.filter(expiry_date__lte=end)
+                filter_message = f"Showing medicines expiring up to {end_date}"
+                
+        except ValueError:
+            filter_error = "Invalid date format. Please use YYYY-MM-DD."
+
     return render(request, 'donations/medicine_search.html', {
         'medicines': medicines,
-        'query': query
+        'query': query,
+        'start_date': start_date,
+        'end_date': end_date,
+        'filter_message': filter_message,
+        'filter_error': filter_error,
     })
 
 
