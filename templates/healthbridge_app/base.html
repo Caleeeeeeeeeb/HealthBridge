@@ -44,7 +44,23 @@
       top: 0;
       z-index: 100;
     }
-    .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: .2px; }
+    
+    .logo { 
+      font-weight: 800; 
+      font-size: 1.5rem; 
+      letter-spacing: .2px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: white;
+      margin-right: 3rem;
+    }
+
+    .logo-img {
+      height: 55px;
+      width: auto;
+    }
 
     nav { display: flex; gap: 1.25rem; align-items: center; }
     nav a {
@@ -94,6 +110,28 @@
       cursor: pointer; transition: filter .15s ease, transform .08s ease;
     }
     .logout-btn:hover { filter: brightness(0.97); }
+
+    .profile-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: none;
+      padding: 0.55rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: filter .15s ease, transform .08s ease;
+      margin-left: 0.75rem;
+    }
+    .profile-icon-btn:hover {
+      filter: brightness(0.97);
+      transform: scale(1.05);
+    }
+    .profile-icon-btn img {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
 
     main { padding: 2rem 5%; }
     footer {
@@ -319,14 +357,13 @@
 </head>
 <body>
   <header>
-    <div> <img src="logo.png"> </div>
+    <div class="logo">
+      <img src="{% static 'healthbridge_app/logo.png' %}" alt="HealthBridge Logo" class="logo-img">
+    </div>
     <nav>
       {% if user.is_authenticated %}
         <a href="{% url 'dashboard:dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Donor Dashboard</a>
         <a href="{% url 'dashboard:recipient_dashboard' %}" class="{% block nav_recipient_active %}{% endblock %}">Recipient Dashboard</a>
-        <a href="{% url 'profile:profile' %}" class="{% block nav_profile_active %}{% endblock %}" style="display: flex; align-items: center; gap: 0.3rem;">
-          <span>👤</span> Profile
-        </a>
       {% endif %}
     </nav>
     
@@ -355,6 +392,11 @@
       
       <a href="{% url 'login:logout' %}">
         <button class="logout-btn">Logout</button>
+      </a>
+      <a href="{% url 'profile:profile' %}">
+        <button class="profile-icon-btn">
+          <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
+        </button>
       </a>
     {% else %}
       <a href="{% url 'login:login' %}">
