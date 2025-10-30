@@ -122,6 +122,7 @@
       cursor: pointer;
       transition: filter .15s ease, transform .08s ease;
       margin-left: 0.75rem;
+      position: relative;
     }
     .profile-icon-btn:hover {
       filter: brightness(0.97);
@@ -131,6 +132,141 @@
       width: 28px;
       height: 28px;
       display: block;
+    }
+
+    /* Profile Overlay Dropdown */
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      min-width: 320px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .profile-header {
+      background: var(--gradient);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 15px 15px 0 0;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .profile-username {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin: 0 0 0.25rem 0;
+      font-weight: 500;
+    }
+
+    .profile-email {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .profile-member-since {
+      font-size: 0.8rem;
+      opacity: 0.8;
+      margin: 0;
+      font-style: italic;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--blue);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .profile-actions {
+      padding: 1rem;
+    }
+
+    .profile-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: none;
+      background: transparent;
+      color: #333;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.2s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .profile-action-btn:hover {
+      background: #f5f5f5;
+    }
+
+    .profile-action-btn.logout-action {
+      color: #e74c3c;
+    }
+
+    .profile-action-btn.logout-action:hover {
+      background: #ffebee;
+    }
+
+    .profile-dropdown-divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 0.5rem 0;
     }
 
     main { padding: 2rem 5%; }
@@ -390,20 +526,84 @@
         </a>
       </div>
       
-      <a href="{% url 'login:logout' %}">
-        <button class="logout-btn">Logout</button>
-      </a>
-      <a href="{% url 'profile:profile' %}">
-        <button class="profile-icon-btn">
+      <!-- Profile Icon with Dropdown -->
+      <div style="position: relative;">
+        <button class="profile-icon-btn" id="profile-toggle">
           <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
         </button>
-      </a>
+        
+        <!-- Profile Dropdown Overlay -->
+        <div class="profile-dropdown" id="profile-dropdown">
+          <div class="profile-header">
+            <div class="profile-avatar">
+              👤
+            </div>
+            <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
+            <p class="profile-username">@{{ user.username }}</p>
+            <p class="profile-member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
+          </div>
+          
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-value">{{ user.donations.count }}</span>
+              <span class="stat-label">Donations</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">{{ user.medicine_requests.count }}</span>
+              <span class="stat-label">Requests</span>
+            </div>
+          </div>
+          
+          <div class="profile-actions">
+            <a href="{% url 'profile:edit_profile' %}" class="profile-action-btn">
+              <span>✏️</span>
+              <span>Edit Profile</span>
+            </a>
+            <a href="{% url 'profile:password_change' %}" class="profile-action-btn">
+              <span>🔒</span>
+              <span>Change Password</span>
+            </a>
+            <div class="profile-dropdown-divider"></div>
+            <a href="{% url 'login:logout' %}" class="profile-action-btn logout-action">
+              <span>🚪</span>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
     {% else %}
       <a href="{% url 'login:login' %}">
         <button class="logout-btn">Login</button>
       </a>
     {% endif %}
   </header>
+
+  <script>
+    // Profile Dropdown Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileToggle = document.getElementById('profile-toggle');
+      const profileDropdown = document.getElementById('profile-dropdown');
+      
+      if (profileToggle && profileDropdown) {
+        profileToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          profileDropdown.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.remove('active');
+          }
+        });
+        
+        // Prevent dropdown from closing when clicking inside it
+        profileDropdown.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
+  </script>
 
   <main>
     {% if messages %}

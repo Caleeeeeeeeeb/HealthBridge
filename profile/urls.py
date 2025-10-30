@@ -5,7 +5,6 @@ from . import views
 app_name = 'profile'
 
 urlpatterns = [
-    path('', views.profile_view, name='profile'),
     path('edit/', views.edit_profile, name='edit_profile'),
 
     # NEW: change password + success
