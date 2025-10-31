@@ -1,0 +1,29 @@
+{
+  // Disable CSS validation in HTML files (Django templates use template tags)
+  "css.validate": false,
+  "css.lint.unknownAtRules": "ignore",
+  
+  // Configure Django template language support
+  "files.associations": {
+    "**/*.html": "html",
+    "**/templates/**/*.html": "django-html"
+  },
+  
+  // Disable HTML validation for Django templates
+  "html.validate.styles": false,
+  "html.validate.scripts": false,
+  
+  // Python settings
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": false,
+  
+  // Editor settings
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  
+  // Emmet for Django templates
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  }
+}

@@ -16,7 +16,7 @@ User = get_user_model()
 
 # ---------- BASIC PAGES ----------
 def home(request):
-    return render(request, "healthbridge_app/home.html")
+    return render(request, "landing/home.html")
 
 def register(request):
     if request.method == "POST":
@@ -27,7 +27,7 @@ def register(request):
         username = email
 
         if User.objects.filter(email=email).exists():
-            return render(request, "healthbridge_app/register.html", {"error": "Email already exists"})
+            return render(request, "registration/register.html", {"error": "Email already exists"})
 
         User.objects.create_user(
             username=username,
@@ -38,7 +38,7 @@ def register(request):
         )
         return redirect("login")
 
-    return render(request, "healthbridge_app/register.html")
+    return render(request, "registration/register.html")
 
 def login_view(request):
     if request.method == "POST":
@@ -48,8 +48,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             return redirect("dashboard")
-        return render(request, "healthbridge_app/login.html", {"error": "Invalid credentials"})
-    return render(request, "healthbridge_app/login.html")
+        return render(request, "login/login.html", {"error": "Invalid credentials"})
+    return render(request, "login/login.html")
 
 def dashboard(request):
     context = {}
@@ -87,7 +87,7 @@ def dashboard(request):
                 alert_sent_at__gte=timezone.now() - timedelta(days=7)
             ).select_related('donation')[:10]
     
-    return render(request, "healthbridge_app/dashboard.html", context)
+    return render(request, "dashboard/dashboard.html", context)
 
 def logout_view(request):
     logout(request)
@@ -135,7 +135,7 @@ def medicine_search(request):
     if query:
         medicines = medicines.filter(name__icontains=query)
 
-    return render(request, 'healthbridge_app/medicine_search.html', {
+    return render(request, 'donations/medicine_search.html', {
         'medicines': medicines,
         'query': query
     })
@@ -158,87 +158,36 @@ def donate_medicine(request):
                 image=image,
             )
             messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
+            
+            # Handle AJAX requests
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True, 'message': 'Donation submitted successfully'})
+            
             return redirect("dashboard")
+        
         messages.error(request, "Please fill in all fields.")
-    return render(request, "healthbridge_app/donate_medicine.html")
+        
+        # Handle AJAX errors
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Please fill in all fields'}, status=400)
+    
+    return render(request, "donations/donate_medicine.html")
 
 # ---------- TRACKING ----------
 @login_required
 def my_donations(request):
     items = Donation.objects.filter(donor=request.user).order_by("-donated_at")
-    return render(request, "healthbridge_app/track_requests_list.html", {"items": items})
+    return render(request, "donations/track_requests_list.html", {"items": items})
 
 @login_required
 def donation_detail(request, pk: int):
     donation = get_object_or_404(Donation, pk=pk, donor=request.user)
-    return render(request, "healthbridge_app/track_request_detail.html", {"donation": donation})
+    return render(request, "donations/track_request_detail.html", {"donation": donation})
 
 
-# ---------- RECIPIENT FEATURES ----------
-@login_required
-def recipient_dashboard(request):
-    """Dashboard for recipients to view their requests and available medicines"""
-    user_requests = MedicineRequest.objects.filter(recipient=request.user)  # Use 'recipient' not 'requester'
-    
-    context = {
-        'total_requests': user_requests.count(),
-        'pending_requests': user_requests.filter(status=MedicineRequest.Status.PENDING).count(),
-        'matched_requests': user_requests.filter(status=MedicineRequest.Status.MATCHED).count(),
-        'available_medicines': Donation.objects.filter(status=Donation.Status.AVAILABLE).count(),
-        'recent_requests': user_requests.order_by('-created_at')[:5],  # Order by most recent
-    }
-    return render(request, 'healthbridge_app/recipient.html', context)
-
-
-@login_required
-def request_medicine(request):
-    """Allow recipients to request medicines"""
-    if request.method == 'POST':
-        medicine_name = request.POST.get('medicine_name', '').strip()
-        quantity_needed = request.POST.get('quantity_needed', '').strip()
-        urgency = request.POST.get('urgency', 'medium')
-        reason = request.POST.get('reason', '').strip()
-        
-        # Validation
-        if not medicine_name or not quantity_needed:
-            messages.error(request, "Please fill in all required fields.")
-            return render(request, 'healthbridge_app/request_medicine.html')
-        
-        try:
-            quantity_int = int(quantity_needed)
-            if quantity_int <= 0:
-                raise ValueError("Quantity must be positive")
-        except ValueError:
-            messages.error(request, "Please enter a valid quantity.")
-            return render(request, 'healthbridge_app/request_medicine.html')
-        
-        # Create the request using actual database field names
-        medicine_request = MedicineRequest.objects.create(
-            recipient=request.user,  # Use 'recipient' not 'requester'
-            medicine_name=medicine_name,
-            quantity=str(quantity_needed),  # Store as string (varchar in DB)
-            urgency=urgency,
-            reason=reason
-        )
-        
-        messages.success(request, f"Your request for {medicine_name} has been submitted! Tracking code: {medicine_request.tracking_code}")
-        return redirect('recipient_dashboard')
-    
-    return render(request, 'healthbridge_app/request_medicine.html')
-
-
-@login_required
-def track_medicine_requests(request):
-    """View all medicine requests made by the user"""
-    requests = MedicineRequest.objects.filter(recipient=request.user)  # Use 'recipient' not 'requester'
-    return render(request, 'healthbridge_app/track_medicine_requests.html', {'requests': requests})
-
-
-@login_required
-def medicine_request_detail(request, pk):
-    """View details of a specific medicine request"""
-    medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)  # Use 'recipient'
-    return render(request, 'healthbridge_app/medicine_request_detail.html', {'request': medicine_request})
+# ---------- DUPLICATE FUNCTIONS - NOW HANDLED BY dashboard AND requests APPS ----------
+# recipient_dashboard, request_medicine, track_medicine_requests, medicine_request_detail
+# are now handled in their respective apps (dashboard/views.py and requests/views.py)
 
 
 @login_required
@@ -252,7 +201,7 @@ def delete_donation(request, pk):
         messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
         return redirect('dashboard')
     
-    return render(request, 'healthbridge_app/confirm_delete_donation.html', {'donation': donation})
+    return render(request, 'donations/confirm_delete_donation.html', {'donation': donation})
 
 
 @login_required
@@ -266,19 +215,19 @@ def delete_medicine_request(request, pk):
         messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
         return redirect('track_medicine_requests')
     
-    return render(request, 'healthbridge_app/confirm_delete_request.html', {'medicine_request': medicine_request})
+    return render(request, 'requests/confirm_delete_request.html', {'medicine_request': medicine_request})
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'healthbridge_app/password_reset.html'
-    email_template_name = 'healthbridge_app/password_reset_email.html'
+    template_name = 'login/password_reset.html'
+    email_template_name = 'login/password_reset_email.html'
     success_url = '/password-reset-done/'
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
-    template_name = 'healthbridge_app/password_reset_done.html'
+    template_name = 'login/password_reset_done.html'
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'healthbridge_app/password_reset_confirm.html'
+    template_name = 'login/password_reset_confirm.html'
     success_url = '/password-reset-complete/'
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
-    template_name = 'healthbridge_app/password_reset_complete.html'
+    template_name = 'login/password_reset_complete.html'
