@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
 
 from .models import MedicineRequest
 from donations.models import Donation
@@ -26,6 +27,11 @@ def request_medicine(request):
         # Validation
         if not medicine_name or not quantity_needed:
             messages.error(request, "Please fill in all required fields.")
+            
+            # Handle AJAX errors
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'Please fill in all required fields'}, status=400)
+            
             return render(request, 'requests/request_medicine.html', {'prefill_data': prefill_data})
         
         try:
@@ -34,6 +40,11 @@ def request_medicine(request):
                 raise ValueError("Quantity must be positive")
         except ValueError:
             messages.error(request, "Please enter a valid quantity.")
+            
+            # Handle AJAX errors
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'Please enter a valid quantity'}, status=400)
+            
             return render(request, 'requests/request_medicine.html', {'prefill_data': prefill_data})
         
         # Check if user is trying to request their own donation
@@ -44,6 +55,11 @@ def request_medicine(request):
         
         if own_donation:
             messages.error(request, f"You cannot request '{medicine_name}' because you donated it yourself. You can view it in your Track Donations page.")
+            
+            # Handle AJAX errors
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'You cannot request your own donation'}, status=400)
+            
             return render(request, 'requests/request_medicine.html', {'prefill_data': prefill_data})
         
         # Create the request
@@ -56,6 +72,11 @@ def request_medicine(request):
         )
         
         messages.success(request, f"Your request for {medicine_name} has been submitted! Tracking code: {medicine_request.tracking_code}")
+        
+        # Handle AJAX requests
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': 'Request submitted successfully', 'tracking_code': medicine_request.tracking_code})
+        
         return redirect('dashboard:recipient_dashboard')
     
     return render(request, 'requests/request_medicine.html', {'prefill_data': prefill_data})

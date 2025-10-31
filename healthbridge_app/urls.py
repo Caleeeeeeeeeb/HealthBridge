@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views  # Added import for built-in auth views
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -22,14 +22,10 @@ urlpatterns = [
     path("requests/<int:pk>/", views.donation_detail, name="request_detail"),
     path("donations/<int:pk>/delete/", views.delete_donation, name="delete_donation"),
     
-    # Recipient features
-    path("recipient/", views.recipient_dashboard, name="recipient_dashboard"),
-    path("recipient/request/", views.request_medicine, name="request_medicine"),
-    path("recipient/track/", views.track_medicine_requests, name="track_medicine_requests"),
-    path("recipient/track/<int:pk>/", views.medicine_request_detail, name="medicine_request_detail"),
+    # Recipient delete function (still needed here)
     path("recipient/requests/<int:pk>/delete/", views.delete_medicine_request, name="delete_medicine_request"),
 
-    # Password reset URLs (added)
+    # Password reset URLs
     path('password-reset/', auth_views.PasswordResetView.as_view(
         template_name='healthbridge_app/password_reset.html',
         email_template_name='healthbridge_app/password_reset_email.html'
