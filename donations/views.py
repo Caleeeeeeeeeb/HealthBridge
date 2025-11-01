@@ -36,7 +36,12 @@ def donate_medicine(request):
                     image=image,
                 )
                 messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
-                return redirect("dashboard:dashboard")
+                # Redirect to appropriate dashboard based on user role
+                if request.user.is_donor:
+                    return redirect("dashboard:donor_dashboard")
+                elif request.user.is_recipient:
+                    return redirect("dashboard:recipient_dashboard")
+                return redirect("select_role")
             except ValueError:
                 messages.error(request, "Invalid date format. Please use a valid date.")
                 return render(request, "donations/donate_medicine.html")
@@ -155,3 +160,17 @@ def medicine_autocomplete(request):
     cache.set(cache_key, suggestions, 300)
     
     return JsonResponse({'suggestions': suggestions})
+
+
+@login_required
+def delete_donation(request, donation_id):
+    """Delete a donation"""
+    if request.method == 'POST':
+        try:
+            donation = get_object_or_404(Donation, id=donation_id, donor=request.user)
+            donation.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+

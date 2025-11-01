@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from healthbridge_app import views as hb_views
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
+    
+    # Role selection (one-time for new users)
+    path('select-role/', hb_views.select_role, name='select_role'),
     
     # Modular apps
     path('', include('landing.urls')),  # Landing page at root

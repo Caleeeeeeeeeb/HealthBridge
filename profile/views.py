@@ -19,7 +19,12 @@ def edit_profile(request):
         user.email = request.POST.get('email', user.email)
         user.save()
         messages.success(request, "✅ Profile updated successfully.")
-        return redirect('dashboard:dashboard')
+        # Redirect to appropriate dashboard based on user role
+        if request.user.is_donor:
+            return redirect('dashboard:donor_dashboard')
+        elif request.user.is_recipient:
+            return redirect('dashboard:recipient_dashboard')
+        return redirect('select_role')
     return render(request, 'profile/edit_profile.html', {'user': request.user})
 
 #change pass

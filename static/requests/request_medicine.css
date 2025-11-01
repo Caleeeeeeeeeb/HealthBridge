@@ -4,7 +4,7 @@
   }
 
   .page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     color: white;
     padding: 2.5rem 2rem;
     border-radius: 20px;
@@ -41,7 +41,7 @@
 
   /* Pre-fill Notice */
   .prefill-notice {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    background: #dbeafe;
     border: 2px solid #3b82f6;
     border-radius: 12px;
     padding: 1.2rem 1.5rem;
@@ -243,7 +243,7 @@
   }
 
   .submit-btn {
-    background: linear-gradient(135deg, var(--blue), var(--emerald));
+    background: var(--blue);
     color: white;
     padding: 1.2rem 3rem;
     border: none;

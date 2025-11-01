@@ -18,7 +18,15 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect("dashboard:dashboard")
+            # Check if user has selected their role
+            if not user.role_selected:
+                return redirect("select_role")
+            # Redirect to appropriate dashboard based on role
+            if user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            return redirect("landing:home")
         return render(request, "login/login.html", {"error": "Invalid credentials"})
     return render(request, "login/login.html")
 

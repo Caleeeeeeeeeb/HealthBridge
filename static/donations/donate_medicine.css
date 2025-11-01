@@ -60,7 +60,7 @@ form input[type="file"] {
 
 .submit-btn {
   margin-top: 1.6rem;
-  background: linear-gradient(90deg, var(--blue), var(--emerald));
+  background: var(--blue);
   color: white;
   font-weight: 700;
   padding: .8rem 1.5rem;
