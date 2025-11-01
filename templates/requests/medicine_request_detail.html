@@ -1,0 +1,112 @@
+{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Request Details - {{ request.medicine_name }} - HealthBridge{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'requests/track_medicine_requests.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="track-container">
+    <!-- Back Link -->
+    {% if user.is_donor %}
+        <a href="{% url 'dashboard:donor_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    {% elif user.is_recipient %}
+        <a href="{% url 'dashboard:recipient_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    {% else %}
+        <a href="{% url 'requests:track_medicine_requests' %}" class="back-link">← Back to Requests</a>
+    {% endif %}
+
+    <!-- Request Card -->
+    <div class="request-card">
+        <!-- Header -->
+        <div class="request-header">
+            <div class="request-title">
+                <h2 class="medicine-name">{{ request.medicine_name }}</h2>
+                <span class="tracking-code">{{ request.tracking_code }}</span>
+            </div>
+            <div class="request-badges">
+                <span class="status-badge status-{{ request.status }}">
+                    {{ request.get_status_display }}
+                </span>
+                <span class="urgency-badge urgency-{{ request.urgency }}">
+                    {{ request.get_urgency_display }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Request Details -->
+        <div class="request-details">
+            <div class="detail-item">
+                <div class="detail-content">
+                    <div class="detail-label">Quantity Needed</div>
+                    <div class="detail-value">{{ request.quantity }}</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-content">
+                    <div class="detail-label">Request Date</div>
+                    <div class="detail-value">{{ request.created_at|date:"M d, Y" }}</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-content">
+                    <div class="detail-label">Last Updated</div>
+                    <div class="detail-value">{{ request.updated_at|date:"M d, Y" }}</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-content">
+                    <div class="detail-label">Days Waiting</div>
+                    <div class="detail-value">{{ request.days_since_request }} days</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reason -->
+        {% if request.reason %}
+        <div class="request-reason">
+            <div class="reason-label">Reason for Request</div>
+            <p class="reason-text">{{ request.reason }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Notes -->
+        {% if request.notes %}
+        <div class="request-reason">
+            <div class="reason-label">Additional Notes</div>
+            <p class="reason-text">{{ request.notes }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Matched Donation Info -->
+        {% if request.matched_donation %}
+        <div class="request-reason" style="border-left-color: #10b981;">
+            <div class="reason-label">Matched with Donation</div>
+            <p class="reason-text">
+                This request has been matched with a donation. 
+                You will be contacted with pickup/delivery details soon.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Footer Actions -->
+        <div class="request-footer">
+            <div class="request-date">
+                Created {{ request.created_at|date:"F d, Y" }}
+            </div>
+            <div class="request-actions">
+                {% if request.status == 'pending' %}
+                <a href="{% url 'requests:delete_medicine_request' request.pk %}" class="action-btn delete-btn">
+                    Cancel Request
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
