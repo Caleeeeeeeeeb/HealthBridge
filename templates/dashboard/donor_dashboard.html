@@ -1,0 +1,279 @@
+{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Donor Dashboard - HealthBridge{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'dashboard/donor_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Professional Donor Dashboard -->
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">Donor Dashboard</h1>
+            <p class="dashboard-subtitle">Welcome back, {{ user.first_name }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="openDonateModal()">
+                <span class="btn-icon">+</span>
+                New Donation
+            </button>
+            <button class="btn-secondary" onclick="openHistoryModal()">
+                History
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Total Donations</span>
+            </div>
+            <div class="stat-value">{{ total_donations }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Available</span>
+            </div>
+            <div class="stat-value">{{ available_donations }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Reserved</span>
+            </div>
+            <div class="stat-value">{{ reserved_donations }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Delivered</span>
+            </div>
+            <div class="stat-value">{{ delivered_donations }}</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Recent Donations Table -->
+        <div class="content-card content-card-wide">
+            <div class="card-header">
+                <h2 class="card-title">Recent Donations</h2>
+                <a href="{% url 'donations:my_donations' %}" class="link-primary">View All →</a>
+            </div>
+            <div class="card-body">
+                {% if recent_donations %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Quantity</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Donated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in recent_donations %}
+                        <tr>
+                            <td class="td-bold">{{ donation.name }}</td>
+                            <td>{{ donation.quantity }}</td>
+                            <td>{{ donation.expiry_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge badge-{{ donation.status }}">
+                                    {{ donation.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ donation.donated_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p class="empty-text">No donations yet</p>
+                    <p class="empty-subtext">Start by creating your first donation</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Pending Requests</h2>
+            </div>
+            <div class="card-body">
+                {% if matched_requests %}
+                <div class="request-list">
+                    {% for request in matched_requests %}
+                    <div class="request-item">
+                        <div class="request-info">
+                            <div class="request-name">{{ request.medicine_name }}</div>
+                            <div class="request-meta">
+                                <span class="badge badge-{{ request.urgency }}">{{ request.get_urgency_display }}</span>
+                                <span class="request-date">{{ request.created_at|date:"M d" }}</span>
+                            </div>
+                        </div>
+                        <button class="btn-secondary btn-sm">View</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state-sm">
+                    <p class="empty-text">No pending requests</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Expiring Soon Alert -->
+        {% if user_critical_donations %}
+        <div class="content-card alert-card">
+            <div class="card-header">
+                <h2 class="card-title">⚠️ Expiring Soon</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert-list">
+                    {% for donation in user_critical_donations %}
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-name">{{ donation.name }}</div>
+                            <div class="alert-date">Expires: {{ donation.expiry_date|date:"M d, Y" }}</div>
+                        </div>
+                        <span class="badge badge-critical">{{ donation.days_until_expiry }} days</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Donate Medicine Modal -->
+<div class="modal-overlay" id="donateModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Donate Medicine</h2>
+      <button class="modal-close" onclick="closeDonateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="donateForm" method="POST" action="{% url 'donations:donate_medicine' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">Medicine Name</label>
+          <input type="text" name="name" class="form-input" placeholder="Enter medicine name" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-input" placeholder="0" min="1" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Expiry Date</label>
+            <input type="date" name="expiry_date" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medicine Image (Optional)</label>
+          <input type="file" name="image" class="form-input file-input" accept="image/*">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeDonateModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Submit Donation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Donation History Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal-container modal-wide">
+    <div class="modal-header">
+      <h2 class="modal-title">Donation History</h2>
+      <button class="modal-close" onclick="closeHistoryModal()">×</button>
+    </div>
+    <div class="modal-body">
+      {% if recent_donations %}
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Medicine Name</th>
+              <th>Quantity</th>
+              <th>Expiry Date</th>
+              <th>Status</th>
+              <th>Donated On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for donation in recent_donations %}
+            <tr>
+              <td><strong>{{ donation.name }}</strong></td>
+              <td>{{ donation.quantity }}</td>
+              <td>{{ donation.expiry_date|date:"M d, Y" }}</td>
+              <td>
+                <span class="status-badge status-{{ donation.status }}">
+                  {{ donation.get_status_display }}
+                </span>
+              </td>
+              <td>{{ donation.donated_at|date:"M d, Y" }}</td>
+              <td>
+                <button class="btn-table-action">View</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="history-empty">
+        <p>No donation history found</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function openDonateModal() {
+  document.getElementById('donateModal').classList.add('active');
+}
+
+function closeDonateModal() {
+  document.getElementById('donateModal').classList.remove('active');
+}
+
+function openHistoryModal() {
+  document.getElementById('historyModal').classList.add('active');
+}
+
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('active');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('active');
+    }
+  });
+});
+</script>
+
+{% endblock %}

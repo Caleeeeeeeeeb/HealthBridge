@@ -36,7 +36,12 @@ def donate_medicine(request):
                     image=image,
                 )
                 messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
-                return redirect("dashboard:dashboard")
+                # Redirect to appropriate dashboard based on user role
+                if request.user.is_donor:
+                    return redirect("dashboard:donor_dashboard")
+                elif request.user.is_recipient:
+                    return redirect("dashboard:recipient_dashboard")
+                return redirect("select_role")
             except ValueError:
                 messages.error(request, "Invalid date format. Please use a valid date.")
                 return render(request, "donations/donate_medicine.html")

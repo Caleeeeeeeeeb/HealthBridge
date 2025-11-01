@@ -15,7 +15,13 @@
 
 
 <div class="search-container">
-  <a href="{% url 'dashboard:dashboard' %}" class="back-btn">
+  {% if user.is_donor %}
+    <a href="{% url 'dashboard:donor_dashboard' %}" class="back-btn">
+  {% elif user.is_recipient %}
+    <a href="{% url 'dashboard:recipient_dashboard' %}" class="back-btn">
+  {% else %}
+    <a href="{% url 'select_role' %}" class="back-btn">
+  {% endif %}
     ← Back to Dashboard
   </a>
 

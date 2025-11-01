@@ -11,7 +11,13 @@
 
 
 <div class="donate-container">
-  <a href="{% url 'dashboard:dashboard' %}" class="back-btn">
+  {% if user.is_donor %}
+    <a href="{% url 'dashboard:donor_dashboard' %}" class="back-btn">
+  {% elif user.is_recipient %}
+    <a href="{% url 'dashboard:recipient_dashboard' %}" class="back-btn">
+  {% else %}
+    <a href="{% url 'select_role' %}" class="back-btn">
+  {% endif %}
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>

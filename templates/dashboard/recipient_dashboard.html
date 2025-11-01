@@ -1,0 +1,293 @@
+{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Recipient Dashboard - HealthBridge{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'dashboard/recipient_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Professional Recipient Dashboard -->
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">Recipient Dashboard</h1>
+            <p class="dashboard-subtitle">Welcome back, {{ user.first_name }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="openRequestModal()">
+                <span class="btn-icon">+</span>
+                New Request
+            </button>
+            <button class="btn-secondary" onclick="openHistoryModal()">
+                History
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Total Requests</span>
+            </div>
+            <div class="stat-value">{{ total_requests }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-value">{{ pending_requests }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Fulfilled</span>
+            </div>
+            <div class="stat-value">{{ fulfilled_requests }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-label">Available Medicines</span>
+            </div>
+            <div class="stat-value">{{ available_medicines_count }}</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- My Requests Table -->
+        <div class="content-card content-card-wide">
+            <div class="card-header">
+                <h2 class="card-title">My Requests</h2>
+                <a href="{% url 'requests:track_medicine_requests' %}" class="link-primary">View All →</a>
+            </div>
+            <div class="card-body">
+                {% if recent_requests %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Quantity</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Requested</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in recent_requests %}
+                        <tr>
+                            <td class="td-bold">{{ request.medicine_name }}</td>
+                            <td>{{ request.quantity }}</td>
+                            <td>
+                                <span class="badge badge-{{ request.urgency }}">
+                                    {{ request.get_urgency_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ request.status }}">
+                                    {{ request.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ request.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p class="empty-text">No requests yet</p>
+                    <p class="empty-subtext">Start by creating your first request</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Available Medicines -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Available Medicines</h2>
+            </div>
+            <div class="card-body">
+                {% if available_medicines %}
+                <div class="medicine-list">
+                    {% for medicine in available_medicines %}
+                    <div class="medicine-item">
+                        <div class="medicine-info">
+                            <div class="medicine-name">{{ medicine.name }}</div>
+                            <div class="medicine-meta">
+                                <span class="medicine-qty">Qty: {{ medicine.quantity }}</span>
+                                <span class="medicine-exp">Exp: {{ medicine.expiry_date|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="window.location.href='{% url 'requests:request_medicine' %}?medicine={{ medicine.name }}'">Request</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state-sm">
+                    <p class="empty-text">No medicines available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Claimed Medicines -->
+        {% if claimed_medicines %}
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Claimed Medicines</h2>
+            </div>
+            <div class="card-body">
+                <div class="claimed-list">
+                    {% for claimed in claimed_medicines %}
+                    <div class="claimed-item">
+                        <div class="claimed-info">
+                            <div class="claimed-name">{{ claimed.medicine_name }}</div>
+                            <div class="claimed-date">Claimed: {{ claimed.claimed_at|date:"M d, Y" }}</div>
+                        </div>
+                        <span class="badge badge-success">✓ Claimed</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Request Medicine Modal -->
+<div class="modal-overlay" id="requestModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Request Medicine</h2>
+      <button class="modal-close" onclick="closeRequestModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="requestForm" method="POST" action="{% url 'requests:request_medicine' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">Medicine Name</label>
+          <input type="text" name="medicine_name" class="form-input" placeholder="Enter medicine name" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-input" placeholder="0" min="1" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Urgency Level</label>
+            <select name="urgency" class="form-input" required>
+              <option value="">Select urgency</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reason (Optional)</label>
+          <textarea name="reason" class="form-input" rows="3" placeholder="Why do you need this medicine?"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeRequestModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Request History Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal-container modal-wide">
+    <div class="modal-header">
+      <h2 class="modal-title">Request History</h2>
+      <button class="modal-close" onclick="closeHistoryModal()">×</button>
+    </div>
+    <div class="modal-body">
+      {% if recent_requests %}
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Medicine Name</th>
+              <th>Quantity</th>
+              <th>Urgency</th>
+              <th>Status</th>
+              <th>Requested On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for request in recent_requests %}
+            <tr>
+              <td><strong>{{ request.medicine_name }}</strong></td>
+              <td>{{ request.quantity }}</td>
+              <td>
+                <span class="urgency-badge urgency-{{ request.urgency }}">
+                  {{ request.get_urgency_display }}
+                </span>
+              </td>
+              <td>
+                <span class="status-badge status-{{ request.status }}">
+                  {{ request.get_status_display }}
+                </span>
+              </td>
+              <td>{{ request.created_at|date:"M d, Y" }}</td>
+              <td>
+                <button class="btn-table-action">View</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="history-empty">
+        <p>No request history found</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function openRequestModal() {
+  document.getElementById('requestModal').classList.add('active');
+}
+
+function closeRequestModal() {
+  document.getElementById('requestModal').classList.remove('active');
+}
+
+function openHistoryModal() {
+  document.getElementById('historyModal').classList.add('active');
+}
+
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('active');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('active');
+    }
+  });
+});
+</script>
+
+{% endblock %}

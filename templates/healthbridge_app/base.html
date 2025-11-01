@@ -498,7 +498,13 @@
     </div>
     <nav>
       {% if user.is_authenticated %}
-        <a href="{% url 'dashboard:dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
+        {% if user.is_donor %}
+          <a href="{% url 'dashboard:donor_dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
+        {% elif user.is_recipient %}
+          <a href="{% url 'dashboard:recipient_dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
+        {% else %}
+          <a href="{% url 'select_role' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
+        {% endif %}
       {% endif %}
     </nav>
     

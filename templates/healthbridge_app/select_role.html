@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Role - HealthBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .role-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .role-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .role-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .role-icon {
+            width: 64px;
+            height: 64px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-card.selected .role-icon {
+            background: #3b82f6;
+        }
+
+        .role-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+
+        .role-description {
+            font-size: 1rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-features {
+            list-style: none;
+        }
+
+        .role-features li {
+            font-size: 0.9375rem;
+            color: #475569;
+            padding: 0.5rem 0;
+            padding-left: 1.75rem;
+            position: relative;
+        }
+
+        .role-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .notice {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .notice p {
+            color: #92400e;
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Choose Your Role</h1>
+            <p>Select how you'll be using HealthBridge. This choice is permanent.</p>
+        </div>
+
+        <div class="notice">
+            <p>⚠️ Important: Once you select your role, it cannot be changed. Choose carefully based on how you plan to use HealthBridge.</p>
+        </div>
+
+        <form method="POST" id="roleForm">
+            {% csrf_token %}
+            
+            <div class="role-cards">
+                <!-- Donor Card -->
+                <label class="role-card" for="donor">
+                    <input type="radio" name="role" value="donor" id="donor" required>
+                    <div class="role-icon">💊</div>
+                    <h3 class="role-title">Donor</h3>
+                    <p class="role-description">Share your unused medicines with those in need and make a difference in your community.</p>
+                    <ul class="role-features">
+                        <li>Donate medicines safely</li>
+                        <li>Track donation status</li>
+                        <li>Respond to requests</li>
+                        <li>View impact metrics</li>
+                    </ul>
+                </label>
+
+                <!-- Recipient Card -->
+                <label class="role-card" for="recipient">
+                    <input type="radio" name="role" value="recipient" id="recipient" required>
+                    <div class="role-icon">🏥</div>
+                    <h3 class="role-title">Recipient</h3>
+                    <p class="role-description">Access medicines you need through our community of generous donors.</p>
+                    <ul class="role-features">
+                        <li>Request needed medicines</li>
+                        <li>Browse available donations</li>
+                        <li>Track request status</li>
+                        <li>Claim received medicines</li>
+                    </ul>
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>Continue</button>
+        </form>
+    </div>
+
+    <script>
+        const roleCards = document.querySelectorAll('.role-card');
+        const radioInputs = document.querySelectorAll('input[type="radio"]');
+        const submitBtn = document.getElementById('submitBtn');
+
+        radioInputs.forEach((radio, index) => {
+            radio.addEventListener('change', function() {
+                // Remove selected class from all cards
+                roleCards.forEach(card => card.classList.remove('selected'));
+                
+                // Add selected class to chosen card
+                if (this.checked) {
+                    roleCards[index].classList.add('selected');
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+
+        // Allow clicking anywhere on the card to select
+        roleCards.forEach((card, index) => {
+            card.addEventListener('click', function() {
+                radioInputs[index].checked = true;
+                radioInputs[index].dispatchEvent(new Event('change'));
+            });
+        });
+    </script>
+</body>
+</html>

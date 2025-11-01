@@ -29,16 +29,53 @@ def register(request):
         if User.objects.filter(email=email).exists():
             return render(request, "registration/register.html", {"error": "Email already exists"})
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
         )
-        return redirect("login")
+        # Auto-login after registration
+        login(request, user)
+        # Redirect to role selection (one-time)
+        return redirect("select_role")
 
     return render(request, "registration/register.html")
+
+
+@login_required
+def select_role(request):
+    """One-time role selection for new users. Cannot be changed after selection."""
+    user = request.user
+    
+    # If role already selected, redirect to appropriate dashboard
+    if user.role_selected:
+        if user.is_donor:
+            return redirect("dashboard:donor_dashboard")
+        elif user.is_recipient:
+            return redirect("dashboard:recipient_dashboard")
+        return redirect("landing:home")
+    
+    if request.method == "POST":
+        selected_role = request.POST.get("role")
+        
+        if selected_role in [User.UserType.DONOR, User.UserType.RECIPIENT]:
+            user.user_type = selected_role
+            user.role_selected = True
+            user.save()
+            
+            messages.success(request, f"Welcome! You've successfully registered as a {user.get_user_type_display()}.")
+            
+            # Redirect to appropriate dashboard
+            if user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            else:
+                return redirect("dashboard:recipient_dashboard")
+        else:
+            messages.error(request, "Please select a valid role.")
+    
+    return render(request, "healthbridge_app/select_role.html")
 
 def login_view(request):
     if request.method == "POST":
@@ -47,7 +84,18 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect("dashboard")
+            
+            # Check if user has selected their role
+            if not user.role_selected:
+                return redirect("select_role")
+            
+            # Redirect to appropriate dashboard based on role
+            if user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            
+            return redirect("landing:home")
         return render(request, "login/login.html", {"error": "Invalid credentials"})
     return render(request, "login/login.html")
 
@@ -91,7 +139,7 @@ def dashboard(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("home")
+    return redirect("landing:home")
 
 # ---------- API ENDPOINTS ----------
 def medicine_autocomplete(request):
@@ -163,7 +211,12 @@ def donate_medicine(request):
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'success': True, 'message': 'Donation submitted successfully'})
             
-            return redirect("dashboard")
+            # Redirect to appropriate dashboard based on user role
+            if request.user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif request.user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            return redirect("select_role")
         
         messages.error(request, "Please fill in all fields.")
         
@@ -199,7 +252,12 @@ def delete_donation(request, pk):
         medicine_name = donation.name
         donation.delete()
         messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
-        return redirect('dashboard')
+        # Redirect to appropriate dashboard based on user role
+        if request.user.is_donor:
+            return redirect('dashboard:donor_dashboard')
+        elif request.user.is_recipient:
+            return redirect('dashboard:recipient_dashboard')
+        return redirect('select_role')
     
     return render(request, 'donations/confirm_delete_donation.html', {'donation': donation})
 
@@ -213,7 +271,7 @@ def delete_medicine_request(request, pk):
         medicine_name = medicine_request.medicine_name
         medicine_request.delete()
         messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
-        return redirect('track_medicine_requests')
+        return redirect('requests:track_medicine_requests')
     
     return render(request, 'requests/confirm_delete_request.html', {'medicine_request': medicine_request})
 

@@ -123,7 +123,13 @@
     </div>
     
     <div class="form-actions">
-      <a href="{% url 'dashboard:dashboard' %}" class="btn-cancel">Cancel</a>
+      {% if user.is_donor %}
+        <a href="{% url 'dashboard:donor_dashboard' %}" class="btn-cancel">Cancel</a>
+      {% elif user.is_recipient %}
+        <a href="{% url 'dashboard:recipient_dashboard' %}" class="btn-cancel">Cancel</a>
+      {% else %}
+        <a href="{% url 'select_role' %}" class="btn-cancel">Cancel</a>
+      {% endif %}
       <button type="submit" class="btn-save">💾 Save Changes</button>
     </div>
   </form>
