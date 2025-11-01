@@ -13,6 +13,7 @@
       --emerald: #2ECC71;
       --emerald-dark: #1ea35a;
       --blue: #2980B9;
+      --sky-blue: #3b9dd4; /* Professional sky blue */
 
       /* tokens used by child templates */
       --white: #ffffff;
@@ -20,14 +21,14 @@
       --text-dark: #2c3e50;
       --text-muted: #6b7280;   /* NEW */
       --dark-emerald: #127a4c; /* NEW */
-      --gradient: linear-gradient(135deg, var(--blue), var(--emerald)); /* NEW */
+      --gradient: var(--sky-blue); /* Changed to solid sky blue */
     }
 
     /* base page */
     body {
       margin: 0;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, rgba(41,128,185,0.18), rgba(46,204,113,0.18));
+      background: #f8f9fa;
       color: var(--text-dark);
     }
 
@@ -425,7 +426,7 @@
 
     .navbar-autocomplete-item:hover,
     .navbar-autocomplete-item.selected {
-      background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
+      background: #e0f2fe;
     }
 
     .navbar-autocomplete-icon {
@@ -498,39 +499,11 @@
     </div>
     <nav>
       {% if user.is_authenticated %}
-        {% if user.is_donor %}
-          <a href="{% url 'dashboard:donor_dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
-        {% elif user.is_recipient %}
-          <a href="{% url 'dashboard:recipient_dashboard' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
-        {% else %}
-          <a href="{% url 'select_role' %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
-        {% endif %}
+        <a href="{% if user.is_donor %}{% url 'dashboard:donor_dashboard' %}{% elif user.is_recipient %}{% url 'dashboard:recipient_dashboard' %}{% else %}{% url 'select_role' %}{% endif %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
       {% endif %}
     </nav>
     
     {% if user.is_authenticated %}
-      <!-- Navbar Search -->
-      <div class="navbar-search-container">
-        <form method="get" action="{% url 'donations:medicine_search' %}" class="navbar-search-form">
-          <div class="navbar-search-wrapper">
-            <span class="navbar-search-icon">🔍</span>
-            <input 
-              type="text" 
-              name="q" 
-              id="navbar-search-input"
-              class="navbar-search-input"
-              placeholder="Search medicines..."
-              autocomplete="off"
-            >
-            <div id="navbar-autocomplete-suggestions" class="navbar-autocomplete-suggestions"></div>
-          </div>
-          <button type="submit" class="navbar-search-btn">Search</button>
-        </form>
-        <a href="{% url 'donations:medicine_search' %}" class="navbar-display-all-btn">
-          <span>📋</span> Display All
-        </a>
-      </div>
-      
       <!-- Profile Icon with Dropdown -->
       <div style="position: relative;">
         <button class="profile-icon-btn" id="profile-toggle">
@@ -546,17 +519,6 @@
             <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
             <p class="profile-username">@{{ user.username }}</p>
             <p class="profile-member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
-          </div>
-          
-          <div class="profile-stats">
-            <div class="stat-item">
-              <span class="stat-value">{{ user.donations.count }}</span>
-              <span class="stat-label">Donations</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">{{ user.medicine_requests.count }}</span>
-              <span class="stat-label">Requests</span>
-            </div>
           </div>
           
           <div class="profile-actions">
@@ -633,144 +595,7 @@
       el.style.opacity = '0';
     });
   }, 3000);
-
-  // Navbar Medicine Autocomplete
-  (function() {
-    const input = document.getElementById('navbar-search-input');
-    if (!input) return; // Not on authenticated pages
-    
-    const container = document.getElementById('navbar-autocomplete-suggestions');
-    let debounceTimer = null;
-    let selectedIndex = -1;
-    let suggestions = [];
-
-    function showLoading() {
-      container.innerHTML = '<div class="navbar-autocomplete-loading">Searching medicines...</div>';
-      container.classList.add('show');
-    }
-
-    function showEmpty() {
-      container.innerHTML = '<div class="navbar-autocomplete-empty">No medicines found</div>';
-      container.classList.add('show');
-    }
-
-    function hide() {
-      container.classList.remove('show');
-      selectedIndex = -1;
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function highlightMatch(text, query) {
-      const regex = new RegExp(`(${query})`, 'gi');
-      return text.replace(regex, '<strong>$1</strong>');
-    }
-
-    function display(query) {
-      if (suggestions.length === 0) {
-        showEmpty();
-        return;
-      }
-
-      const html = suggestions.map((suggestion, index) => {
-        const highlighted = highlightMatch(escapeHtml(suggestion), escapeHtml(query));
-        return `
-          <div class="navbar-autocomplete-item" data-index="${index}" data-value="${escapeHtml(suggestion)}">
-            <span class="navbar-autocomplete-icon">💊</span>
-            <span>${highlighted}</span>
-          </div>
-        `;
-      }).join('');
-
-      container.innerHTML = html;
-      container.classList.add('show');
-
-      // Add click handlers
-      container.querySelectorAll('.navbar-autocomplete-item').forEach(item => {
-        item.addEventListener('click', () => {
-          input.value = item.dataset.value;
-          hide();
-          input.form.submit();
-        });
-      });
-    }
-
-    async function fetchSuggestions(query) {
-      if (!query || query.length < 2) {
-        hide();
-        return;
-      }
-
-      showLoading();
-
-      try {
-        const response = await fetch(`/donations/api/autocomplete/?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        suggestions = data.suggestions || [];
-        display(query);
-      } catch (error) {
-        console.error('Autocomplete error:', error);
-        hide();
-      }
-    }
-
-    // Input event
-    input.addEventListener('input', (e) => {
-      const query = e.target.value.trim();
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
-    });
-
-    // Focus event
-    input.addEventListener('focus', () => {
-      const query = input.value.trim();
-      if (query.length >= 2) {
-        fetchSuggestions(query);
-      }
-    });
-
-    // Keyboard navigation
-    input.addEventListener('keydown', (e) => {
-      const items = container.querySelectorAll('.navbar-autocomplete-item');
-      
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-        updateSelection(items);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        selectedIndex = Math.max(selectedIndex - 1, -1);
-        updateSelection(items);
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        items[selectedIndex].click();
-      } else if (e.key === 'Escape') {
-        hide();
-      }
-    });
-
-    function updateSelection(items) {
-      items.forEach((item, index) => {
-        if (index === selectedIndex) {
-          item.classList.add('selected');
-          item.scrollIntoView({ block: 'nearest' });
-        } else {
-          item.classList.remove('selected');
-        }
-      });
-    }
-
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!input.contains(e.target) && !container.contains(e.target)) {
-        hide();
-      }
-    });
-  })();
   </script>
 </body>
 </html>
+

@@ -23,7 +23,7 @@
                 New Donation
             </button>
             <button class="btn-secondary" onclick="openHistoryModal()">
-                History
+                My Donations
             </button>
         </div>
     </div>
@@ -35,13 +35,6 @@
                 <span class="stat-label">Total Donations</span>
             </div>
             <div class="stat-value">{{ total_donations }}</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-label">Available</span>
-            </div>
-            <div class="stat-value">{{ available_donations }}</div>
         </div>
 
         <div class="stat-card">
@@ -65,7 +58,7 @@
         <div class="content-card content-card-wide">
             <div class="card-header">
                 <h2 class="card-title">Recent Donations</h2>
-                <a href="{% url 'donations:my_donations' %}" class="link-primary">View All →</a>
+                <button class="link-primary" onclick="openHistoryModal()">View All →</button>
             </div>
             <div class="card-body">
                 {% if recent_donations %}
@@ -81,7 +74,7 @@
                     </thead>
                     <tbody>
                         {% for donation in recent_donations %}
-                        <tr>
+                        <tr onclick="showDonationDetails({{ donation.id }})" style="cursor: pointer;">
                             <td class="td-bold">{{ donation.name }}</td>
                             <td>{{ donation.quantity }}</td>
                             <td>{{ donation.expiry_date|date:"M d, Y" }}</td>
@@ -110,24 +103,54 @@
                 <h2 class="card-title">Pending Requests</h2>
             </div>
             <div class="card-body">
-                {% if matched_requests %}
+                {% if pending_requests %}
                 <div class="request-list">
-                    {% for request in matched_requests %}
-                    <div class="request-item">
+                    {% for request in pending_requests %}
+                    <div class="request-item" onclick="showRequestDetails({{ request.id }})" style="cursor: pointer;">
                         <div class="request-info">
                             <div class="request-name">{{ request.medicine_name }}</div>
                             <div class="request-meta">
                                 <span class="badge badge-{{ request.urgency }}">{{ request.get_urgency_display }}</span>
+                                <span class="badge badge-{{ request.status }}">{{ request.get_status_display }}</span>
                                 <span class="request-date">{{ request.created_at|date:"M d" }}</span>
                             </div>
                         </div>
-                        <button class="btn-secondary btn-sm">View</button>
+                        <button class="btn-secondary btn-sm" onclick="event.stopPropagation(); showRequestDetails({{ request.id }})">View</button>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
                 <div class="empty-state-sm">
                     <p class="empty-text">No pending requests</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Settled Requests -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">Settled Requests</h2>
+            </div>
+            <div class="card-body">
+                {% if settled_requests %}
+                <div class="request-list">
+                    {% for request in settled_requests %}
+                    <div class="request-item" onclick="showRequestDetails({{ request.id }})" style="cursor: pointer;">
+                        <div class="request-info">
+                            <div class="request-name">{{ request.medicine_name }}</div>
+                            <div class="request-meta">
+                                <span class="badge badge-success">Claimed</span>
+                                <span class="request-date">{{ request.created_at|date:"M d" }}</span>
+                            </div>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="event.stopPropagation(); showRequestDetails({{ request.id }})">View</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state-sm">
+                    <p class="empty-text">No settled requests</p>
                 </div>
                 {% endif %}
             </div>
@@ -199,6 +222,14 @@
   </div>
 </div>
 
+<!-- Notification Overlay -->
+<div id="notificationOverlay" class="notification-overlay">
+  <div class="notification-content">
+    <span class="notification-icon" id="notificationIcon"></span>
+    <span class="notification-message" id="notificationMessage"></span>
+  </div>
+</div>
+
 <!-- Donation History Modal -->
 <div class="modal-overlay" id="historyModal">
   <div class="modal-container modal-wide">
@@ -249,7 +280,125 @@
   </div>
 </div>
 
+<!-- Donation Details Modal -->
+<div class="modal-overlay" id="donationDetailsModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title" id="donationDetailsTitle">Donation Details</h2>
+      <button class="modal-close" onclick="closeDonationDetailsModal()">×</button>
+    </div>
+    <div class="modal-body" id="donationDetailsBody">
+      <div class="details-loading">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Request Details Modal -->
+<div class="modal-overlay" id="requestDetailsModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title" id="requestDetailsTitle">Request Details</h2>
+      <button class="modal-close" onclick="closeRequestDetailsModal()">×</button>
+    </div>
+    <div class="modal-body" id="requestDetailsBody">
+      <div class="details-loading">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteConfirmModal">
+  <div class="modal-container modal-small">
+    <div class="modal-header">
+      <h2 class="modal-title">Confirm Delete</h2>
+      <button class="modal-close" onclick="closeDeleteConfirmModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-message" id="deleteConfirmMessage">Are you sure you want to delete this donation? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+        <button class="btn-cancel" onclick="closeDeleteConfirmModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+// Notification System
+function showNotification(message, type = 'success') {
+  const overlay = document.getElementById('notificationOverlay');
+  const icon = document.getElementById('notificationIcon');
+  const messageEl = document.getElementById('notificationMessage');
+  const content = overlay.querySelector('.notification-content');
+  
+  // Set icon based on type
+  icon.textContent = type === 'success' ? '✅' : '❌';
+  messageEl.textContent = message;
+  
+  // Set style based on type
+  content.className = 'notification-content ' + type;
+  
+  // Show notification
+  overlay.classList.add('show');
+  
+  // Auto hide after 4 seconds
+  setTimeout(() => {
+    overlay.classList.remove('show');
+  }, 4000);
+}
+
+// Donation data
+const donationData = [
+  {% for donation in recent_donations %}
+  {
+    id: {{ donation.id }},
+    name: "{{ donation.name|escapejs }}",
+    quantity: {{ donation.quantity }},
+    expiry_date: "{{ donation.expiry_date|date:'M d, Y' }}",
+    days_until_expiry: {{ donation.days_until_expiry|default:999 }},
+    status: "{{ donation.status }}",
+    status_display: "{{ donation.get_status_display }}",
+    {% if donation.image %}image: "{{ donation.image.url }}",{% endif %}
+    tracking_code: "{{ donation.tracking_code }}",
+    donated_at: "{{ donation.donated_at|date:'M d, Y' }}"
+  },
+  {% endfor %}
+];
+
+// Request data (pending + settled)
+const requestData = [
+  {% for request in pending_requests %}
+  {
+    id: {{ request.id }},
+    medicine_name: "{{ request.medicine_name|escapejs }}",
+    quantity: {{ request.quantity }},
+    urgency: "{{ request.urgency }}",
+    urgency_display: "{{ request.get_urgency_display }}",
+    status: "{{ request.status }}",
+    status_display: "{{ request.get_status_display }}",
+    recipient_name: "{{ request.recipient.first_name }} {{ request.recipient.last_name }}",
+    created_at: "{{ request.created_at|date:'M d, Y' }}",
+    reason: "{{ request.reason|escapejs }}",
+    tracking_code: "{{ request.tracking_code }}"
+  },
+  {% endfor %}
+  {% for request in settled_requests %}
+  {
+    id: {{ request.id }},
+    medicine_name: "{{ request.medicine_name|escapejs }}",
+    quantity: {{ request.quantity }},
+    urgency: "{{ request.urgency }}",
+    urgency_display: "{{ request.get_urgency_display }}",
+    status: "{{ request.status }}",
+    status_display: "{{ request.get_status_display }}",
+    recipient_name: "{{ request.recipient.first_name }} {{ request.recipient.last_name }}",
+    created_at: "{{ request.created_at|date:'M d, Y' }}",
+    reason: "{{ request.reason|escapejs }}",
+    tracking_code: "{{ request.tracking_code }}"
+  },
+  {% endfor %}
+];
+
 function openDonateModal() {
   document.getElementById('donateModal').classList.add('active');
 }
@@ -264,6 +413,239 @@ function openHistoryModal() {
 
 function closeHistoryModal() {
   document.getElementById('historyModal').classList.remove('active');
+}
+
+function openDonationDetailsModal() {
+  document.getElementById('donationDetailsModal').classList.add('active');
+}
+
+function closeDonationDetailsModal() {
+  document.getElementById('donationDetailsModal').classList.remove('active');
+}
+
+function openRequestDetailsModal() {
+  document.getElementById('requestDetailsModal').classList.add('active');
+}
+
+function closeRequestDetailsModal() {
+  document.getElementById('requestDetailsModal').classList.remove('active');
+}
+
+function showDonationDetails(donationId) {
+  const donation = donationData.find(d => d.id === donationId);
+  if (!donation) return;
+  
+  const title = document.getElementById('donationDetailsTitle');
+  const body = document.getElementById('donationDetailsBody');
+  
+  title.textContent = donation.name;
+  
+  body.innerHTML = `
+    <div class="medicine-details-content">
+      ${donation.image ? `
+        <div class="details-image">
+          <img src="${donation.image}" alt="${donation.name}">
+        </div>
+      ` : ''}
+      <div class="details-info">
+        <div class="details-row">
+          <span class="details-label">Medicine Name:</span>
+          <span class="details-value"><strong>${donation.name}</strong></span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Quantity:</span>
+          <span class="details-value">${donation.quantity}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Expiry Date:</span>
+          <span class="details-value">${donation.expiry_date}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Days Until Expiry:</span>
+          <span class="details-value">${donation.days_until_expiry} days</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Status:</span>
+          <span class="badge badge-${donation.status}">${donation.status_display}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Donated On:</span>
+          <span class="details-value">${donation.donated_at}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Tracking Code:</span>
+          <span class="details-value"><code>${donation.tracking_code}</code></span>
+        </div>
+      </div>
+      <div class="details-actions">
+        <button class="btn-danger" onclick="deleteDonation(${donation.id})">Delete Donation</button>
+        <button class="btn-cancel" onclick="closeDonationDetailsModal()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  openDonationDetailsModal();
+}
+
+function showRequestDetails(requestId) {
+  const request = requestData.find(r => r.id === requestId);
+  if (!request) return;
+  
+  const title = document.getElementById('requestDetailsTitle');
+  const body = document.getElementById('requestDetailsBody');
+  
+  title.textContent = `Request for ${request.medicine_name}`;
+  
+  body.innerHTML = `
+    <div class="medicine-details-content">
+      <div class="details-info">
+        <div class="details-row">
+          <span class="details-label">Medicine Name:</span>
+          <span class="details-value"><strong>${request.medicine_name}</strong></span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Quantity Requested:</span>
+          <span class="details-value">${request.quantity}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Urgency:</span>
+          <span class="badge badge-${request.urgency}">${request.urgency_display}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Status:</span>
+          <span class="badge badge-${request.status}">${request.status_display}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Requested By:</span>
+          <span class="details-value">${request.recipient_name}</span>
+        </div>
+        <div class="details-row">
+          <span class="details-label">Request Date:</span>
+          <span class="details-value">${request.created_at}</span>
+        </div>
+        ${request.reason ? `
+          <div class="details-row" style="flex-direction: column; align-items: flex-start;">
+            <span class="details-label">Reason:</span>
+            <span class="details-value" style="margin-top: 0.5rem;">${request.reason}</span>
+          </div>
+        ` : ''}
+        ${request.tracking_code ? `
+          <div class="details-row">
+            <span class="details-label">Tracking Code:</span>
+            <span class="details-value"><code>${request.tracking_code}</code></span>
+          </div>
+        ` : ''}
+        ${request.status === 'claimed' ? `
+          <div class="alert-success" style="margin-top: 1rem; padding: 1rem; background: #e0e7ff; border-left: 3px solid #6366f1; border-radius: 8px;">
+            <strong>✅ Settled</strong>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">The recipient has claimed this medicine.</p>
+          </div>
+        ` : ''}
+      </div>
+      <div class="details-actions">
+        ${request.status === 'matched' ? `
+          <button class="btn-primary" onclick="deliverMedicine(${request.id})">
+            <span style="margin-right: 0.5rem;">📦</span> Deliver Medicine
+          </button>
+        ` : ''}
+        ${request.status === 'fulfilled' ? `
+          <div class="alert-success" style="padding: 0.75rem; background: #d1fae5; border-left: 3px solid #10b981; border-radius: 8px; margin-bottom: 1rem;">
+            <p style="margin: 0; font-size: 0.9rem;">Waiting for recipient to claim...</p>
+          </div>
+        ` : ''}
+        <button class="btn-cancel" onclick="closeRequestDetailsModal()">Close</button>
+      </div>
+    </div>
+  `;
+  
+  openRequestDetailsModal();
+}
+
+function deliverMedicine(requestId) {
+  if (!confirm('Mark this medicine as delivered? The recipient will be notified to claim it.')) {
+    return;
+  }
+  
+  fetch(`/requests/${requestId}/deliver/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showNotification('Medicine marked as delivered! Recipient has been notified.', 'success');
+      closeRequestDetailsModal();
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      showNotification('Error: ' + data.message, 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('An error occurred. Please try again.', 'error');
+  });
+}
+
+function openDeleteConfirmModal() {
+  document.getElementById('deleteConfirmModal').classList.add('active');
+}
+
+function closeDeleteConfirmModal() {
+  document.getElementById('deleteConfirmModal').classList.remove('active');
+}
+
+function deleteDonation(donationId) {
+  // Show confirmation modal instead of browser alert
+  openDeleteConfirmModal();
+  
+  // Set up the confirm button click handler
+  document.getElementById('confirmDeleteBtn').onclick = function() {
+    closeDeleteConfirmModal();
+    
+    // Get CSRF token
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch(`/donations/delete/${donationId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        closeDonationDetailsModal();
+        showNotification('Donation deleted successfully', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showNotification('Error deleting donation: ' + (data.error || 'Unknown error'), 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('An error occurred while deleting the donation.', 'error');
+    });
+  };
+}
+
+function filterMedicines() {
+  const input = document.getElementById('medicineSearch');
+  const filter = input.value.toLowerCase();
+  const cards = document.querySelectorAll('.medicine-card');
+  
+  cards.forEach(card => {
+    const name = card.getAttribute('data-name');
+    if (name.includes(filter)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
 }
 
 // Close modals on overlay click

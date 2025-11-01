@@ -160,3 +160,17 @@ def medicine_autocomplete(request):
     cache.set(cache_key, suggestions, 300)
     
     return JsonResponse({'suggestions': suggestions})
+
+
+@login_required
+def delete_donation(request, donation_id):
+    """Delete a donation"""
+    if request.method == 'POST':
+        try:
+            donation = get_object_or_404(Donation, id=donation_id, donor=request.user)
+            donation.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+

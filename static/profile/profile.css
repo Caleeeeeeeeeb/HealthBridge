@@ -5,7 +5,7 @@
 }
 
 .profile-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: white;
   padding: 2rem;
   border-radius: 20px;
@@ -93,7 +93,7 @@
 }
 
 .stat-box {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: #f8f9fa;
   padding: 1.5rem;
   border-radius: 14px;
   text-align: center;
@@ -122,7 +122,7 @@
 
 .btn-edit {
   flex: 1;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: white;
   padding: 1rem;
   border: none;
@@ -138,6 +138,8 @@
 
 .btn-edit:hover {
   transform: translateY(-2px);
+  background: #5568d3;
+}
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
 }
 

@@ -82,9 +82,12 @@ def donor_dashboard(request):
     
     # Donor statistics
     total_donations = Donation.objects.filter(donor=request.user).count()
-    available_donations = Donation.objects.filter(donor=request.user, status=Donation.Status.AVAILABLE).count()
     reserved_donations = Donation.objects.filter(donor=request.user, status=Donation.Status.RESERVED).count()
-    delivered_donations = Donation.objects.filter(donor=request.user, status=Donation.Status.DELIVERED).count()
+    # Count settled requests (claimed medicines) instead of donation status
+    delivered_donations = MedicineRequest.objects.filter(
+        matched_donation__donor=request.user,
+        status=MedicineRequest.Status.CLAIMED
+    ).count()
     
     # Recent donations
     recent_donations = Donation.objects.filter(donor=request.user).order_by('-donated_at')[:10]
@@ -93,20 +96,34 @@ def donor_dashboard(request):
     user_expiring = Donation.objects.expiring_within(days=10).filter(donor=request.user)
     critical_donations = user_expiring.filter(expiry_date__lte=date.today() + timedelta(days=3))
     
-    # Requests for donor's medicines
-    matched_requests = MedicineRequest.objects.filter(
-        matched_donation__donor=request.user
-    ).order_by('-created_at')[:5]
+    # Pending requests (matched but not yet claimed)
+    pending_requests = MedicineRequest.objects.filter(
+        matched_donation__donor=request.user,
+        status__in=[MedicineRequest.Status.MATCHED, MedicineRequest.Status.FULFILLED]
+    ).order_by('-created_at')[:10]
+    
+    # Settled requests (claimed by recipient)
+    settled_requests = MedicineRequest.objects.filter(
+        matched_donation__donor=request.user,
+        status=MedicineRequest.Status.CLAIMED
+    ).order_by('-created_at')[:10]
+    
+    # All available medicines for browsing (only show with quantity > 0)
+    all_available_medicines = Donation.objects.filter(
+        status=Donation.Status.AVAILABLE,
+        quantity__gt=0
+    ).order_by('-donated_at')[:50]  # Limit to 50 most recent
     
     context.update({
         'total_donations': total_donations,
-        'available_donations': available_donations,
         'reserved_donations': reserved_donations,
         'delivered_donations': delivered_donations,
         'recent_donations': recent_donations,
         'user_expiring_donations': user_expiring,
         'user_critical_donations': critical_donations,
-        'matched_requests': matched_requests,
+        'pending_requests': pending_requests,
+        'settled_requests': settled_requests,
+        'all_available_medicines': all_available_medicines,
     })
     
     return render(request, "dashboard/donor_dashboard.html", context)
@@ -125,36 +142,49 @@ def recipient_dashboard(request):
     user_requests = MedicineRequest.objects.filter(recipient=request.user)
     
     total_requests = user_requests.count()
-    pending_requests = user_requests.filter(status=MedicineRequest.Status.PENDING).count()
-    matched_requests = user_requests.filter(status=MedicineRequest.Status.MATCHED).count()
+    # Pending counter should include PENDING and MATCHED statuses
+    pending_requests = user_requests.filter(
+        status__in=[MedicineRequest.Status.PENDING, MedicineRequest.Status.MATCHED]
+    ).count()
     fulfilled_requests = user_requests.filter(status=MedicineRequest.Status.FULFILLED).count()
+    claimed_count = user_requests.filter(status=MedicineRequest.Status.CLAIMED).count()
     
-    # Available medicines
-    available_medicines = Donation.objects.filter(status=Donation.Status.AVAILABLE).order_by('expiry_date')[:10]
-    available_medicines_count = Donation.objects.filter(status=Donation.Status.AVAILABLE).count()
+    # Recently donated medicines (most recent first, only show available ones with quantity > 0)
+    available_medicines = Donation.objects.filter(
+        status=Donation.Status.AVAILABLE,
+        quantity__gt=0
+    ).order_by('-donated_at')[:3]
+    available_medicines_count = Donation.objects.filter(
+        status=Donation.Status.AVAILABLE,
+        quantity__gt=0
+    ).count()
     
-    # Recent requests
-    recent_requests = user_requests.order_by('-created_at')[:10]
+    # All available medicines for browse modal
+    all_available_medicines = Donation.objects.filter(
+        status=Donation.Status.AVAILABLE,
+        quantity__gt=0
+    ).order_by('-donated_at')[:50]
+    
+    # Recent requests (pending, matched, fulfilled only)
+    recent_requests = user_requests.filter(
+        status__in=[MedicineRequest.Status.PENDING, MedicineRequest.Status.MATCHED, MedicineRequest.Status.FULFILLED]
+    ).order_by('-created_at')[:10]
     
     # Claimed medicines
-    try:
-        from requests.models import ClaimedMedicine
-        claimed_medicines = ClaimedMedicine.objects.filter(recipient=request.user).order_by('-claimed_at')[:5]
-        total_claimed = ClaimedMedicine.objects.filter(recipient=request.user).count()
-    except:
-        claimed_medicines = []
-        total_claimed = 0
+    claimed_medicines = user_requests.filter(
+        status=MedicineRequest.Status.CLAIMED
+    ).order_by('-created_at')[:10]
     
     context.update({
         'total_requests': total_requests,
         'pending_requests': pending_requests,
-        'matched_requests': matched_requests,
         'fulfilled_requests': fulfilled_requests,
+        'claimed_count': claimed_count,
         'available_medicines': available_medicines,
+        'all_available_medicines': all_available_medicines,
         'available_medicines_count': available_medicines_count,
         'recent_requests': recent_requests,
         'claimed_medicines': claimed_medicines,
-        'total_claimed': total_claimed,
     })
     
     return render(request, "dashboard/recipient_dashboard.html", context)

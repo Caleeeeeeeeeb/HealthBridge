@@ -12,6 +12,7 @@ class MedicineRequest(models.Model):
         PENDING = "pending", "Pending"
         MATCHED = "matched", "Matched"
         FULFILLED = "fulfilled", "Fulfilled"
+        CLAIMED = "claimed", "Claimed"
         CANCELLED = "cancelled", "Cancelled"
     
     class Urgency(models.TextChoices):
