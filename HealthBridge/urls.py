@@ -16,8 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 from healthbridge_app import views as hb_views
 
 urlpatterns = [
@@ -37,6 +35,5 @@ urlpatterns = [
     path('requests/', include('requests.urls')),  # Medicine requests
 ]
 
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Note: Media files are served from Supabase Storage (cloud), not locally
+# No need for local media serving with Supabase Storage backend

@@ -265,6 +265,17 @@
         
         <input type="hidden" name="donation_id" id="donationIdInput">
         
+        <!-- Medicine Image Preview (hidden by default) -->
+        <div id="medicineImagePreview" style="display: none; margin-bottom: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 12px; border: 2px solid #e5e7eb;">
+            <img id="requestMedicineImage" src="" alt="Medicine" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+            <div>
+              <div style="font-weight: 600; color: #1f2937;" id="requestMedicineName"></div>
+              <div style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Selected Medicine</div>
+            </div>
+          </div>
+        </div>
+        
         <div class="form-group">
           <label class="form-label">Medicine Name</label>
           <input type="text" name="medicine_name" class="form-input" placeholder="Enter medicine name" required>
@@ -497,6 +508,13 @@ function openRequestModal() {
 
 function closeRequestModal() {
   document.getElementById('requestModal').classList.remove('active');
+  
+  // Hide image preview
+  const imagePreview = document.getElementById('medicineImagePreview');
+  if (imagePreview) {
+    imagePreview.style.display = 'none';
+  }
+  
   // Reset the form when closing
   const nameInput = document.querySelector('input[name="medicine_name"]');
   if (nameInput) {
@@ -742,6 +760,10 @@ function showMedicineDetails(medicineId) {
 function requestThisMedicine(medicineName, donationId) {
   closeAllMedicinesModal();
   openRequestModal();
+  
+  // Find the medicine from allMedicines array
+  const medicine = allMedicines.find(m => m.id === donationId);
+  
   // Pre-fill the medicine name and make it readonly
   const nameInput = document.querySelector('input[name="medicine_name"]');
   const donationInput = document.getElementById('donationIdInput');
@@ -755,6 +777,17 @@ function requestThisMedicine(medicineName, donationId) {
   
   if (donationInput && donationId) {
     donationInput.value = donationId;
+  }
+  
+  // Show medicine image if available
+  if (medicine && medicine.image) {
+    const imagePreview = document.getElementById('medicineImagePreview');
+    const medicineImage = document.getElementById('requestMedicineImage');
+    const medicineNameEl = document.getElementById('requestMedicineName');
+    
+    medicineImage.src = medicine.image;
+    medicineNameEl.textContent = medicine.name;
+    imagePreview.style.display = 'block';
   }
 }
 
