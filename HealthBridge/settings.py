@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',  # django-storages for custom storage backends
     
     # Core app (will keep CustomUser model here)
     'healthbridge_app',
@@ -172,9 +173,24 @@ CACHES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# 🆕 Media files (for uploaded images)
-MEDIA_URL = '/media/'  # URL path for serving media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Folder to store uploaded images
+# 🆕 Media files configuration - Supabase Storage
+MEDIA_URL = '/media/'  # Keep for backward compatibility
+
+# Supabase Storage settings
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME', 'medicine-images')
+
+# Use Supabase Storage as default file storage (Django 5.x uses STORAGES)
+STORAGES = {
+    "default": {
+        "BACKEND": "HealthBridge.supabase_storage.SupabaseStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
 # Auth redirects
 LOGIN_URL = '/login/'             # where @login_required sends unauthenticated users
 LOGIN_REDIRECT_URL = '/dashboard/'

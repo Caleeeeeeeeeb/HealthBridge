@@ -42,14 +42,14 @@ pip install --upgrade pip
 if exist requirements.txt (
     pip install -r requirements.txt
 ) else (
-    pip install django python-dotenv dj-database-url psycopg2-binary pillow
+    pip install django python-dotenv dj-database-url psycopg2-binary pillow supabase django-storages
 )
 echo.
 
 echo [5/5] Checking .env configuration...
 if exist .env (
     echo .env file found!
-    echo Please verify your DATABASE_URL and email settings.
+    echo Please verify your DATABASE_URL, email, and Supabase Storage settings.
 ) else (
     echo WARNING: .env file not found!
     echo Creating template .env file...
@@ -65,10 +65,15 @@ if exist .env (
         echo EMAIL_PORT=587
         echo EMAIL_HOST_USER=your-email@gmail.com
         echo EMAIL_HOST_PASSWORD=your-app-password
+        echo.
+        echo # Supabase Storage Configuration
+        echo SUPABASE_URL=https://your-project.supabase.co
+        echo SUPABASE_KEY=your-supabase-anon-key
+        echo SUPABASE_BUCKET_NAME=medicine-images
     ) > .env
     echo.
     echo IMPORTANT: Edit .env file with your actual credentials!
-    echo See QUICK_START.md for team credentials.
+    echo See SETUP_INSTRUCTIONS.txt for team credentials.
 )
 echo.
 
