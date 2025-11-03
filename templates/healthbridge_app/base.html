@@ -204,6 +204,13 @@
       font-style: italic;
     }
 
+    .profile-contact {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin: 0.4rem 0 0 0;
+      color: var(--text-dark);
+    }
+
     .profile-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -268,6 +275,177 @@
       height: 1px;
       background: #e0e0e0;
       margin: 0.5rem 0;
+    }
+
+    /* Modal Overlay Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.75rem;
+      color: #6b7280;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #111827;
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      font-size: 0.9375rem;
+      color: #111827;
+      transition: all 0.2s;
+      font-family: 'Segoe UI', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-cancel {
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-submit {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #1d4ed8;
+    }
+
+    .password-rules-modal {
+      list-style: none;
+      padding: 0;
+      margin: 0.75rem 0 0 0;
+      font-size: 0.8125rem;
+      color: #6b7280;
+    }
+
+    .password-rules-modal li {
+      padding: 0.375rem 0;
+      transition: color 0.2s;
+    }
+
+    .password-rules-modal li.valid {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .password-rules-modal li::before {
+      content: '○ ';
+      margin-right: 0.25rem;
+    }
+
+    .password-rules-modal li.valid::before {
+      content: '✓ ';
+      font-weight: 700;
     }
 
     main { padding: 2rem 5%; }
@@ -519,17 +697,19 @@
             <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
             <p class="profile-username">@{{ user.username }}</p>
             <p class="profile-member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
+            <p class="profile-contact">📞 {{ user.phone_number|default:"Empty" }}</p>
+            <p class="profile-contact">📍 {{ user.address|default:"Empty" }}</p>
           </div>
           
           <div class="profile-actions">
-            <a href="{% url 'profile:edit_profile' %}" class="profile-action-btn">
+            <button onclick="openEditProfileModal()" class="profile-action-btn">
               <span>✏️</span>
               <span>Edit Profile</span>
-            </a>
-            <a href="{% url 'profile:password_change' %}" class="profile-action-btn">
+            </button>
+            <button onclick="openChangePasswordModal()" class="profile-action-btn">
               <span>🔒</span>
               <span>Change Password</span>
-            </a>
+            </button>
             <div class="profile-dropdown-divider"></div>
             <a href="{% url 'login:logout' %}" class="profile-action-btn logout-action">
               <span>🚪</span>
@@ -587,6 +767,94 @@
     © 2025 HealthBridge — Building bridges in healthcare.
   </footer>
   
+  <!-- Edit Profile Modal -->
+  {% if user.is_authenticated %}
+  <div class="modal-overlay" id="editProfileModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">✏️ Edit Profile</h2>
+        <button class="modal-close" onclick="closeEditProfileModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm" method="POST" action="{% url 'profile:edit_profile' %}">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-input" value="{{ user.first_name }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-input" value="{{ user.last_name }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" value="{{ user.email }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" name="phone_number" class="form-input" value="{{ user.phone_number|default:'' }}" placeholder="+1234567890">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Address</label>
+            <textarea name="address" class="form-input" rows="3" placeholder="Enter your address">{{ user.address|default:'' }}</textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeEditProfileModal()">Cancel</button>
+            <button type="submit" class="btn-submit">💾 Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-overlay" id="changePasswordModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🔒 Change Password</h2>
+        <button class="modal-close" onclick="closeChangePasswordModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="changePasswordForm" method="POST" action="{% url 'profile:password_change' %}" onsubmit="return validatePasswordChange()">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" id="old_password" name="old_password" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" id="new_password1" name="new_password1" class="form-input" required oninput="validateNewPassword()">
+            <ul class="password-rules-modal" id="passwordRulesModal">
+              <li id="rule-length-modal">✓ At least 8 characters</li>
+              <li id="rule-capital-modal">✓ At least 1 uppercase letter</li>
+              <li id="rule-number-modal">✓ At least 1 number</li>
+              <li id="rule-special-modal">✓ At least 1 special character (!@#$%^&* etc.)</li>
+            </ul>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" id="new_password2" name="new_password2" class="form-input" required>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeChangePasswordModal()">Cancel</button>
+            <button type="submit" class="btn-submit">✅ Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  
   <script>
   // Auto-dismiss messages
   setTimeout(() => {
@@ -595,6 +863,84 @@
       el.style.opacity = '0';
     });
   }, 3000);
+
+  // Modal functions
+  function openEditProfileModal() {
+    document.getElementById('editProfileModal').classList.add('active');
+    document.getElementById('profile-dropdown').classList.remove('active');
+  }
+
+  function closeEditProfileModal() {
+    document.getElementById('editProfileModal').classList.remove('active');
+  }
+
+  function openChangePasswordModal() {
+    document.getElementById('changePasswordModal').classList.add('active');
+    document.getElementById('profile-dropdown').classList.remove('active');
+  }
+
+  function closeChangePasswordModal() {
+    document.getElementById('changePasswordModal').classList.remove('active');
+    // Reset form and validation
+    document.getElementById('changePasswordForm').reset();
+    document.querySelectorAll('.password-rules-modal li').forEach(li => {
+      li.classList.remove('valid');
+    });
+  }
+
+  function validateNewPassword() {
+    const password = document.getElementById('new_password1').value;
+    const rules = {
+      length: password.length >= 8,
+      capital: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    
+    for (const [rule, valid] of Object.entries(rules)) {
+      const element = document.getElementById(`rule-${rule}-modal`);
+      if (valid) {
+        element.classList.add('valid');
+      } else {
+        element.classList.remove('valid');
+      }
+    }
+    
+    return rules.length && rules.capital && rules.number && rules.special;
+  }
+
+  function validatePasswordChange() {
+    const password = document.getElementById('new_password1').value;
+    const confirm = document.getElementById('new_password2').value;
+    
+    const validPassword = password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!validPassword) {
+      alert('Password must meet all requirements');
+      return false;
+    }
+    
+    if (password !== confirm) {
+      alert('Passwords do not match');
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Close modals on overlay click
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+  });
   </script>
 </body>
 </html>

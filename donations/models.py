@@ -55,8 +55,8 @@ class Donation(models.Model):
         related_name="donations",
     )
 
-    # image + tracking fields
-    image = models.ImageField(upload_to='donations/', null=True, blank=True)
+    # image + tracking fields (image recommended but optional for existing data)
+    image = models.ImageField(upload_to='donations/', null=True, blank=True, help_text="Image is required for new donations")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.AVAILABLE)
     tracking_code = models.CharField(max_length=12, unique=True, editable=False)
     donated_at = models.DateTimeField(auto_now_add=True)

@@ -56,16 +56,11 @@ def create_request(request):
                         'message': f'Only {matched_donation.quantity} units available, but you requested {quantity_int}'
                     }, status=400)
                 
-                # Subtract the requested quantity from the donation
-                matched_donation.quantity -= quantity_int
-                print(f"Subtracting {quantity_int} from donation. New quantity: {matched_donation.quantity}")
-                
-                # If quantity reaches zero, mark as unavailable
-                if matched_donation.quantity <= 0:
-                    matched_donation.status = Donation.Status.DELIVERED
-                    print(f"Donation quantity is now 0 - marking as DELIVERED")
-                
+                # Don't subtract quantity yet - only when claimed
+                # Just mark as RESERVED to prevent others from requesting
+                matched_donation.status = Donation.Status.RESERVED
                 matched_donation.save()
+                print(f"Donation marked as RESERVED - quantity will be subtracted when claimed")
                 
             except Donation.DoesNotExist:
                 print(f"Donation ID {donation_id} not found or not available")
@@ -190,6 +185,18 @@ def delete_medicine_request(request, pk):
         try:
             medicine_request = get_object_or_404(MedicineRequest, pk=pk, recipient=request.user)
             medicine_name = medicine_request.medicine_name
+            
+            # If the request was matched to a donation, restore it to AVAILABLE
+            # Only restore if NOT delivered yet (if delivered, quantity was already subtracted)
+            if medicine_request.matched_donation and medicine_request.status not in [MedicineRequest.Status.FULFILLED, MedicineRequest.Status.CLAIMED]:
+                donation = medicine_request.matched_donation
+                
+                # Set donation back to AVAILABLE (quantity was never subtracted unless delivered)
+                if donation.status == Donation.Status.RESERVED:
+                    donation.status = Donation.Status.AVAILABLE
+                    donation.save()
+                    print(f"✅ Restored donation to AVAILABLE: ID={donation.id}, Status={donation.status}")
+            
             medicine_request.delete()
             
             # Check if it's an AJAX request
@@ -198,6 +205,7 @@ def delete_medicine_request(request, pk):
             
             return redirect('requests:track_medicine_requests')
         except Exception as e:
+            print(f"❌ Error deleting request: {str(e)}")
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
                 return JsonResponse({'success': False, 'error': str(e)})
             return redirect('requests:track_medicine_requests')
@@ -222,12 +230,29 @@ def deliver_medicine(request, pk):
                 'message': 'You do not have permission to deliver this medicine'
             }, status=403)
         
-        # Update statuses
+        # Subtract quantity from donation NOW (when delivered)
+        if medicine_request.matched_donation:
+            donation = medicine_request.matched_donation
+            
+            try:
+                requested_qty = int(medicine_request.quantity)
+            except (ValueError, TypeError):
+                requested_qty = 0
+            
+            # Subtract the quantity
+            donation.quantity -= requested_qty
+            print(f"✅ Delivered! Subtracting {requested_qty} from donation. New quantity: {donation.quantity}")
+            
+            # If quantity reaches zero, mark as DELIVERED
+            if donation.quantity <= 0:
+                donation.status = Donation.Status.DELIVERED
+                print(f"Donation quantity is now 0 - marking as DELIVERED")
+            
+            donation.save()
+        
+        # Update request status to fulfilled
         medicine_request.status = MedicineRequest.Status.FULFILLED
         medicine_request.save()
-        
-        # Don't change donation status - it was already handled during request creation
-        # The donation quantity was already subtracted and status only changes to DELIVERED when quantity = 0
         
         return JsonResponse({
             'success': True,
@@ -235,6 +260,7 @@ def deliver_medicine(request, pk):
         })
         
     except Exception as e:
+        print(f"❌ Error delivering medicine: {str(e)}")
         return JsonResponse({
             'success': False,
             'message': str(e)
@@ -256,7 +282,7 @@ def claim_medicine(request, pk):
                 'message': 'This medicine is not ready to be claimed yet'
             }, status=400)
         
-        # Update status to claimed
+        # Update status to claimed (quantity was already subtracted when delivered)
         medicine_request.status = MedicineRequest.Status.CLAIMED
         medicine_request.save()
         
@@ -266,6 +292,7 @@ def claim_medicine(request, pk):
         })
         
     except Exception as e:
+        print(f"❌ Error claiming medicine: {str(e)}")
         return JsonResponse({
             'success': False,
             'message': str(e)

@@ -135,7 +135,13 @@ def dashboard(request):
                 alert_sent_at__gte=timezone.now() - timedelta(days=7)
             ).select_related('donation')[:10]
     
-    return render(request, "dashboard/dashboard.html", context)
+    # Redirect to role-specific dashboard instead of unified dashboard
+    if request.user.is_donor:
+        return redirect('dashboard:donor_dashboard')
+    elif request.user.is_recipient:
+        return redirect('dashboard:recipient_dashboard')
+    else:
+        return redirect('select_role')
 
 def logout_view(request):
     logout(request)
@@ -269,6 +275,17 @@ def delete_medicine_request(request, pk):
     
     if request.method == 'POST':
         medicine_name = medicine_request.medicine_name
+        
+        # If the request was matched to a donation, restore it to AVAILABLE
+        # Only restore if NOT delivered yet (if delivered, quantity was already subtracted)
+        if medicine_request.matched_donation and medicine_request.status not in [MedicineRequest.Status.FULFILLED, MedicineRequest.Status.CLAIMED]:
+            donation = medicine_request.matched_donation
+            
+            # Set donation back to AVAILABLE (quantity was never subtracted unless delivered)
+            if donation.status == Donation.Status.RESERVED:
+                donation.status = Donation.Status.AVAILABLE
+                donation.save()
+        
         medicine_request.delete()
         messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
         return redirect('requests:track_medicine_requests')

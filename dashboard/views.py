@@ -68,7 +68,13 @@ def dashboard(request):
             alert_sent_at__gte=timezone.now() - timedelta(days=7)
         ).select_related('donation')[:10]
     
-    return render(request, "dashboard/dashboard.html", context)
+    # Redirect to role-specific dashboard instead of unified dashboard
+    if request.user.is_donor:
+        return redirect('dashboard:donor_dashboard')
+    elif request.user.is_recipient:
+        return redirect('dashboard:recipient_dashboard')
+    else:
+        return redirect('select_role')
 
 
 @login_required
