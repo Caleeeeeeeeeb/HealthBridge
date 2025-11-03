@@ -25,6 +25,8 @@ class SupabaseStorage(Storage):
         """
         Open a file from Supabase Storage.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         try:
             # Download file from Supabase
             file_data = self.client.storage.from_(self.bucket_name).download(name)
@@ -36,6 +38,8 @@ class SupabaseStorage(Storage):
         """
         Save a file to Supabase Storage.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         print(f"🔵 SupabaseStorage._save() called for: {name}")
         try:
             # Read file content
@@ -72,6 +76,8 @@ class SupabaseStorage(Storage):
         """
         Delete a file from Supabase Storage.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         try:
             self.client.storage.from_(self.bucket_name).remove([name])
         except Exception as e:
@@ -81,9 +87,12 @@ class SupabaseStorage(Storage):
         """
         Check if a file exists in Supabase Storage.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         try:
             # Try to list the file
-            files = self.client.storage.from_(self.bucket_name).list(path=os.path.dirname(name))
+            dir_path = os.path.dirname(name).replace('\\', '/')
+            files = self.client.storage.from_(self.bucket_name).list(path=dir_path)
             filename = os.path.basename(name)
             return any(file['name'] == filename for file in files)
         except Exception:
@@ -93,6 +102,8 @@ class SupabaseStorage(Storage):
         """
         Return the public URL for the file.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         try:
             # Get public URL from Supabase
             public_url = self.client.storage.from_(self.bucket_name).get_public_url(name)
@@ -105,8 +116,11 @@ class SupabaseStorage(Storage):
         """
         Return the size of a file in bytes.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        name = name.replace('\\', '/')
         try:
-            files = self.client.storage.from_(self.bucket_name).list(path=os.path.dirname(name))
+            dir_path = os.path.dirname(name).replace('\\', '/')
+            files = self.client.storage.from_(self.bucket_name).list(path=dir_path)
             filename = os.path.basename(name)
             for file in files:
                 if file['name'] == filename:
@@ -119,6 +133,8 @@ class SupabaseStorage(Storage):
         """
         List the contents of a directory.
         """
+        # Normalize path to use forward slashes for Supabase (Windows compatibility)
+        path = path.replace('\\', '/')
         try:
             files = self.client.storage.from_(self.bucket_name).list(path=path)
             directories = [f['name'] for f in files if f.get('id') is None]

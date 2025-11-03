@@ -275,6 +275,17 @@ def delete_medicine_request(request, pk):
     
     if request.method == 'POST':
         medicine_name = medicine_request.medicine_name
+        
+        # If the request was matched to a donation, restore it to AVAILABLE
+        # Only restore if NOT delivered yet (if delivered, quantity was already subtracted)
+        if medicine_request.matched_donation and medicine_request.status not in [MedicineRequest.Status.FULFILLED, MedicineRequest.Status.CLAIMED]:
+            donation = medicine_request.matched_donation
+            
+            # Set donation back to AVAILABLE (quantity was never subtracted unless delivered)
+            if donation.status == Donation.Status.RESERVED:
+                donation.status = Donation.Status.AVAILABLE
+                donation.save()
+        
         medicine_request.delete()
         messages.success(request, f'Request for "{medicine_name}" has been deleted successfully.')
         return redirect('requests:track_medicine_requests')
