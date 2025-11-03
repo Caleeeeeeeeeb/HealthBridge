@@ -17,6 +17,8 @@ def edit_profile(request):
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
+        user.phone_number = request.POST.get('phone_number', user.phone_number or '')
+        user.address = request.POST.get('address', user.address or '')
         user.save()
         messages.success(request, "✅ Profile updated successfully.")
         # Redirect to appropriate dashboard based on user role
