@@ -18,35 +18,41 @@ def donate_medicine(request):
         expiry_date_str = request.POST.get("expiry_date")
         image = request.FILES.get("image")
 
-        if name and quantity and expiry_date_str:
-            # Validate expiry date is not in the past
-            try:
-                expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
-                today = date.today()
-                
-                if expiry_date < today:
-                    messages.error(request, f"Cannot donate expired medicine. The expiry date ({expiry_date_str}) has already passed.")
-                    return render(request, "donations/donate_medicine.html")
-                
-                Donation.objects.create(
-                    name=name,
-                    quantity=quantity,
-                    expiry_date=expiry_date,
-                    donor=request.user,
-                    image=image,
-                )
-                messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
-                # Redirect to appropriate dashboard based on user role
-                if request.user.is_donor:
-                    return redirect("dashboard:donor_dashboard")
-                elif request.user.is_recipient:
-                    return redirect("dashboard:recipient_dashboard")
-                return redirect("select_role")
-            except ValueError:
-                messages.error(request, "Invalid date format. Please use a valid date.")
+        # Validate all required fields including image
+        if not all([name, quantity, expiry_date_str, image]):
+            if not image:
+                messages.error(request, "Medicine image is required. Please upload an image of the medicine.")
+            else:
+                messages.error(request, "Please fill in all required fields.")
+            return render(request, "donations/donate_medicine.html")
+
+        # Validate expiry date is not in the past
+        try:
+            expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+            today = date.today()
+            
+            if expiry_date < today:
+                messages.error(request, f"Cannot donate expired medicine. The expiry date ({expiry_date_str}) has already passed.")
                 return render(request, "donations/donate_medicine.html")
-        
-        messages.error(request, "Please fill in all fields.")
+            
+            Donation.objects.create(
+                name=name,
+                quantity=quantity,
+                expiry_date=expiry_date,
+                donor=request.user,
+                image=image,
+            )
+            messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
+            # Redirect to appropriate dashboard based on user role
+            if request.user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif request.user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            return redirect("select_role")
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use a valid date.")
+            return render(request, "donations/donate_medicine.html")
+    
     return render(request, "donations/donate_medicine.html")
 
 
@@ -71,6 +77,23 @@ def delete_donation(request, pk):
     
     if request.method == 'POST':
         medicine_name = donation.name
+        
+        # Check if anyone has requested this donation
+        has_requests = donation.matched_requests.exists()
+        
+        # Delete the image from Supabase only if no one has requested it
+        if donation.image and not has_requests:
+            try:
+                # Delete from Supabase storage
+                donation.image.delete(save=False)
+                messages.info(request, f'Image for "{medicine_name}" was also deleted from storage.')
+            except Exception as e:
+                # Log error but don't fail the deletion
+                print(f"Error deleting image from Supabase: {str(e)}")
+                messages.warning(request, f'Donation deleted, but there was an issue removing the image.')
+        elif has_requests:
+            messages.info(request, f'Image preserved because someone has requested this donation.')
+        
         donation.delete()
         messages.success(request, f'Donation "{medicine_name}" has been deleted successfully.')
         return redirect('donations:my_donations')
