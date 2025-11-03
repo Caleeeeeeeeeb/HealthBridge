@@ -235,3 +235,88 @@ p a:hover {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    nav {
+        padding: 12px 20px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    nav .logo {
+        font-size: 1.3rem;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+
+    form {
+        width: 90%;
+        max-width: 400px;
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    form h1 {
+        font-size: 1.5rem;
+    }
+
+    .tagline {
+        font-size: 12px;
+    }
+
+    input, textarea, button {
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 16px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    nav {
+        padding: 10px 15px;
+    }
+
+    nav .logo {
+        font-size: 1.2rem;
+    }
+
+    form {
+        width: 95%;
+        padding: 25px 15px;
+    }
+
+    form h1 {
+        font-size: 1.3rem;
+    }
+
+    input, textarea, button {
+        padding: 16px;
+        font-size: 16px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+}

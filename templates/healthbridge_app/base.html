@@ -456,6 +456,48 @@
 
     @media (max-width: 720px){
       main { padding: 1.25rem 4%; }
+      
+      /* Modal mobile improvements */
+      .modal-container {
+        width: 95%;
+        max-height: 95vh;
+        margin: 0.5rem;
+      }
+
+      .modal-header {
+        padding: 1rem 1.25rem;
+      }
+
+      .modal-title {
+        font-size: 1.1rem;
+      }
+
+      .modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 2rem;
+      }
+
+      .modal-body {
+        padding: 1.25rem;
+      }
+
+      .form-input, textarea.form-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.85rem;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-actions .btn,
+      .modal-actions .btn-cancel {
+        width: 100%;
+        padding: 1rem;
+        font-size: 16px;
+      }
     }
 
     /* Navbar Search Styles */

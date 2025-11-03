@@ -147,3 +147,71 @@
   font-weight: 600;
   color: #0b1220;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .detail-wrap {
+    margin: 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .back-btn {
+    position: static;
+    margin-bottom: 1rem;
+  }
+
+  .page-header h2 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .image-card,
+  .info-card {
+    padding: 1rem;
+  }
+
+  .thumb {
+    height: 200px;
+  }
+
+  .thumb img {
+    max-height: 200px;
+  }
+
+  .info-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .info-list {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-wrap {
+    margin: 0.5rem;
+    padding: 1rem 0.75rem;
+  }
+
+  .page-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .thumb {
+    height: 180px;
+  }
+
+  .info-list td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  .tracking strong {
+    font-size: 0.95rem;
+  }
+}

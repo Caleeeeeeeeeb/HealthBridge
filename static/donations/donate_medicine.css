@@ -75,3 +75,57 @@ form input[type="file"] {
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .donate-container {
+    margin: 1.5rem;
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+
+  .back-btn {
+    position: static;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  form input {
+    padding: 0.8rem;
+    font-size: 16px;
+  }
+
+  form input[type="file"] {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+
+  .submit-btn {
+    padding: 1rem;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .donate-container {
+    margin: 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  form label {
+    font-size: 14px;
+  }
+
+  form input {
+    padding: 0.9rem;
+    font-size: 16px;
+  }
+}
