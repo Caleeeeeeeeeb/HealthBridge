@@ -29,12 +29,15 @@ print(f"Loading .env from: {env_path}")  # Debug line
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY','insecure-secret-key')
+
+#real secret key
+#SECRET_KEY = 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['healthbridgeforked.onrender.com']
 
 
 # Application definition
@@ -75,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
 ]
 
 ROOT_URLCONF = 'HealthBridge.urls'
