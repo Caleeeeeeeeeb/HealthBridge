@@ -155,7 +155,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]  # Look for static files in project root
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # Cache configuration for faster autocomplete
 CACHES = {
     'default': {
