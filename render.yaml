@@ -16,7 +16,7 @@ services:
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
-        value: healthbridge.onrender.com
+        value: healthbridgeforked.onrender.com
       - key: DJANGO_SETTINGS_MODULE
         value: HealthBridge.settings
       - key: EMAIL_HOST
