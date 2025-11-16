@@ -29,15 +29,14 @@ print(f"Loading .env from: {env_path}")  # Debug line
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY','insecure-secret-key')
-
-#real secret key
-#SECRET_KEY = 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['healthbridgeforked.onrender.com']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'healthbridge.onrender.com,localhost,127.0.0.1').split(',')
+# Clean whitespace from hosts
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
 
 
 # Application definition
