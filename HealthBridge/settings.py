@@ -34,9 +34,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-e3h6v-cied4y2vt^icj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'healthbridge-sl9y.onrender.com,localhost,127.0.0.1').split(',')
+# Allow any Render.com subdomain + localhost for development
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*.onrender.com,localhost,127.0.0.1').split(',')
 # Clean whitespace from hosts
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
+
+# If running on Render, also allow the specific render URL
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
