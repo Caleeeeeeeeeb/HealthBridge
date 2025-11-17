@@ -1,4 +1,4 @@
-﻿<!-- Donate Medicine Modal -->
+﻿<!-- Donate Medicine Modal - Updated 2025-11-17 -->
 <div class="modal-overlay" id="donateModal">
   <div class="modal-container">
     <div class="modal-header">
@@ -27,8 +27,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Medicine Image (Optional)</label>
-          <input type="file" name="image" class="form-input file-input" accept="image/*">
+          <label class="form-label">Medicine Image <span style="color: #dc2626;">*</span></label>
+          <input type="file" name="image" id="medicineImage" class="form-input file-input" accept="image/*" required>
+          <small style="color: #64748b; font-size: 0.875rem;">Please upload a clear image of the medicine (required)</small>
+          <div id="imageError" style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem; display: none;">
+            ⚠️ Medicine image is required. Please upload an image of the medicine.
+          </div>
         </div>
 
         <div class="modal-actions">
@@ -40,3 +44,34 @@
   </div>
 </div>
 
+<script>
+// Add client-side validation for the donate form
+document.addEventListener('DOMContentLoaded', function() {
+  const donateForm = document.getElementById('donateForm');
+  const imageInput = document.getElementById('medicineImage');
+  const imageError = document.getElementById('imageError');
+  
+  if (donateForm) {
+    donateForm.addEventListener('submit', function(e) {
+      // Check if image is selected
+      if (!imageInput.files || imageInput.files.length === 0) {
+        e.preventDefault();
+        imageError.style.display = 'block';
+        imageInput.focus();
+        imageInput.style.borderColor = '#dc2626';
+        return false;
+      }
+      imageError.style.display = 'none';
+      imageInput.style.borderColor = '';
+    });
+    
+    // Hide error when user selects a file
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        imageError.style.display = 'none';
+        this.style.borderColor = '';
+      }
+    });
+  }
+});
+</script>
