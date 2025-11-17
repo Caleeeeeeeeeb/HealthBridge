@@ -6,6 +6,16 @@ User = get_user_model()
 
 def register(request):
     """User registration view"""
+    # Redirect authenticated users to their dashboard
+    if request.user.is_authenticated:
+        if not request.user.role_selected:
+            return redirect("select_role")
+        if request.user.is_donor:
+            return redirect("dashboard:donor_dashboard")
+        elif request.user.is_recipient:
+            return redirect("dashboard:recipient_dashboard")
+        return redirect("landing:home")
+    
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")

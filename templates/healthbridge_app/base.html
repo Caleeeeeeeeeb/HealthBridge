@@ -6,70 +6,103 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}HealthBridge{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* brand palette */
+      /* Professional Color System */
+      --primary-blue: #2563eb;
+      --primary-blue-hover: #1d4ed8;
+      --text-dark: #1e293b;
+      --text-gray: #64748b;
+      --border-color: #e2e8f0;
+      --bg-light: #f8fafc;
+      --success-green: #10b981;
+      
+      /* Legacy colors for backward compatibility */
       --emerald: #2ECC71;
       --emerald-dark: #1ea35a;
       --blue: #2980B9;
-      --sky-blue: #3b9dd4; /* Professional sky blue */
-
-      /* tokens used by child templates */
+      --sky-blue: #3b9dd4;
       --white: #ffffff;
-      --light-bg: #f4f8f9;
-      --text-dark: #2c3e50;
-      --text-muted: #6b7280;   /* NEW */
-      --dark-emerald: #127a4c; /* NEW */
-      --gradient: var(--sky-blue); /* Changed to solid sky blue */
+      --text-muted: #6b7280;
+      --dark-emerald: #127a4c;
+      --gradient: var(--sky-blue);
     }
 
     /* base page */
     body {
       margin: 0;
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f8f9fa;
       color: var(--text-dark);
     }
 
-    /* header */
+    /* Professional Header/Navbar */
     header {
-      background: var(--gradient);
-      padding: 1rem 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 0;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
     
     .logo { 
-      font-weight: 800; 
-      font-size: 1.5rem; 
-      letter-spacing: .2px;
+      font-weight: 700;
+      font-size: 1.75rem;
+      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
       text-decoration: none;
-      color: white;
+      color: var(--primary-blue);
       margin-right: 3rem;
     }
 
     .logo-img {
-      height: 55px;
+      height: 50px;
       width: auto;
     }
 
-    nav { display: flex; gap: 1.25rem; align-items: center; }
-    nav a {
-      color: white; text-decoration: none; font-weight: 600;
-      padding: .25rem 0; position: relative;
+    nav { 
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex: 1;
     }
+    
+    nav a {
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9375rem;
+      padding: 0.5rem 0;
+      position: relative;
+      transition: color 0.2s;
+    }
+    
     nav a:hover,
-    nav a.is-active { border-bottom: 2px solid white; }
+    nav a.is-active { 
+      color: var(--primary-blue);
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-blue);
+      transition: width 0.3s;
+    }
+
+    nav a:hover::after,
+    nav a.is-active::after {
+      width: 100%;
+    }
 
     /* shared button system (usable anywhere) */
     .btn {
@@ -105,34 +138,51 @@
     }
     .btn-ghost:hover { background: #f3f7fb; }
 
-    .logout-btn { /* keep route the same, just switch to .btn classes in HTML if you want */
-      background: white; color: var(--blue); border: none;
-      padding: 0.55rem 1.2rem; border-radius: 10px; font-weight: 800;
-      cursor: pointer; transition: filter .15s ease, transform .08s ease;
-    }
-    .logout-btn:hover { filter: brightness(0.97); }
-
+    /* Profile Icon Button */
     .profile-icon-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: white;
-      border: none;
-      padding: 0.55rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border-color);
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       cursor: pointer;
-      transition: filter .15s ease, transform .08s ease;
-      margin-left: 0.75rem;
-      position: relative;
+      transition: all 0.2s;
+      padding: 0;
     }
+
     .profile-icon-btn:hover {
-      filter: brightness(0.97);
+      background: var(--primary-blue);
+      border-color: var(--primary-blue);
       transform: scale(1.05);
     }
+
     .profile-icon-btn img {
       width: 28px;
       height: 28px;
-      display: block;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logout-btn {
+      background: transparent;
+      color: var(--primary-blue);
+      border: 2px solid var(--primary-blue);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .logout-btn:hover {
+      background: var(--primary-blue);
+      color: white;
+      transform: translateY(-1px);
     }
 
     /* Profile Overlay Dropdown */
@@ -141,143 +191,214 @@
       top: calc(100% + 10px);
       right: 0;
       background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      min-width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 1px rgba(0, 0, 0, 0.1);
+      min-width: 340px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
+      transform: translateY(-15px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .profile-dropdown.active {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
+    /* Elite Professional Profile Dropdown */
     .profile-header {
-      background: var(--gradient);
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-hover) 100%);
       color: white;
-      padding: 1.5rem;
-      border-radius: 15px 15px 0 0;
+      padding: 2rem 1.5rem 1.5rem;
+      border-radius: 12px 12px 0 0;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.3; }
     }
 
     .profile-avatar {
-      width: 70px;
-      height: 70px;
+      width: 80px;
+      height: 80px;
       background: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 1rem;
-      font-size: 2rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 2.25rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 1;
+      border: 4px solid rgba(255, 255, 255, 0.3);
     }
 
     .profile-name {
-      font-size: 1.3rem;
+      font-size: 1.375rem;
       font-weight: 700;
-      margin: 0 0 0.25rem 0;
+      margin: 0 0 0.375rem 0;
+      letter-spacing: -0.3px;
+      position: relative;
+      z-index: 1;
     }
 
     .profile-username {
-      font-size: 0.85rem;
-      opacity: 0.85;
-      margin: 0 0 0.25rem 0;
+      font-size: 0.875rem;
+      opacity: 0.95;
+      margin: 0;
       font-weight: 500;
-    }
-
-    .profile-email {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      margin: 0 0 0.5rem 0;
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      display: inline-block;
     }
 
     .profile-member-since {
-      font-size: 0.8rem;
-      opacity: 0.8;
-      margin: 0;
-      font-style: italic;
+      font-size: 0.8125rem;
+      opacity: 0.9;
+      margin: 0.75rem 0 0 0;
+      font-style: normal;
+      position: relative;
+      z-index: 1;
     }
 
     .profile-contact {
-      font-size: 0.85rem;
-      opacity: 0.85;
-      margin: 0.4rem 0 0 0;
-      color: var(--text-dark);
-    }
-
-    .profile-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      padding: 1.5rem;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--blue);
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: #666;
-      font-weight: 600;
+      font-size: 0.8125rem;
+      opacity: 0.9;
+      margin: 0.5rem 0 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      z-index: 1;
     }
 
     .profile-actions {
       padding: 1rem;
+      background: white;
     }
 
     .profile-action-btn {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
       width: 100%;
-      padding: 0.85rem 1rem;
+      padding: 1rem 1.125rem;
       border: none;
       background: transparent;
-      color: #333;
-      font-size: 0.95rem;
-      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 0.9375rem;
+      font-weight: 500;
       cursor: pointer;
       border-radius: 10px;
-      transition: background 0.2s ease;
+      transition: all 0.25s ease;
       text-decoration: none;
-      font-family: inherit;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      margin-bottom: 0.375rem;
+      overflow: hidden;
+    }
+
+    .profile-action-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .profile-action-btn::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--primary-blue);
+      transform: scaleY(0);
+      transition: transform 0.25s ease;
+    }
+
+    .profile-action-btn span:first-child {
+      font-size: 1.125rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
     }
 
     .profile-action-btn:hover {
-      background: #f5f5f5;
+      background: var(--bg-light);
+      transform: translateX(6px);
+    }
+
+    .profile-action-btn:hover::before {
+      transform: scaleY(1);
+    }
+
+    .profile-action-btn:hover span:first-child {
+      background: var(--primary-blue);
+      color: white;
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
     .profile-action-btn.logout-action {
-      color: #e74c3c;
+      color: #dc2626;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.25rem;
+    }
+
+    .profile-action-btn.logout-action::before {
+      background: #dc2626;
+    }
+
+    .profile-action-btn.logout-action span:first-child {
+      background: #fee2e2;
     }
 
     .profile-action-btn.logout-action:hover {
-      background: #ffebee;
+      background: #fef2f2;
+    }
+
+    .profile-action-btn.logout-action:hover span:first-child {
+      background: #dc2626;
+      color: white;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+      transform: scale(1.15) rotate(-5deg);
     }
 
     .profile-dropdown-divider {
       height: 1px;
-      background: #e0e0e0;
-      margin: 0.5rem 0;
+      background: var(--border-color);
+      margin: 0.5rem 0.75rem;
     }
 
-    /* Modal Overlay Styles */
+    /* Elite Professional Modal Overlay Styles */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -285,10 +406,17 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
       align-items: center;
       justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .modal-overlay.active {
@@ -298,11 +426,23 @@
     .modal-container {
       background: white;
       width: 90%;
-      max-width: 600px;
+      max-width: 540px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .modal-header {
@@ -310,33 +450,37 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem 2rem;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f9fafb;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-light);
     }
 
     .modal-title {
       font-size: 1.25rem;
-      font-weight: 600;
-      color: #111827;
+      font-weight: 700;
+      color: var(--text-dark);
       margin: 0;
+      letter-spacing: -0.3px;
+      font-family: 'Inter', sans-serif;
     }
 
     .modal-close {
-      background: none;
+      background: transparent;
       border: none;
-      font-size: 1.75rem;
-      color: #6b7280;
+      font-size: 1.5rem;
+      color: var(--text-gray);
       cursor: pointer;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.2s;
+      border-radius: 8px;
+      transition: all 0.2s;
     }
 
     .modal-close:hover {
-      color: #111827;
+      background: var(--border-color);
+      color: var(--text-dark);
     }
 
     .modal-body {
@@ -344,68 +488,75 @@
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
     .form-label {
       display: block;
       font-size: 0.875rem;
       font-weight: 600;
-      color: #374151;
+      color: var(--text-dark);
       margin-bottom: 0.5rem;
+      font-family: 'Inter', sans-serif;
     }
 
     .form-input {
       width: 100%;
       padding: 0.75rem 1rem;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       background: #ffffff;
       font-size: 0.9375rem;
-      color: #111827;
+      color: var(--text-dark);
       transition: all 0.2s;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', sans-serif;
       box-sizing: border-box;
     }
 
     .form-input:focus {
       outline: none;
-      border-color: #2563eb;
+      border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #94a3b8;
     }
 
     textarea.form-input {
       resize: vertical;
-      min-height: 80px;
+      min-height: 90px;
     }
 
     .modal-actions {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       justify-content: flex-end;
       margin-top: 2rem;
       padding-top: 1.5rem;
-      border-top: 1px solid #e5e7eb;
+      border-top: 1px solid var(--border-color);
     }
 
     .btn-cancel {
-      background: #f3f4f6;
-      color: #374151;
-      border: none;
+      background: white;
+      color: var(--text-dark);
+      border: 2px solid var(--border-color);
       padding: 0.75rem 1.5rem;
       border-radius: 8px;
       font-size: 0.9375rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
     }
 
     .btn-cancel:hover {
-      background: #e5e7eb;
+      background: var(--bg-light);
+      border-color: var(--text-gray);
     }
 
     .btn-submit {
-      background: #2563eb;
+      background: var(--primary-blue);
       color: white;
       border: none;
       padding: 0.75rem 1.5rem;
@@ -414,33 +565,54 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
     }
 
     .btn-submit:hover {
-      background: #1d4ed8;
+      background: var(--primary-blue-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
     }
 
     .password-rules-modal {
       list-style: none;
-      padding: 0;
+      padding: 0.75rem;
       margin: 0.75rem 0 0 0;
       font-size: 0.8125rem;
-      color: #6b7280;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
 
     .password-rules-modal li {
-      padding: 0.375rem 0;
-      transition: color 0.2s;
-    }
-
-    .password-rules-modal li.valid {
-      color: #10b981;
-      font-weight: 600;
+      padding: 0.375rem 0.5rem;
+      color: var(--text-gray);
+      transition: all 0.2s;
+      position: relative;
+      padding-left: 1.75rem;
     }
 
     .password-rules-modal li::before {
-      content: '○ ';
-      margin-right: 0.25rem;
+      content: '○';
+      position: absolute;
+      left: 0.5rem;
+      color: var(--text-gray);
+      font-weight: bold;
+    }
+
+    .password-rules-modal li.valid {
+      color: var(--success-green);
+      font-weight: 500;
+    }
+
+    .password-rules-modal li.valid::before {
+      content: '✓';
+      color: var(--success-green);
+    }
     }
 
     .password-rules-modal li.valid::before {
@@ -714,57 +886,60 @@
 </head>
 <body>
   <header>
-    <div class="logo">
-      <img src="{% static 'healthbridge_app/logo.png' %}" alt="HealthBridge Logo" class="logo-img">
-    </div>
-    <nav>
+    <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+      <div class="logo">
+        <img src="{% static 'healthbridge_app/logo.png' %}" alt="HealthBridge Logo" class="logo-img">
+        HealthBridge
+      </div>
+      <nav>
+        {% if user.is_authenticated %}
+          <a href="{% if user.is_donor %}{% url 'dashboard:donor_dashboard' %}{% elif user.is_recipient %}{% url 'dashboard:recipient_dashboard' %}{% else %}{% url 'select_role' %}{% endif %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
+        {% endif %}
+      </nav>
+      
       {% if user.is_authenticated %}
-        <a href="{% if user.is_donor %}{% url 'dashboard:donor_dashboard' %}{% elif user.is_recipient %}{% url 'dashboard:recipient_dashboard' %}{% else %}{% url 'select_role' %}{% endif %}" class="{% block nav_dashboard_active %}{% endblock %}">Dashboard</a>
-      {% endif %}
-    </nav>
-    
-    {% if user.is_authenticated %}
-      <!-- Profile Icon with Dropdown -->
-      <div style="position: relative;">
-        <button class="profile-icon-btn" id="profile-toggle">
-          <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
-        </button>
-        
-        <!-- Profile Dropdown Overlay -->
-        <div class="profile-dropdown" id="profile-dropdown">
-          <div class="profile-header">
-            <div class="profile-avatar">
-              👤
-            </div>
-            <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
-            <p class="profile-username">@{{ user.username }}</p>
-            <p class="profile-member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
-            <p class="profile-contact">📞 {{ user.phone_number|default:"Empty" }}</p>
-            <p class="profile-contact">📍 {{ user.address|default:"Empty" }}</p>
-          </div>
+        <!-- Profile Icon with Dropdown -->
+        <div style="position: relative;">
+          <button class="profile-icon-btn" id="profile-toggle">
+            <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
+          </button>
           
-          <div class="profile-actions">
-            <button onclick="openEditProfileModal()" class="profile-action-btn">
-              <span>✏️</span>
-              <span>Edit Profile</span>
-            </button>
-            <button onclick="openChangePasswordModal()" class="profile-action-btn">
-              <span>🔒</span>
-              <span>Change Password</span>
-            </button>
-            <div class="profile-dropdown-divider"></div>
-            <a href="{% url 'login:logout' %}" class="profile-action-btn logout-action">
-              <span>🚪</span>
-              <span>Logout</span>
-            </a>
+          <!-- Profile Dropdown Overlay -->
+          <div class="profile-dropdown" id="profile-dropdown">
+            <div class="profile-header">
+              <div class="profile-avatar">
+                👤
+              </div>
+              <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
+              <p class="profile-username">@{{ user.username }}</p>
+              <p class="profile-member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
+              <p class="profile-contact">📞 {{ user.phone_number|default:"Empty" }}</p>
+              <p class="profile-contact">📍 {{ user.address|default:"Empty" }}</p>
+            </div>
+            
+            <div class="profile-actions">
+              <button onclick="openEditProfileModal()" class="profile-action-btn">
+                <span>✏️</span>
+                <span>Edit Profile</span>
+              </button>
+              <button onclick="openChangePasswordModal()" class="profile-action-btn">
+                <span>🔒</span>
+                <span>Change Password</span>
+              </button>
+              <div class="profile-dropdown-divider"></div>
+              <a href="{% url 'login:logout' %}" class="profile-action-btn logout-action">
+                <span>🚪</span>
+                <span>Logout</span>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    {% else %}
-      <a href="{% url 'login:login' %}">
-        <button class="logout-btn">Login</button>
-      </a>
-    {% endif %}
+      {% else %}
+        <a href="{% url 'login:login' %}">
+          <button class="logout-btn">Login</button>
+        </a>
+      {% endif %}
+    </div>
   </header>
 
   <script>
