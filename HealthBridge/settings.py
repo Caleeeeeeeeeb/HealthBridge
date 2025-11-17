@@ -29,12 +29,14 @@ print(f"Loading .env from: {env_path}")  # Debug line
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-e3h6v-cied4y2vt^icj+c_d!v1jsx^o=fza_4$gb_2t4-jy4+j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'healthbridgeforked.onrender.com,localhost,127.0.0.1').split(',')
+# Clean whitespace from hosts
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
 
 
 # Application definition
@@ -75,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
 ]
 
 ROOT_URLCONF = 'HealthBridge.urls'
@@ -155,7 +158,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]  # Look for static files in project root
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # Cache configuration for faster autocomplete
 CACHES = {
     'default': {
