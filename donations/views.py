@@ -18,13 +18,19 @@ def donate_medicine(request):
         expiry_date_str = request.POST.get("expiry_date")
         image = request.FILES.get("image")
 
-        # Validate all required fields including image
-        if not all([name, quantity, expiry_date_str, image]):
-            if not image:
-                messages.error(request, "Medicine image is required. Please upload an image of the medicine.")
-            else:
-                messages.error(request, "Please fill in all required fields.")
-            return render(request, "donations/donate_medicine.html")
+        # Validate image is provided first
+        if not image:
+            messages.error(request, "⚠️ Medicine image is required. Please upload a clear image of the medicine to complete your donation.")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'error': 'Medicine image is required'}, status=400)
+            return redirect(request.META.get('HTTP_REFERER', 'donations:donate_medicine'))
+        
+        # Validate other required fields
+        if not all([name, quantity, expiry_date_str]):
+            messages.error(request, "Please fill in all required fields.")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+            return redirect(request.META.get('HTTP_REFERER', 'donations:donate_medicine'))
 
         # Validate expiry date is not in the past
         try:
@@ -33,7 +39,7 @@ def donate_medicine(request):
             
             if expiry_date < today:
                 messages.error(request, f"Cannot donate expired medicine. The expiry date ({expiry_date_str}) has already passed.")
-                return render(request, "donations/donate_medicine.html")
+                return redirect(request.META.get('HTTP_REFERER', 'donations:donate_medicine'))
             
             Donation.objects.create(
                 name=name,
@@ -42,7 +48,7 @@ def donate_medicine(request):
                 donor=request.user,
                 image=image,
             )
-            messages.success(request, f"Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
+            messages.success(request, f"✅ Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
             # Redirect to appropriate dashboard based on user role
             if request.user.is_donor:
                 return redirect("dashboard:donor_dashboard")
@@ -51,7 +57,7 @@ def donate_medicine(request):
             return redirect("select_role")
         except ValueError:
             messages.error(request, "Invalid date format. Please use a valid date.")
-            return render(request, "donations/donate_medicine.html")
+            return redirect(request.META.get('HTTP_REFERER', 'donations:donate_medicine'))
     
     return render(request, "donations/donate_medicine.html")
 
