@@ -6,6 +6,7 @@
 
 :root {
   --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
   --primary-green: #10b981;
   --deep-blue: #1e40af;
   --light-blue: #dbeafe;
@@ -34,66 +35,57 @@ body::before {
   z-index: -1;
 }
 
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 8%;
-  background: transparent;
-  backdrop-filter: none;
+/* Professional Navbar */
+.professional-nav {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: none;
   transition: all 0.3s;
 }
 
-nav .logo {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-nav ul {
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
   display: flex;
-  list-style: none;
-  gap: 2.5rem;
+  justify-content: space-between;
   align-items: center;
 }
 
-nav ul li a {
+.logo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
   text-decoration: none;
-  color: white;
-  font-weight: 600;
+  color: var(--text-dark);
+  font-weight: 500;
   font-size: 0.9375rem;
-  transition: color 0.3s;
+  transition: color 0.2s;
   position: relative;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-nav ul li a:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-nav ul li a::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: white;
-  transition: width 0.3s;
-}
-
-nav ul li a:hover::after {
-  width: 100%;
+.nav-links li a:hover {
+  color: var(--primary-blue);
 }
 
 .nav-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -105,50 +97,36 @@ nav ul li a:hover::after {
   cursor: pointer;
   transition: all 0.3s;
   border: none;
-}
-
-.nav-buttons button:first-child {
-  background: transparent;
-  color: white;
-  border: 2px solid white;
-}
-
-.nav-buttons button:first-child:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.nav-buttons button:last-child {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
-}
-
-.nav-buttons button:last-child:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
 }
 
 .login-btn {
-  background: rgba(59, 157, 212, 0.85) !important;
-  color: white !important;
-  border: 2px solid rgba(59, 157, 212, 1) !important;
-  padding: 0.625rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.9375rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  background: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+  padding: 0.5rem 1.25rem;
 }
 
 .login-btn:hover {
-  background: rgba(59, 157, 212, 1) !important;
-  color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 157, 212, 0.4);
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.register-btn {
+  background: var(--primary-blue);
+  color: white;
+  border: 2px solid var(--primary-blue);
+  padding: 0.5rem 1.25rem;
+}
+
+.register-btn:hover {
+  background: var(--primary-blue-hover);
+  border-color: var(--primary-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .hero-section {
@@ -472,15 +450,33 @@ nav ul li a:hover::after {
 }
 
 @media (max-width: 768px) {
-  nav ul {
-    display: none;
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
   }
+
+  .nav-links {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+
   .hero-section {
     padding: 6rem 5% 4rem;
+    flex-direction: column;
+    text-align: center;
   }
+
   .hero-text h1 {
     font-size: 2.5rem;
   }
+
   .features-section h2,
   .cta-section h2 {
     font-size: 2rem;

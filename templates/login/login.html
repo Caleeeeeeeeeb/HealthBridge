@@ -3,51 +3,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - HealthBridge</title>
-    
-  <link rel="stylesheet" href="{% static 'login/login.css' %}">
-  <style>
-        /* Background Blur Override */
-        .login-bg-blur {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: url("{% static 'healthbridge_app/background.png' %}") center center / cover no-repeat; 
-            filter: blur(8px) brightness(0.85);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'login/login.css' %}?v=3">
 </head>
 
 <body>
-    <div class="login-bg-blur"></div>
-
     <!-- Navbar -->
-    <nav>
-        <div class="logo">HealthBridge</div>
-        <ul>
-            <li><a href="{% url 'landing:home' %}">Home</a></li>
-            <li><a href="#">Service</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact Us</a></li>
-        </ul>
+    <nav class="professional-nav">
+        <div class="nav-container">
+            <div class="logo">HealthBridge</div>
+            <ul class="nav-links">
+                <li><a href="{% url 'landing:home' %}">Home</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
     </nav>
 
-    <!-- Login Form -->
-    <form name="loginForm" method="post">
-        {% csrf_token %}
-        <h1>Login</h1>
-        <p class="tagline">Your health, just a click away.</p>
-        <div id="error" class="error">{% if error %}{{ error }}{% endif %}</div>
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="card-header">
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Sign in to your HealthBridge account</p>
+            </div>
 
-        <input type="text" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    <p>Forgot your password? <a href="{% url 'login:password_reset' %}">Click here</a></p>
-    <p>
-        Don't have an account? <a href="{% url 'registration:register' %}">Sign Up</a>
-    </p>
+            {% if error %}
+            <div class="error-message">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form name="loginForm" method="post" class="login-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-footer">
+                    <a href="{% url 'login:password_reset' %}" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+
+            <div class="card-footer">
+                <p>Don't have an account? <a href="{% url 'registration:register' %}" class="signup-link">Create Account</a></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

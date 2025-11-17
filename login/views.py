@@ -13,6 +13,16 @@ User = get_user_model()
 
 def login_view(request):
     """User login view"""
+    # Redirect authenticated users to their dashboard
+    if request.user.is_authenticated:
+        if not request.user.role_selected:
+            return redirect("select_role")
+        if request.user.is_donor:
+            return redirect("dashboard:donor_dashboard")
+        elif request.user.is_recipient:
+            return redirect("dashboard:recipient_dashboard")
+        return redirect("landing:home")
+    
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -42,10 +52,34 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = 'login/password_reset.html'
     email_template_name = 'login/password_reset_email.html'
     success_url = reverse_lazy('login:password_reset_done')
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Redirect authenticated users to their dashboard
+        if request.user.is_authenticated:
+            if not request.user.role_selected:
+                return redirect("select_role")
+            if request.user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif request.user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            return redirect("landing:home")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
     template_name = 'login/password_reset_done.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Redirect authenticated users to their dashboard
+        if request.user.is_authenticated:
+            if not request.user.role_selected:
+                return redirect("select_role")
+            if request.user.is_donor:
+                return redirect("dashboard:donor_dashboard")
+            elif request.user.is_recipient:
+                return redirect("dashboard:recipient_dashboard")
+            return redirect("landing:home")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
