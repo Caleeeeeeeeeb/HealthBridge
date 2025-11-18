@@ -207,11 +207,9 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Email configuration
-# Always use SMTP backend to test email functionality
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 # Try Mailgun first (Render's recommended free option)
 if os.getenv('MAILGUN_SMTP_LOGIN'):
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.mailgun.org'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
@@ -220,6 +218,7 @@ if os.getenv('MAILGUN_SMTP_LOGIN'):
     DEFAULT_FROM_EMAIL = os.getenv('MAILGUN_SMTP_LOGIN', 'noreply@healthbridge.app')
 # Try SendGrid (alternative free option - 100 emails/day)
 elif os.getenv('SENDGRID_API_KEY'):
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
@@ -227,14 +226,25 @@ elif os.getenv('SENDGRID_API_KEY'):
     EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
     DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'noreply@healthbridge.app')
 # Gmail configuration (works locally and on Render with proper setup)
-else:
+elif os.getenv('EMAIL_HOST_USER') and os.getenv('EMAIL_HOST_PASSWORD'):
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
     EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False  # Use TLS on port 587, not SSL
     EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-    DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'noreply@healthbridge.app')
+    DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+else:
+    # Fallback - use console backend if no credentials configured
+    # This prevents crashes but emails won't actually send
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    DEFAULT_FROM_EMAIL = 'noreply@healthbridge.app'
+    print("WARNING: No email credentials configured. Using console backend.")
 
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
     

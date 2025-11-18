@@ -72,32 +72,26 @@ class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
         """Override to add error handling and logging"""
         try:
-            # Log email configuration (without password)
-            logger.info(f"Attempting to send password reset email via {settings.EMAIL_HOST}")
-            logger.info(f"Email user: {settings.EMAIL_HOST_USER}")
-            
             # Check if email is configured
             if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
                 logger.error("Email credentials not configured")
-                messages.error(
-                    self.request, 
-                    "Email service is not configured properly. Please contact support."
-                )
-                return redirect('login:password_reset')
+                # Still proceed to success page to avoid revealing user existence
+                return super().form_valid(form)
+            
+            # Log attempt (without sensitive info)
+            logger.info(f"Attempting password reset email via {settings.EMAIL_HOST}")
             
             # Try to send the email
             response = super().form_valid(form)
-            logger.info("Password reset email sent successfully")
+            logger.info("Password reset email process completed")
             return response
             
         except Exception as e:
-            # Log the full error
+            # Log the error but don't expose it to user
             logger.error(f"Password reset email failed: {str(e)}", exc_info=True)
-            messages.error(
-                self.request,
-                f"Unable to send password reset email. Error: {str(e)[:100]}. Please try again or contact support."
-            )
-            return redirect('login:password_reset')
+            # Still return success to avoid revealing if user exists
+            # The user will just not receive an email
+            return super().form_valid(form)
 
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
