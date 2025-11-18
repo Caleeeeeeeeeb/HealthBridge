@@ -9,9 +9,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.conf import settings
-from django.core.mail import send_mail
 import logging
-import threading
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
