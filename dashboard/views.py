@@ -2,9 +2,12 @@ from datetime import date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
+import logging
 
 from donations.models import Donation, ExpiryAlert
 from requests.models import MedicineRequest
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -69,11 +72,15 @@ def dashboard(request):
         ).select_related('donation')[:10]
     
     # Redirect to role-specific dashboard instead of unified dashboard
-    if request.user.is_donor:
-        return redirect('dashboard:donor_dashboard')
-    elif request.user.is_recipient:
-        return redirect('dashboard:recipient_dashboard')
-    else:
+    try:
+        if request.user.is_donor:
+            return redirect('dashboard:donor_dashboard')
+        elif request.user.is_recipient:
+            return redirect('dashboard:recipient_dashboard')
+        else:
+            return redirect('select_role')
+    except Exception as e:
+        logger.error(f"Error determining dashboard redirect: {str(e)}")
         return redirect('select_role')
 
 
@@ -81,8 +88,12 @@ def dashboard(request):
 def donor_dashboard(request):
     """Professional Donor Dashboard - View and manage medicine donations"""
     # Ensure user is a donor
-    if not request.user.is_donor:
-        return redirect('dashboard:recipient_dashboard' if request.user.is_recipient else 'select_role')
+    try:
+        if not request.user.is_donor:
+            return redirect('dashboard:recipient_dashboard' if request.user.is_recipient else 'select_role')
+    except Exception as e:
+        logger.error(f"Error checking user role in donor_dashboard: {str(e)}")
+        return redirect('select_role')
     
     context = {}
     
@@ -139,8 +150,12 @@ def donor_dashboard(request):
 def recipient_dashboard(request):
     """Professional Recipient Dashboard - View and request medicines"""
     # Ensure user is a recipient
-    if not request.user.is_recipient:
-        return redirect('dashboard:donor_dashboard' if request.user.is_donor else 'select_role')
+    try:
+        if not request.user.is_recipient:
+            return redirect('dashboard:donor_dashboard' if request.user.is_donor else 'select_role')
+    except Exception as e:
+        logger.error(f"Error checking user role in recipient_dashboard: {str(e)}")
+        return redirect('select_role')
     
     context = {}
     

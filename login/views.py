@@ -19,30 +19,53 @@ def login_view(request):
     """User login view"""
     # Redirect authenticated users to their dashboard
     if request.user.is_authenticated:
-        if not request.user.role_selected:
-            return redirect("select_role")
-        if request.user.is_donor:
-            return redirect("dashboard:donor_dashboard")
-        elif request.user.is_recipient:
-            return redirect("dashboard:recipient_dashboard")
-        return redirect("landing:home")
-    
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            # Check if user has selected their role
-            if not user.role_selected:
+        try:
+            if not request.user.role_selected:
                 return redirect("select_role")
-            # Redirect to appropriate dashboard based on role
-            if user.is_donor:
+            if request.user.is_donor:
                 return redirect("dashboard:donor_dashboard")
-            elif user.is_recipient:
+            elif request.user.is_recipient:
                 return redirect("dashboard:recipient_dashboard")
             return redirect("landing:home")
-        return render(request, "login/login.html", {"error": "Invalid credentials"})
+        except Exception as e:
+            logger.error(f"Error checking user role: {str(e)}")
+            return redirect("landing:home")
+    
+    if request.method == "POST":
+        try:
+            email = request.POST.get("email", "").strip()
+            password = request.POST.get("password", "")
+            
+            if not email or not password:
+                return render(request, "login/login.html", {"error": "Email and password are required"})
+            
+            user = authenticate(request, email=email, password=password)
+            
+            if user is not None:
+                login(request, user)
+                logger.info(f"User {user.email} logged in successfully")
+                
+                # Check if user has selected their role
+                try:
+                    if not user.role_selected:
+                        return redirect("select_role")
+                    # Redirect to appropriate dashboard based on role
+                    if user.is_donor:
+                        return redirect("dashboard:donor_dashboard")
+                    elif user.is_recipient:
+                        return redirect("dashboard:recipient_dashboard")
+                    return redirect("landing:home")
+                except Exception as e:
+                    logger.error(f"Error determining user dashboard: {str(e)}")
+                    # Fallback to home if there's an issue
+                    return redirect("landing:home")
+            else:
+                logger.warning(f"Failed login attempt for email: {email}")
+                return render(request, "login/login.html", {"error": "Invalid credentials"})
+        except Exception as e:
+            logger.error(f"Login view error: {str(e)}")
+            return render(request, "login/login.html", {"error": "An error occurred during login. Please try again."})
+    
     return render(request, "login/login.html")
 
 

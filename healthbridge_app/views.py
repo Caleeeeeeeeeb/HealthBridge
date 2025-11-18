@@ -7,11 +7,13 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.core.cache import cache
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+import logging
 
 from .models import GenericMedicine, BrandMedicine
 from donations.models import Donation
 from requests.models import MedicineRequest
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 # ---------- BASIC PAGES ----------
@@ -50,30 +52,38 @@ def select_role(request):
     user = request.user
     
     # If role already selected, redirect to appropriate dashboard
-    if user.role_selected:
-        if user.is_donor:
-            return redirect("dashboard:donor_dashboard")
-        elif user.is_recipient:
-            return redirect("dashboard:recipient_dashboard")
-        return redirect("landing:home")
-    
-    if request.method == "POST":
-        selected_role = request.POST.get("role")
-        
-        if selected_role in [User.UserType.DONOR, User.UserType.RECIPIENT]:
-            user.user_type = selected_role
-            user.role_selected = True
-            user.save()
-            
-            messages.success(request, f"Welcome! You've successfully registered as a {user.get_user_type_display()}.")
-            
-            # Redirect to appropriate dashboard
+    try:
+        if user.role_selected:
             if user.is_donor:
                 return redirect("dashboard:donor_dashboard")
-            else:
+            elif user.is_recipient:
                 return redirect("dashboard:recipient_dashboard")
-        else:
-            messages.error(request, "Please select a valid role.")
+            return redirect("landing:home")
+    except Exception as e:
+        logger.error(f"Error checking user role in select_role: {str(e)}")
+        # Continue to role selection if there's an error
+    
+    if request.method == "POST":
+        try:
+            selected_role = request.POST.get("role")
+            
+            if selected_role in [User.UserType.DONOR, User.UserType.RECIPIENT]:
+                user.user_type = selected_role
+                user.role_selected = True
+                user.save()
+                
+                messages.success(request, f"Welcome! You've successfully registered as a {user.get_user_type_display()}.")
+                
+                # Redirect to appropriate dashboard
+                if user.is_donor:
+                    return redirect("dashboard:donor_dashboard")
+                else:
+                    return redirect("dashboard:recipient_dashboard")
+            else:
+                messages.error(request, "Please select a valid role.")
+        except Exception as e:
+            logger.error(f"Error saving user role: {str(e)}")
+            messages.error(request, "An error occurred while saving your role. Please try again.")
     
     return render(request, "healthbridge_app/select_role.html")
 
