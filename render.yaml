@@ -16,16 +16,13 @@ services:
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
-        value: .onrender.com
+        value: healthbridgeforked.onrender.com
       - key: DJANGO_SETTINGS_MODULE
         value: HealthBridge.settings
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: 587
-      - key: EMAIL_HOST_USER
+      # Mailgun SMTP credentials (automatically added by Render's email add-on)
+      - key: MAILGUN_SMTP_LOGIN
         sync: false
-      - key: EMAIL_HOST_PASSWORD
+      - key: MAILGUN_SMTP_PASSWORD
         sync: false
       - key: SUPABASE_URL
         sync: false
@@ -51,13 +48,9 @@ services:
         sync: false
       - key: DJANGO_SETTINGS_MODULE
         value: HealthBridge.settings
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: 587
-      - key: EMAIL_HOST_USER
+      - key: MAILGUN_SMTP_LOGIN
         sync: false
-      - key: EMAIL_HOST_PASSWORD
+      - key: MAILGUN_SMTP_PASSWORD
         sync: false
 
   # Critical Expiry Check - Runs every 6 hours
@@ -77,13 +70,9 @@ services:
         sync: false
       - key: DJANGO_SETTINGS_MODULE
         value: HealthBridge.settings
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: 587
-      - key: EMAIL_HOST_USER
+      - key: MAILGUN_SMTP_LOGIN
         sync: false
-      - key: EMAIL_HOST_PASSWORD
+      - key: MAILGUN_SMTP_PASSWORD
         sync: false
 
 databases:
