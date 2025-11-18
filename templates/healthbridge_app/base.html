@@ -58,7 +58,7 @@
       gap: 0.75rem;
       text-decoration: none;
       color: var(--primary-blue);
-      margin-right: 3rem;
+      flex-shrink: 0;
     }
 
     .logo-img {
@@ -70,7 +70,7 @@
       display: flex;
       gap: 2rem;
       align-items: center;
-      flex: 1;
+      margin-left: 3rem;
     }
     
     nav a {
@@ -886,7 +886,7 @@
 </head>
 <body>
   <header>
-    <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 2rem; display: flex; align-items: center; gap: 2rem;">
       <div class="logo">
         <img src="{% static 'healthbridge_app/logo.png' %}" alt="HealthBridge Logo" class="logo-img">
         HealthBridge
@@ -899,7 +899,7 @@
       
       {% if user.is_authenticated %}
         <!-- Profile Icon with Dropdown -->
-        <div style="position: relative;">
+        <div style="position: relative; margin-left: auto;">
           <button class="profile-icon-btn" id="profile-toggle">
             <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
           </button>

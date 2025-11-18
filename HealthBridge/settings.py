@@ -207,12 +207,38 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Email configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development - prints to console
-# For production, use:
+# Always use SMTP backend to test email functionality
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = 'healthbridge.expiryalerts123@gmail.com'
+
+# Try Mailgun first (Render's recommended free option)
+if os.getenv('MAILGUN_SMTP_LOGIN'):
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.getenv('MAILGUN_SMTP_LOGIN')
+    EMAIL_HOST_PASSWORD = os.getenv('MAILGUN_SMTP_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.getenv('MAILGUN_SMTP_LOGIN', 'noreply@healthbridge.app')
+# Try SendGrid (alternative free option - 100 emails/day)
+elif os.getenv('SENDGRID_API_KEY'):
+    EMAIL_HOST = 'smtp.sendgrid.net'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'apikey'
+    EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+    DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'noreply@healthbridge.app')
+# Gmail configuration (works locally and on Render with proper setup)
+else:
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False  # Use TLS on port 587, not SSL
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'noreply@healthbridge.app')
+
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+    
+# Email timeout to prevent hanging
+EMAIL_TIMEOUT = 30  # Increased timeout for Gmail
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_KEYFILE = None
