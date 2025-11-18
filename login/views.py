@@ -9,7 +9,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.conf import settings
+from django.core.mail import send_mail
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -70,28 +72,27 @@ class CustomPasswordResetView(PasswordResetView):
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        """Override to add error handling and logging"""
+        """Override to add error handling and prevent worker timeout"""
+        # Check if email is configured
+        if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+            logger.error("Email credentials not configured")
+            # Redirect to done page anyway (security best practice)
+            return redirect(self.success_url)
+        
         try:
-            # Check if email is configured
-            if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-                logger.error("Email credentials not configured")
-                # Still proceed to success page to avoid revealing user existence
-                return super().form_valid(form)
-            
             # Log attempt (without sensitive info)
             logger.info(f"Attempting password reset email via {settings.EMAIL_HOST}")
             
-            # Try to send the email
+            # Try to send the email with timeout protection
             response = super().form_valid(form)
-            logger.info("Password reset email process completed")
+            logger.info("Password reset email sent successfully")
             return response
             
         except Exception as e:
             # Log the error but don't expose it to user
-            logger.error(f"Password reset email failed: {str(e)}", exc_info=True)
-            # Still return success to avoid revealing if user exists
-            # The user will just not receive an email
-            return super().form_valid(form)
+            logger.error(f"Password reset email failed: {type(e).__name__}: {str(e)}")
+            # Still redirect to success page (security - don't reveal if email exists)
+            return redirect(self.success_url)
 
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):

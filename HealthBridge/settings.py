@@ -248,7 +248,7 @@ else:
 
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
     
-# Email timeout to prevent hanging
-EMAIL_TIMEOUT = 30  # Increased timeout for Gmail
+# Email timeout to prevent worker timeouts on Render
+EMAIL_TIMEOUT = 10  # Reduced from 30 to prevent worker timeout
 EMAIL_SSL_CERTFILE = None
 EMAIL_SSL_KEYFILE = None
