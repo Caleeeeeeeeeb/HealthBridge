@@ -20,6 +20,10 @@ def login_view(request):
     # Redirect authenticated users to their dashboard
     if request.user.is_authenticated:
         try:
+            # Redirect admins/superusers to admin dashboard
+            if request.user.is_superuser:
+                return redirect("admin_dashboard")
+            
             if not request.user.role_selected:
                 return redirect("select_role")
             if request.user.is_donor:
@@ -45,8 +49,13 @@ def login_view(request):
                 login(request, user)
                 logger.info(f"User {user.email} logged in successfully")
                 
-                # Check if user has selected their role
+                # Check if user is admin/superuser first
                 try:
+                    # Redirect admins/superusers to admin dashboard
+                    if user.is_superuser:
+                        return redirect("admin_dashboard")
+                    
+                    # Check if user has selected their role
                     if not user.role_selected:
                         return redirect("select_role")
                     # Redirect to appropriate dashboard based on role

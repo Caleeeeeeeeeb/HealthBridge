@@ -45,7 +45,10 @@ def dashboard(request):
         'total_requests': user_requests.count(),
         'pending_requests': user_requests.filter(status=MedicineRequest.Status.PENDING).count(),
         'matched_requests': user_requests.filter(status=MedicineRequest.Status.MATCHED).count(),
-        'available_medicines': Donation.objects.filter(status=Donation.Status.AVAILABLE).count(),
+        'available_medicines': Donation.objects.filter(
+            status=Donation.Status.AVAILABLE,
+            approval_status=Donation.ApprovalStatus.APPROVED
+        ).count(),
         'recent_requests': user_requests.order_by('-created_at')[:5],
     })
     
@@ -73,6 +76,10 @@ def dashboard(request):
     
     # Redirect to role-specific dashboard instead of unified dashboard
     try:
+        # Redirect admins to admin dashboard
+        if request.user.is_superuser:
+            return redirect('admin_dashboard')
+        
         if request.user.is_donor:
             return redirect('dashboard:donor_dashboard')
         elif request.user.is_recipient:
@@ -113,21 +120,24 @@ def donor_dashboard(request):
     user_expiring = Donation.objects.expiring_within(days=10).filter(donor=request.user)
     critical_donations = user_expiring.filter(expiry_date__lte=date.today() + timedelta(days=3))
     
-    # Pending requests (matched but not yet claimed)
+    # Pending requests (matched but not yet claimed) - only show APPROVED requests
     pending_requests = MedicineRequest.objects.filter(
         matched_donation__donor=request.user,
+        approval_status=MedicineRequest.ApprovalStatus.APPROVED,  # Only show approved requests
         status__in=[MedicineRequest.Status.MATCHED, MedicineRequest.Status.FULFILLED]
     ).order_by('-created_at')[:10]
     
-    # Settled requests (claimed by recipient)
+    # Settled requests (claimed by recipient) - only show APPROVED requests
     settled_requests = MedicineRequest.objects.filter(
         matched_donation__donor=request.user,
+        approval_status=MedicineRequest.ApprovalStatus.APPROVED,  # Only show approved requests
         status=MedicineRequest.Status.CLAIMED
     ).order_by('-created_at')[:10]
     
-    # All available medicines for browsing (only show with quantity > 0)
+    # All available medicines for browsing (only show APPROVED donations with quantity > 0)
     all_available_medicines = Donation.objects.filter(
         status=Donation.Status.AVAILABLE,
+        approval_status=Donation.ApprovalStatus.APPROVED,  # Only show approved donations
         quantity__gt=0
     ).order_by('-donated_at')[:50]  # Limit to 50 most recent
     
@@ -170,19 +180,22 @@ def recipient_dashboard(request):
     fulfilled_requests = user_requests.filter(status=MedicineRequest.Status.FULFILLED).count()
     claimed_count = user_requests.filter(status=MedicineRequest.Status.CLAIMED).count()
     
-    # Recently donated medicines (most recent first, only show available ones with quantity > 0)
+    # Recently donated medicines (most recent first, only show APPROVED available ones with quantity > 0)
     available_medicines = Donation.objects.filter(
         status=Donation.Status.AVAILABLE,
+        approval_status=Donation.ApprovalStatus.APPROVED,  # Only show approved donations
         quantity__gt=0
     ).order_by('-donated_at')[:3]
     available_medicines_count = Donation.objects.filter(
         status=Donation.Status.AVAILABLE,
+        approval_status=Donation.ApprovalStatus.APPROVED,  # Only show approved donations
         quantity__gt=0
     ).count()
     
-    # All available medicines for browse modal
+    # All available medicines for browse modal (only APPROVED)
     all_available_medicines = Donation.objects.filter(
         status=Donation.Status.AVAILABLE,
+        approval_status=Donation.ApprovalStatus.APPROVED,  # Only show approved donations
         quantity__gt=0
     ).order_by('-donated_at')[:50]
     

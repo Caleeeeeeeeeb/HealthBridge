@@ -41,6 +41,11 @@ class Donation(models.Model):
         PICKED_UP = "picked_up", "Picked up"
         DELIVERED = "delivered", "Delivered"
         CANCELLED = "cancelled", "Cancelled"
+    
+    class ApprovalStatus(models.TextChoices):
+        PENDING = "pending", "Pending Admin Approval"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
 
     # core data
     name = models.CharField(max_length=100)
@@ -62,6 +67,24 @@ class Donation(models.Model):
     donated_at = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     notes = models.TextField(blank=True, default="")
+    
+    # Admin approval workflow
+    approval_status = models.CharField(
+        max_length=20,
+        choices=ApprovalStatus.choices,
+        default=ApprovalStatus.PENDING,
+        help_text="Admin approval status for this donation"
+    )
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reviewed_donations",
+        help_text="Admin who reviewed this donation"
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True, help_text="Reason for rejection (if rejected)")
 
     objects = DonationManager()  # Custom manager
 
