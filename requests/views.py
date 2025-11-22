@@ -67,7 +67,7 @@ def create_request(request):
         else:
             print("No donation_id provided")
         
-        # Create the request
+        # Create the request (set approval_status to PENDING for admin review)
         medicine_request = MedicineRequest.objects.create(
             recipient=request.user,
             medicine_name=medicine_name,
@@ -75,7 +75,8 @@ def create_request(request):
             urgency=urgency,
             reason=reason,
             matched_donation=matched_donation,
-            status=MedicineRequest.Status.MATCHED if matched_donation else MedicineRequest.Status.PENDING
+            status=MedicineRequest.Status.MATCHED if matched_donation else MedicineRequest.Status.PENDING,
+            approval_status=MedicineRequest.ApprovalStatus.PENDING  # Requires admin approval
         )
         
         print(f"Request created: ID={medicine_request.id}, Status={medicine_request.status}, Matched Donation={medicine_request.matched_donation_id}")
@@ -145,13 +146,14 @@ def request_medicine(request):
             
             return render(request, 'requests/request_medicine.html', {'prefill_data': prefill_data})
         
-        # Create the request
+        # Create the request (set approval_status to PENDING for admin review)
         medicine_request = MedicineRequest.objects.create(
             recipient=request.user,
             medicine_name=medicine_name,
             quantity=str(quantity_needed),
             urgency=urgency,
-            reason=reason
+            reason=reason,
+            approval_status=MedicineRequest.ApprovalStatus.PENDING  # Requires admin approval
         )
         
         # Handle AJAX requests

@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.admin-dashboard-link {
+    display: block;
+    padding: 12px 20px;
+    margin: 10px 0;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white !important;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard-link:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    color: white !important;
+}
+
+.admin-dashboard-link i {
+    margin-right: 8px;
+}
+
+#header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.module h2, .module caption {
+    background: #1e3a8a;
+}
+</style>
+{% endblock %}
+
+{% block userlinks %}
+<a href="{% url 'admin_dashboard' %}" class="admin-dashboard-link" style="display: inline-block; margin-right: 20px; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 6px;">
+    <i class="fas fa-arrow-left"></i> Back to Admin Dashboard
+</a>
+{{ block.super }}
+{% endblock %}

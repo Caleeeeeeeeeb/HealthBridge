@@ -51,6 +51,10 @@ def select_role(request):
     """One-time role selection for new users. Cannot be changed after selection."""
     user = request.user
     
+    # Redirect admins/superusers to admin dashboard
+    if user.is_superuser:
+        return redirect("admin_dashboard")
+    
     # If role already selected, redirect to appropriate dashboard
     try:
         if user.role_selected:
@@ -194,7 +198,12 @@ def medicine_autocomplete(request):
 # ---------- SEARCH ----------
 def medicine_search(request):
     query = request.GET.get('q', '').strip()
-    medicines = Donation.objects.all()
+    # Only show APPROVED and AVAILABLE donations with quantity > 0
+    medicines = Donation.objects.filter(
+        status=Donation.Status.AVAILABLE,
+        approval_status=Donation.ApprovalStatus.APPROVED,
+        quantity__gt=0
+    )
 
     if query:
         medicines = medicines.filter(name__icontains=query)

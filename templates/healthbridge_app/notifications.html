@@ -1,0 +1,378 @@
+{% extends 'healthbridge_app/base.html' %}
+{% load static %}
+
+{% block title %}Notifications - HealthBridge{% endblock %}
+
+{% block extra_css %}
+<style>
+.notifications-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.notifications-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(30, 58, 138, 0.2);
+}
+
+.notifications-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.notifications-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.notifications-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stat-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.notifications-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.mark-all-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mark-all-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.mark-all-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    border-left: 4px solid transparent;
+}
+
+.notification-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.notification-card.unread {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.notification-card-content {
+    display: flex;
+    gap: 1rem;
+}
+
+.notification-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.notification-icon.approved {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.notification-icon.rejected {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.notification-details {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.notification-message {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.notification-meta {
+    display: flex;
+    gap: 1rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.notification-time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.unread-badge {
+    background: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h2 {
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #94a3b8;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: white;
+    color: #1e3a8a;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    background: #1e3a8a;
+    color: white;
+}
+
+.pagination .current {
+    background: #1e3a8a;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <div class="notifications-header">
+        <h1>🔔 Notifications</h1>
+        <p>Stay updated with your donations and requests</p>
+        <div class="notifications-stats">
+            <div class="stat-badge">
+                {{ notifications.paginator.count }} Total
+            </div>
+            {% if unread_count > 0 %}
+            <div class="stat-badge">
+                {{ unread_count }} Unread
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if notifications %}
+    <div class="notifications-actions">
+        <h2 style="margin: 0; color: #1f2937;">All Notifications</h2>
+        {% if unread_count > 0 %}
+        <button class="mark-all-btn" id="markAllReadBtn">
+            Mark All as Read
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-card {% if not notification.is_read %}unread{% endif %}" 
+             data-id="{{ notification.id }}"
+             onclick="markAsRead({{ notification.id }})">
+            <div class="notification-card-content">
+                <div class="notification-icon {% if 'APPROVED' in notification.notification_type %}approved{% else %}rejected{% endif %}">
+                    {% if 'APPROVED' in notification.notification_type %}✅{% else %}❌{% endif %}
+                </div>
+                <div class="notification-details">
+                    <div class="notification-title">
+                        {{ notification.title }}
+                    </div>
+                    <div class="notification-message">
+                        {{ notification.message }}
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">
+                            <i class="fas fa-clock"></i>
+                            {{ notification.time_ago }}
+                        </span>
+                        {% if not notification.is_read %}
+                        <span class="unread-badge">NEW</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if notifications.has_other_pages %}
+    <div class="pagination">
+        {% if notifications.has_previous %}
+        <a href="?page={{ notifications.previous_page_number }}">← Previous</a>
+        {% endif %}
+        
+        <span class="current">Page {{ notifications.number }} of {{ notifications.paginator.num_pages }}</span>
+        
+        {% if notifications.has_next %}
+        <a href="?page={{ notifications.next_page_number }}">Next →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <h2>No Notifications Yet</h2>
+        <p>You'll see notifications here when there are updates on your donations or requests.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Mark notification as read
+async function markAsRead(notificationId) {
+    try {
+        const response = await fetch(`/api/notifications/${notificationId}/read/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update UI
+            const card = document.querySelector(`[data-id="${notificationId}"]`);
+            if (card) {
+                card.classList.remove('unread');
+                const badge = card.querySelector('.unread-badge');
+                if (badge) badge.remove();
+            }
+            
+            // Reload page to update counts
+            setTimeout(() => window.location.reload(), 500);
+        }
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+    }
+}
+
+// Mark all as read
+{% if unread_count > 0 %}
+document.getElementById('markAllReadBtn').addEventListener('click', async function() {
+    try {
+        const response = await fetch('/api/notifications/mark-all-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Reload page to show updated state
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error('Error marking all as read:', error);
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

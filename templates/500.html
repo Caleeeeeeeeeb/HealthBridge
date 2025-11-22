@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - HealthBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'healthbridge_app/error-500.css' %}">
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Server Error</h1>
+        <p class="error-message">
+            Something went wrong on our end. We're working to fix it!
+        </p>
+
+        <div class="error-details">
+            <strong>What happened?</strong>
+            <p>
+                Our server encountered an unexpected error while processing your request. 
+                The technical team has been automatically notified and is working on a solution.
+            </p>
+        </div>
+
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Return Home
+            </a>
+            <button onclick="location.reload()" class="btn btn-secondary">
+                <i class="fas fa-redo"></i>
+                Try Again
+            </button>
+        </div>
+
+        <div class="support-info">
+            <h3>Need immediate help?</h3>
+            <p>
+                If this error persists, please contact our support team. 
+                We apologize for any inconvenience this may have caused.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

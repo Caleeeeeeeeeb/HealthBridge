@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}HealthBridge{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root {
@@ -898,8 +900,12 @@
       </nav>
       
       {% if user.is_authenticated %}
-        <!-- Profile Icon with Dropdown -->
-        <div style="position: relative; margin-left: auto;">
+        <!-- Notification Bell and Profile Icon with Dropdown -->
+        <div style="position: relative; margin-left: auto; display: flex; align-items: center; gap: 1rem;">
+          <!-- Notification Bell -->
+          {% include 'healthbridge_app/notification_bell.html' %}
+          
+          <!-- Profile Icon -->
           <button class="profile-icon-btn" id="profile-toggle">
             <img src="{% static 'healthbridge_app/image.png' %}" alt="Profile">
           </button>

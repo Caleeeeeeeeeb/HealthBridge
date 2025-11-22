@@ -47,8 +47,9 @@ def donate_medicine(request):
                 expiry_date=expiry_date,
                 donor=request.user,
                 image=image,
+                approval_status=Donation.ApprovalStatus.PENDING  # Set to pending for admin approval
             )
-            messages.success(request, f"✅ Thank you for donating {quantity}x {name}! You can track it under Track Requests.")
+            messages.success(request, f"✅ Thank you for submitting your donation of {quantity}x {name}! It is now pending admin approval. You'll be notified once it's reviewed.")
             # Redirect to appropriate dashboard based on user role
             if request.user.is_donor:
                 return redirect("dashboard:donor_dashboard")

@@ -21,6 +21,11 @@ class MedicineRequest(models.Model):
         HIGH = "high", "High"
         CRITICAL = "critical", "Critical"
     
+    class ApprovalStatus(models.TextChoices):
+        PENDING = "pending", "Pending Admin Approval"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+    
     # Request details - matching database column names
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -59,6 +64,29 @@ class MedicineRequest(models.Model):
     # Timestamps - matching database column names
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # Admin approval workflow
+    approval_status = models.CharField(
+        max_length=20,
+        choices=ApprovalStatus.choices,
+        default=ApprovalStatus.PENDING,
+        help_text="Admin approval status for this request"
+    )
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reviewed_requests",
+        help_text="Admin who reviewed this request"
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True, help_text="Reason for rejection (if rejected)")
+    claim_ready_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Date when medicine will be ready for claiming (set by admin)"
+    )
     
     class Meta:
         ordering = ['-created_at']

@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HealthBridge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'healthbridge_app/admin-dashboard.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-shield-alt"></i> HealthBridge</h2>
+            <p>Admin Control Panel</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'admin_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="{% url 'landing:home' %}"><i class="fas fa-home"></i> Main Site</a></li>
+            <li><a href="/admin/"><i class="fas fa-cog"></i> Django Admin</a></li>
+            <li><a href="{% url 'login:logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
+            <span class="admin-badge"><i class="fas fa-crown"></i> Administrator</span>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-card-header">
+                    <h3>Pending Donations</h3>
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-card-value">{{ pending_donations_count }}</div>
+                <div class="stat-card-label">Awaiting approval</div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-card-header">
+                    <h3>Pending Requests</h3>
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-card-value">{{ pending_requests_count }}</div>
+                <div class="stat-card-label">Awaiting approval</div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-card-header">
+                    <h3>Approved Donations</h3>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-card-value">{{ approved_donations }}</div>
+                <div class="stat-card-label">Total approved</div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-card-header">
+                    <h3>Approved Requests</h3>
+                    <i class="fas fa-thumbs-up"></i>
+                </div>
+                <div class="stat-card-value">{{ approved_requests }}</div>
+                <div class="stat-card-label">Total approved</div>
+            </div>
+        </div>
+
+        <!-- Pending Donations -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-pills"></i> Pending Donations ({{ pending_donations_count }})</h2>
+            </div>
+
+            {% if pending_donations %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Donor</th>
+                        <th>Quantity</th>
+                        <th>Expiry Date</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donation in pending_donations %}
+                    <tr>
+                        <td><strong>{{ donation.name }}</strong></td>
+                        <td>{{ donation.donor.get_full_name }}</td>
+                        <td>{{ donation.quantity }}</td>
+                        <td>{{ donation.expiry_date }}</td>
+                        <td>{{ donation.donated_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-approve" onclick="approveDonation({{ donation.id }})">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="btn btn-reject" onclick="showRejectDonationModal({{ donation.id }}, '{{ donation.name }}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-double"></i>
+                <p>No pending donations. Great job!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-hand-holding-medical"></i> Pending Medicine Requests ({{ pending_requests_count }})</h2>
+            </div>
+
+            {% if pending_requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Recipient</th>
+                        <th>Quantity</th>
+                        <th>Urgency</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in pending_requests %}
+                    <tr>
+                        <td><strong>{{ request.medicine_name }}</strong></td>
+                        <td>{{ request.recipient.get_full_name }}</td>
+                        <td>{{ request.quantity }}</td>
+                        <td><span class="badge {{ request.urgency }}">{{ request.get_urgency_display }}</span></td>
+                        <td>{{ request.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-approve" onclick="showApproveRequestModal({{ request.id }}, '{{ request.medicine_name }}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="btn btn-reject" onclick="showRejectRequestModal({{ request.id }}, '{{ request.medicine_name }}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-double"></i>
+                <p>No pending requests. All caught up!</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Reject Donation Modal -->
+    <div id="rejectDonationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-times-circle"></i> Reject Donation</h3>
+            </div>
+            <form id="rejectDonationForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Reason for rejection:</label>
+                    <textarea name="reason" required placeholder="Explain why this donation is being rejected..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('rejectDonationModal')">Cancel</button>
+                    <button type="submit" class="btn btn-reject">Reject Donation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Approve Request Modal -->
+    <div id="approveRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Approve Request</h3>
+            </div>
+            <form id="approveRequestForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Claim Ready Date (Optional):</label>
+                    <input type="date" name="claim_ready_date" min="{{ today|date:'Y-m-d' }}">
+                    <small style="color: #6b7280;">When will the medicine be ready for claiming?</small>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('approveRequestModal')">Cancel</button>
+                    <button type="submit" class="btn btn-approve">Approve Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reject Request Modal -->
+    <div id="rejectRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-times-circle"></i> Reject Request</h3>
+            </div>
+            <form id="rejectRequestForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Reason for rejection:</label>
+                    <textarea name="reason" required placeholder="Explain why this request is being rejected..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('rejectRequestModal')">Cancel</button>
+                    <button type="submit" class="btn btn-reject">Reject Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script src="{% static 'healthbridge_app/admin-dashboard.js' %}"></script>
+</body>
+</html>
