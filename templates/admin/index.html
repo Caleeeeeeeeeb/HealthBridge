@@ -1,0 +1,21 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+    <a href="{% url 'admin_dashboard' %}" style="display: block; padding: 20px; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; text-decoration: none; border-radius: 12px; text-align: center; font-size: 1.1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3); transition: all 0.3s ease;">
+        <i class="fas fa-dashboard" style="margin-right: 10px; font-size: 1.3rem;"></i>
+        Go to Admin Dashboard (Approve/Reject Donations & Requests)
+    </a>
+</div>
+
+{{ block.super }}
+
+<style>
+a[href="{% url 'admin_dashboard' %}"]:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4) !important;
+}
+</style>
+{% endblock %}

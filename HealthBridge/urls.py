@@ -53,5 +53,9 @@ urlpatterns = [
     path('requests/', include('requests.urls')),  # Medicine requests
 ]
 
+# Custom error handlers
+handler404 = 'HealthBridge.views.custom_404'
+handler500 = 'HealthBridge.views.custom_500'
+
 # Note: Media files are served from Supabase Storage (cloud), not locally
 # No need for local media serving with Supabase Storage backend
